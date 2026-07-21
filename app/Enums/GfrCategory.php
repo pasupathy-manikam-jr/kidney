@@ -55,6 +55,17 @@ enum GfrCategory: string
         };
     }
 
+    /** Serializable catalog for the frontend reference tables. */
+    public static function catalog(): array
+    {
+        return array_map(fn (self $c) => [
+            'code' => $c->value,
+            'label' => $c->label(),
+            'range' => $c->range(),
+            'severity' => $c->severity(),
+        ], self::cases());
+    }
+
     /** Severity 1 (best) .. 5 (worst) — for UI color ramp. */
     public function severity(): int
     {

@@ -1,5 +1,5 @@
 import { Link } from '@inertiajs/react';
-import { Activity, BookOpen, FolderGit2, LayoutGrid } from 'lucide-react';
+import { Activity, BookOpen, FolderGit2, LayoutGrid, Table2 } from 'lucide-react';
 import AppLogo from '@/components/app-logo';
 import { NavFooter } from '@/components/nav-footer';
 import { NavMain } from '@/components/nav-main';
@@ -26,6 +26,11 @@ const mainNavItems: NavItem[] = [
         title: 'Lab Results',
         href: '/lab-results',
         icon: Activity,
+    },
+    {
+        title: 'Reference',
+        href: '/reference',
+        icon: Table2,
     },
 ];
 

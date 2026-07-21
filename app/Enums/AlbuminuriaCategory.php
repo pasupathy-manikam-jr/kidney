@@ -38,4 +38,14 @@ enum AlbuminuriaCategory: string
             self::A3 => '>300',
         };
     }
+
+    /** Serializable catalog for the frontend reference tables. */
+    public static function catalog(): array
+    {
+        return array_map(fn (self $c) => [
+            'code' => $c->value,
+            'label' => $c->label(),
+            'range' => $c->range(),
+        ], self::cases());
+    }
 }
