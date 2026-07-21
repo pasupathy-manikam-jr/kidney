@@ -75,9 +75,16 @@ export function initializeTheme(): void {
         return;
     }
 
-    if (!localStorage.getItem('appearance')) {
-        localStorage.setItem('appearance', 'dark');
-        setCookie('appearance', 'dark');
+    // One-time migration: dark is now the default. Adopt it for anyone who
+    // never explicitly chose a theme (no value, or the old auto-seeded 'system').
+    const MIGRATION_KEY = 'appearance-default-dark';
+    if (!localStorage.getItem(MIGRATION_KEY)) {
+        localStorage.setItem(MIGRATION_KEY, '1');
+        const stored = localStorage.getItem('appearance');
+        if (!stored || stored === 'system') {
+            localStorage.setItem('appearance', 'dark');
+            setCookie('appearance', 'dark');
+        }
     }
 
     currentAppearance = getStoredAppearance();
