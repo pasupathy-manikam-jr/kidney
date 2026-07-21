@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\GfrCategory;
 use App\Enums\LabMetric;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -45,9 +46,26 @@ class DashboardController extends Controller
             ];
         }, LabMetric::cases());
 
+        // GFR category from the latest eGFR reading, if any.
+        $latestEgfr = $byMetric->get(LabMetric::Egfr->value, collect())->first();
+        $gfr = null;
+        if ($latestEgfr) {
+            $value = (float) $latestEgfr->value;
+            $category = GfrCategory::fromEgfr($value);
+            $gfr = [
+                'code' => $category->value,
+                'label' => $category->label(),
+                'range' => $category->range(),
+                'severity' => $category->severity(),
+                'egfr' => $value,
+                'measuredAt' => $latestEgfr->measured_at->toDateString(),
+            ];
+        }
+
         return Inertia::render('dashboard', [
             'tiles' => $tiles,
             'totalReadings' => $results->count(),
+            'gfr' => $gfr,
         ]);
     }
 }

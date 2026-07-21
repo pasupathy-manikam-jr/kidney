@@ -25,6 +25,31 @@ test('the dashboard shows a tile per metric with the latest value and status', f
         );
 });
 
+test('the dashboard derives the GFR category from the latest eGFR', function () {
+    $user = User::factory()->create();
+
+    $user->labResults()->create(['metric' => 'egfr', 'value' => 100, 'unit' => 'mL/min/1.73m²', 'measured_at' => '2026-05-01']);
+    $user->labResults()->create(['metric' => 'egfr', 'value' => 40, 'unit' => 'mL/min/1.73m²', 'measured_at' => '2026-07-01']);
+
+    $this->actingAs($user)
+        ->get('/dashboard')
+        ->assertOk()
+        ->assertInertia(fn ($page) => $page
+            ->where('gfr.code', 'G3b')
+            ->where('gfr.egfr', 40)
+            ->where('gfr.severity', 3)
+        );
+});
+
+test('the GFR card is absent when there is no eGFR reading', function () {
+    $user = User::factory()->create();
+
+    $this->actingAs($user)
+        ->get('/dashboard')
+        ->assertOk()
+        ->assertInertia(fn ($page) => $page->where('gfr', null));
+});
+
 test('metrics with no readings render as empty tiles', function () {
     $user = User::factory()->create();
 

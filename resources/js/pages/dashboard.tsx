@@ -22,9 +22,90 @@ interface Tile {
     count: number;
 }
 
+interface Gfr {
+    code: string;
+    label: string;
+    range: string;
+    severity: number;
+    egfr: number;
+    measuredAt: string;
+}
+
 interface PageProps {
     tiles: Tile[];
     totalReadings: number;
+    gfr: Gfr | null;
+}
+
+// KDIGO GFR-category color ramp: green (best) -> deep red (worst).
+const SEVERITY_STYLE: Record<number, { bar: string; text: string; bg: string }> = {
+    1: { bar: 'bg-emerald-500', text: 'text-emerald-600 dark:text-emerald-400', bg: 'from-emerald-500/10' },
+    2: { bar: 'bg-lime-500', text: 'text-lime-600 dark:text-lime-400', bg: 'from-lime-500/10' },
+    3: { bar: 'bg-amber-500', text: 'text-amber-600 dark:text-amber-400', bg: 'from-amber-500/10' },
+    4: { bar: 'bg-orange-500', text: 'text-orange-600 dark:text-orange-400', bg: 'from-orange-500/10' },
+    5: { bar: 'bg-rose-600', text: 'text-rose-600 dark:text-rose-400', bg: 'from-rose-600/10' },
+};
+
+const GFR_CATEGORIES = [
+    { code: 'G1', range: '≥90' },
+    { code: 'G2', range: '60–89' },
+    { code: 'G3a', range: '45–59' },
+    { code: 'G3b', range: '30–44' },
+    { code: 'G4', range: '15–29' },
+    { code: 'G5', range: '<15' },
+];
+
+function GfrCard({ gfr }: { gfr: Gfr }) {
+    const s = SEVERITY_STYLE[gfr.severity];
+
+    return (
+        <Card className={cn('overflow-hidden bg-gradient-to-br to-transparent', s.bg)}>
+            <CardContent className="flex flex-col gap-4 pt-6 sm:flex-row sm:items-center sm:justify-between">
+                <div className="flex items-center gap-4">
+                    <div
+                        className={cn(
+                            'flex size-16 flex-col items-center justify-center rounded-xl text-white',
+                            s.bar,
+                        )}
+                    >
+                        <span className="text-xl font-bold leading-none">{gfr.code}</span>
+                    </div>
+                    <div>
+                        <div className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                            GFR category (KDIGO)
+                        </div>
+                        <div className={cn('text-lg font-semibold', s.text)}>{gfr.label}</div>
+                        <div className="text-sm text-muted-foreground">
+                            eGFR {gfr.egfr} mL/min/1.73m² · {gfr.measuredAt}
+                        </div>
+                    </div>
+                </div>
+
+                {/* Category ladder */}
+                <div className="flex gap-1">
+                    {GFR_CATEGORIES.map((c) => {
+                        const active = c.code === gfr.code;
+                        return (
+                            <div
+                                key={c.code}
+                                className={cn(
+                                    'flex w-11 flex-col items-center gap-1 rounded-md border px-1 py-1.5 text-center transition',
+                                    active
+                                        ? cn('border-transparent text-white', s.bar)
+                                        : 'border-border text-muted-foreground',
+                                )}
+                            >
+                                <span className="text-xs font-semibold">{c.code}</span>
+                                <span className="text-[10px] leading-none opacity-80">
+                                    {c.range}
+                                </span>
+                            </div>
+                        );
+                    })}
+                </div>
+            </CardContent>
+        </Card>
+    );
 }
 
 const STATUS_STYLE: Record<
@@ -170,7 +251,7 @@ function MetricTile({ tile }: { tile: Tile }) {
     );
 }
 
-export default function Dashboard({ tiles, totalReadings }: PageProps) {
+export default function Dashboard({ tiles, totalReadings, gfr }: PageProps) {
     return (
         <>
             <Head title="Dashboard" />
@@ -199,6 +280,9 @@ export default function Dashboard({ tiles, totalReadings }: PageProps) {
                         </Link>
                     </Button>
                 </div>
+
+                {/* GFR category */}
+                {gfr && <GfrCard gfr={gfr} />}
 
                 {/* Tiles */}
                 <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
