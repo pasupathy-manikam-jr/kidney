@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\AlbuminuriaCategory;
 use App\Enums\GfrCategory;
 use App\Enums\LabMetric;
+use App\Support\KdigoRisk;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -48,17 +50,47 @@ class DashboardController extends Controller
 
         // GFR category from the latest eGFR reading, if any.
         $latestEgfr = $byMetric->get(LabMetric::Egfr->value, collect())->first();
+        $gfrCategory = null;
         $gfr = null;
         if ($latestEgfr) {
             $value = (float) $latestEgfr->value;
-            $category = GfrCategory::fromEgfr($value);
+            $gfrCategory = GfrCategory::fromEgfr($value);
             $gfr = [
-                'code' => $category->value,
-                'label' => $category->label(),
-                'range' => $category->range(),
-                'severity' => $category->severity(),
+                'code' => $gfrCategory->value,
+                'label' => $gfrCategory->label(),
+                'range' => $gfrCategory->range(),
+                'severity' => $gfrCategory->severity(),
                 'egfr' => $value,
                 'measuredAt' => $latestEgfr->measured_at->toDateString(),
+            ];
+        }
+
+        // Albuminuria category from the latest UACR reading, if any.
+        $latestUacr = $byMetric->get(LabMetric::Uacr->value, collect())->first();
+        $albCategory = null;
+        $albuminuria = null;
+        if ($latestUacr) {
+            $value = (float) $latestUacr->value;
+            $albCategory = AlbuminuriaCategory::fromUacr($value);
+            $albuminuria = [
+                'code' => $albCategory->value,
+                'label' => $albCategory->label(),
+                'range' => $albCategory->range(),
+                'uacr' => $value,
+                'measuredAt' => $latestUacr->measured_at->toDateString(),
+            ];
+        }
+
+        // KDIGO risk heat-map — needs both a GFR and an albuminuria category.
+        $risk = null;
+        if ($gfrCategory && $albCategory) {
+            $level = KdigoRisk::level($gfrCategory, $albCategory);
+            $risk = [
+                'level' => $level,
+                'label' => KdigoRisk::label($level),
+                'gfrCode' => $gfrCategory->value,
+                'albCode' => $albCategory->value,
+                'grid' => KdigoRisk::grid(),
             ];
         }
 
@@ -66,6 +98,8 @@ class DashboardController extends Controller
             'tiles' => $tiles,
             'totalReadings' => $results->count(),
             'gfr' => $gfr,
+            'albuminuria' => $albuminuria,
+            'risk' => $risk,
         ]);
     }
 }

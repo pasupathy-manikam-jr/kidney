@@ -50,6 +50,33 @@ test('the GFR card is absent when there is no eGFR reading', function () {
         ->assertInertia(fn ($page) => $page->where('gfr', null));
 });
 
+test('the dashboard builds the KDIGO risk map from latest eGFR and UACR', function () {
+    $user = User::factory()->create();
+
+    $user->labResults()->create(['metric' => 'egfr', 'value' => 40, 'unit' => 'mL/min/1.73m²', 'measured_at' => '2026-07-01']); // G3b
+    $user->labResults()->create(['metric' => 'uacr', 'value' => 120, 'unit' => 'mg/g', 'measured_at' => '2026-07-01']);        // A2
+
+    $this->actingAs($user)
+        ->get('/dashboard')
+        ->assertOk()
+        ->assertInertia(fn ($page) => $page
+            ->where('albuminuria.code', 'A2')
+            ->where('risk.gfrCode', 'G3b')
+            ->where('risk.albCode', 'A2')
+            ->where('risk.level', 4) // G3b × A2 = very high
+        );
+});
+
+test('the risk map is null without both eGFR and UACR', function () {
+    $user = User::factory()->create();
+    $user->labResults()->create(['metric' => 'egfr', 'value' => 40, 'unit' => 'mL/min/1.73m²', 'measured_at' => '2026-07-01']);
+
+    $this->actingAs($user)
+        ->get('/dashboard')
+        ->assertOk()
+        ->assertInertia(fn ($page) => $page->where('risk', null));
+});
+
 test('metrics with no readings render as empty tiles', function () {
     $user = User::factory()->create();
 

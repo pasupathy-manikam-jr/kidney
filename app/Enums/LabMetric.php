@@ -14,6 +14,7 @@ enum LabMetric: string
     case Egfr = 'egfr';
     case Creatinine = 'creatinine';
     case Bun = 'bun';
+    case Uacr = 'uacr';
     case Potassium = 'potassium';
     case Phosphorus = 'phosphorus';
     case SystolicBp = 'systolic_bp';
@@ -26,6 +27,7 @@ enum LabMetric: string
             self::Egfr => 'eGFR',
             self::Creatinine => 'Creatinine',
             self::Bun => 'BUN',
+            self::Uacr => 'Albuminuria (UACR)',
             self::Potassium => 'Potassium',
             self::Phosphorus => 'Phosphorus',
             self::SystolicBp => 'Systolic BP',
@@ -40,6 +42,7 @@ enum LabMetric: string
             self::Egfr => 'mL/min/1.73m²',
             self::Creatinine, self::Phosphorus => 'mg/dL',
             self::Bun => 'mg/dL',
+            self::Uacr => 'mg/g',
             self::Potassium => 'mEq/L',
             self::SystolicBp, self::DiastolicBp => 'mmHg',
             self::Weight => 'kg',
@@ -56,6 +59,7 @@ enum LabMetric: string
             self::Egfr => [90, null],        // >=90 normal; lower stages kidney disease
             self::Creatinine => [0.6, 1.3],
             self::Bun => [7, 20],
+            self::Uacr => [null, 30],        // <30 mg/g normal (A1); higher = albuminuria
             self::Potassium => [3.5, 5.0],
             self::Phosphorus => [2.5, 4.5],
             self::SystolicBp => [90, 120],
@@ -68,7 +72,7 @@ enum LabMetric: string
     public function precision(): int
     {
         return match ($this) {
-            self::Egfr, self::Bun, self::SystolicBp, self::DiastolicBp => 0,
+            self::Egfr, self::Bun, self::Uacr, self::SystolicBp, self::DiastolicBp => 0,
             self::Creatinine, self::Potassium, self::Phosphorus, self::Weight => 1,
         };
     }

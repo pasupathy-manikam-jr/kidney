@@ -31,10 +31,116 @@ interface Gfr {
     measuredAt: string;
 }
 
+interface Risk {
+    level: number;
+    label: string;
+    gfrCode: string;
+    albCode: string;
+    grid: Record<string, Record<string, number>>;
+}
+
 interface PageProps {
     tiles: Tile[];
     totalReadings: number;
     gfr: Gfr | null;
+    risk: Risk | null;
+}
+
+// KDIGO risk-level colors: 1 low -> 4 very high.
+const RISK_STYLE: Record<number, { cell: string; text: string; label: string }> = {
+    1: { cell: 'bg-emerald-500', text: 'text-emerald-700 dark:text-emerald-400', label: 'Low' },
+    2: { cell: 'bg-amber-400', text: 'text-amber-700 dark:text-amber-400', label: 'Moderate' },
+    3: { cell: 'bg-orange-500', text: 'text-orange-700 dark:text-orange-400', label: 'High' },
+    4: { cell: 'bg-rose-600', text: 'text-rose-700 dark:text-rose-400', label: 'Very high' },
+};
+
+const GFR_ROWS = ['G1', 'G2', 'G3a', 'G3b', 'G4', 'G5'];
+const ALB_COLS = ['A1', 'A2', 'A3'];
+const ALB_HEADERS: Record<string, string> = {
+    A1: 'A1 (<30)',
+    A2: 'A2 (30–300)',
+    A3: 'A3 (>300)',
+};
+
+function RiskHeatMap({ risk }: { risk: Risk }) {
+    const active = RISK_STYLE[risk.level];
+
+    return (
+        <Card>
+            <CardHeader className="pb-3">
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                    <span className="font-semibold">KDIGO risk map</span>
+                    <Badge className={cn('border-transparent text-white', active.cell)}>
+                        {risk.label}
+                    </Badge>
+                </div>
+                <p className="text-xs text-muted-foreground">
+                    GFR category {risk.gfrCode} × albuminuria {risk.albCode}. Prognosis
+                    grid only — not a diagnosis.
+                </p>
+            </CardHeader>
+            <CardContent>
+                <div className="overflow-x-auto">
+                    <div className="inline-grid grid-cols-[auto_repeat(3,minmax(64px,1fr))] gap-1 text-center text-xs">
+                        {/* Header row */}
+                        <div className="flex items-end justify-center pb-1 text-[10px] font-medium text-muted-foreground">
+                            GFR ↓ / Alb →
+                        </div>
+                        {ALB_COLS.map((a) => (
+                            <div
+                                key={a}
+                                className="flex items-end justify-center pb-1 text-[10px] font-medium text-muted-foreground"
+                            >
+                                {ALB_HEADERS[a]}
+                            </div>
+                        ))}
+
+                        {/* Grid rows */}
+                        {GFR_ROWS.map((g) => (
+                            <div key={g} className="contents">
+                                <div className="flex items-center justify-end pr-2 text-[11px] font-medium text-muted-foreground">
+                                    {g}
+                                </div>
+                                {ALB_COLS.map((a) => {
+                                    const level = risk.grid[g]?.[a] ?? 1;
+                                    const isActive =
+                                        g === risk.gfrCode && a === risk.albCode;
+                                    return (
+                                        <div
+                                            key={a}
+                                            className={cn(
+                                                'flex aspect-square items-center justify-center rounded-md text-white/90 transition',
+                                                RISK_STYLE[level].cell,
+                                                isActive
+                                                    ? 'scale-105 shadow-lg ring-2 ring-foreground ring-offset-2 ring-offset-background'
+                                                    : 'opacity-60',
+                                            )}
+                                        >
+                                            {isActive && (
+                                                <span className="text-lg font-bold">●</span>
+                                            )}
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        ))}
+                    </div>
+                </div>
+
+                {/* Legend */}
+                <div className="mt-4 flex flex-wrap gap-3">
+                    {[1, 2, 3, 4].map((l) => (
+                        <div key={l} className="flex items-center gap-1.5 text-xs">
+                            <span className={cn('size-3 rounded-sm', RISK_STYLE[l].cell)} />
+                            <span className="text-muted-foreground">
+                                {RISK_STYLE[l].label}
+                            </span>
+                        </div>
+                    ))}
+                </div>
+            </CardContent>
+        </Card>
+    );
 }
 
 // KDIGO GFR-category color ramp: green (best) -> deep red (worst).
@@ -251,7 +357,7 @@ function MetricTile({ tile }: { tile: Tile }) {
     );
 }
 
-export default function Dashboard({ tiles, totalReadings, gfr }: PageProps) {
+export default function Dashboard({ tiles, totalReadings, gfr, risk }: PageProps) {
     return (
         <>
             <Head title="Dashboard" />
@@ -281,8 +387,13 @@ export default function Dashboard({ tiles, totalReadings, gfr }: PageProps) {
                     </Button>
                 </div>
 
-                {/* GFR category */}
-                {gfr && <GfrCard gfr={gfr} />}
+                {/* GFR category + KDIGO risk map */}
+                {(gfr || risk) && (
+                    <div className={cn('grid gap-4', risk && 'lg:grid-cols-[1fr_auto]')}>
+                        {gfr && <GfrCard gfr={gfr} />}
+                        {risk && <RiskHeatMap risk={risk} />}
+                    </div>
+                )}
 
                 {/* Tiles */}
                 <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
