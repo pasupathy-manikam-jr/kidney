@@ -6,7 +6,7 @@ import {
     ShieldCheck,
     TrendingUp,
 } from 'lucide-react';
-import { dashboard, login, register } from '@/routes';
+import { dashboard, guide, login, register } from '@/routes';
 
 const features = [
     {
@@ -48,6 +48,12 @@ export default function Welcome() {
                         KidneyLove
                     </span>
                     <nav className="flex items-center gap-2">
+                        <Link
+                            href={guide()}
+                            className="rounded-md px-4 py-2 text-sm font-medium text-muted-foreground transition hover:text-foreground"
+                        >
+                            User guide
+                        </Link>
                         {auth.user ? (
                             <Link
                                 href={dashboard()}
@@ -134,7 +140,13 @@ export default function Welcome() {
                 </main>
 
                 <footer className="border-t border-border py-6 text-center text-xs text-muted-foreground">
-                    Built with care for people managing kidney health.
+                    Built with care for people managing kidney health. ·{' '}
+                    <Link
+                        href={guide()}
+                        className="font-medium text-teal-600 hover:underline dark:text-teal-400"
+                    >
+                        Read the user guide
+                    </Link>
                 </footer>
             </div>
         </>
