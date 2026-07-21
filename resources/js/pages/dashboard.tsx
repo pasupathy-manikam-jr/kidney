@@ -1,26 +1,219 @@
-import { Head } from '@inertiajs/react';
-import { PlaceholderPattern } from '@/components/ui/placeholder-pattern';
+import { Head, Link } from '@inertiajs/react';
+import { Activity, ArrowDownRight, ArrowRight, ArrowUpRight, Minus, Plus } from 'lucide-react';
+import { Line, LineChart, ResponsiveContainer, YAxis } from 'recharts';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card';
+import { cn } from '@/lib/utils';
 import { dashboard } from '@/routes';
 
-export default function Dashboard() {
+type Status = 'in_range' | 'low' | 'high' | 'none' | 'empty';
+
+interface Tile {
+    metric: string;
+    label: string;
+    unit: string;
+    referenceRange: [number | null, number | null] | null;
+    value: number | null;
+    previousValue: number | null;
+    measuredAt: string | null;
+    status: Status;
+    spark: { v: number }[];
+    count: number;
+}
+
+interface PageProps {
+    tiles: Tile[];
+    totalReadings: number;
+}
+
+const STATUS_STYLE: Record<
+    Status,
+    { ring: string; text: string; badge: string; label: string; stroke: string }
+> = {
+    in_range: {
+        ring: 'border-emerald-500/30',
+        text: 'text-emerald-600 dark:text-emerald-400',
+        badge: 'border-emerald-500/30 bg-emerald-500/10 text-emerald-700 dark:text-emerald-400',
+        label: 'In range',
+        stroke: '#10b981',
+    },
+    low: {
+        ring: 'border-amber-500/30',
+        text: 'text-amber-600 dark:text-amber-400',
+        badge: 'border-amber-500/30 bg-amber-500/10 text-amber-700 dark:text-amber-400',
+        label: 'Below range',
+        stroke: '#f59e0b',
+    },
+    high: {
+        ring: 'border-rose-500/30',
+        text: 'text-rose-600 dark:text-rose-400',
+        badge: 'border-rose-500/30 bg-rose-500/10 text-rose-700 dark:text-rose-400',
+        label: 'Above range',
+        stroke: '#f43f5e',
+    },
+    none: {
+        ring: 'border-border',
+        text: 'text-foreground',
+        badge: 'border-border bg-muted text-muted-foreground',
+        label: 'No range',
+        stroke: '#6b7280',
+    },
+    empty: {
+        ring: 'border-dashed border-border',
+        text: 'text-muted-foreground',
+        badge: 'border-border bg-muted text-muted-foreground',
+        label: 'No data',
+        stroke: '#6b7280',
+    },
+};
+
+function rangeLabel(range: Tile['referenceRange'], unit: string): string {
+    if (!range) return 'No reference range';
+    const [low, high] = range;
+    if (low !== null && high !== null) return `Ref ${low}–${high} ${unit}`;
+    if (low !== null) return `Ref ≥${low} ${unit}`;
+    if (high !== null) return `Ref ≤${high} ${unit}`;
+    return 'No reference range';
+}
+
+function Delta({ value, previous }: { value: number; previous: number | null }) {
+    if (previous === null) return null;
+    const diff = Math.round((value - previous) * 100) / 100;
+
+    if (diff === 0) {
+        return (
+            <span className="inline-flex items-center gap-1 text-xs text-muted-foreground">
+                <Minus className="size-3" /> no change
+            </span>
+        );
+    }
+
+    const up = diff > 0;
+    return (
+        <span className="inline-flex items-center gap-1 text-xs font-medium text-muted-foreground">
+            {up ? (
+                <ArrowUpRight className="size-3" />
+            ) : (
+                <ArrowDownRight className="size-3" />
+            )}
+            {up ? '+' : ''}
+            {diff} vs last
+        </span>
+    );
+}
+
+function MetricTile({ tile }: { tile: Tile }) {
+    const s = STATUS_STYLE[tile.status];
+    const hasData = tile.value !== null;
+
+    return (
+        <Card className={cn('gap-0 overflow-hidden transition-shadow hover:shadow-md', s.ring)}>
+            <CardHeader className="flex flex-row items-center justify-between gap-2 pb-2">
+                <span className="text-sm font-medium text-muted-foreground">
+                    {tile.label}
+                </span>
+                <Badge className={s.badge}>{s.label}</Badge>
+            </CardHeader>
+
+            <CardContent className="pb-3">
+                {hasData ? (
+                    <div className="flex items-end justify-between gap-3">
+                        <div>
+                            <div className="flex items-baseline gap-1">
+                                <span
+                                    className={cn(
+                                        'text-3xl font-semibold tabular-nums tracking-tight',
+                                        s.text,
+                                    )}
+                                >
+                                    {tile.value}
+                                </span>
+                                <span className="text-xs text-muted-foreground">
+                                    {tile.unit}
+                                </span>
+                            </div>
+                            <div className="mt-1">
+                                <Delta value={tile.value!} previous={tile.previousValue} />
+                            </div>
+                        </div>
+
+                        {tile.spark.length > 1 && (
+                            <div className="h-12 w-24 shrink-0">
+                                <ResponsiveContainer width="100%" height="100%">
+                                    <LineChart data={tile.spark}>
+                                        <YAxis hide domain={['dataMin', 'dataMax']} />
+                                        <Line
+                                            type="monotone"
+                                            dataKey="v"
+                                            stroke={s.stroke}
+                                            strokeWidth={2}
+                                            dot={false}
+                                        />
+                                    </LineChart>
+                                </ResponsiveContainer>
+                            </div>
+                        )}
+                    </div>
+                ) : (
+                    <div className="flex h-[52px] items-center text-sm text-muted-foreground">
+                        No readings yet
+                    </div>
+                )}
+            </CardContent>
+
+            <CardFooter className="flex items-center justify-between border-t bg-muted/30 py-2 text-xs text-muted-foreground">
+                <span>{rangeLabel(tile.referenceRange, tile.unit)}</span>
+                <span>{tile.measuredAt ?? '—'}</span>
+            </CardFooter>
+        </Card>
+    );
+}
+
+export default function Dashboard({ tiles, totalReadings }: PageProps) {
     return (
         <>
             <Head title="Dashboard" />
-            <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
-                <div className="grid auto-rows-min gap-4 md:grid-cols-3">
-                    <div className="relative aspect-video overflow-hidden rounded-xl border border-sidebar-border/70 dark:border-sidebar-border">
-                        <PlaceholderPattern className="absolute inset-0 size-full stroke-neutral-900/20 dark:stroke-neutral-100/20" />
+
+            <div className="flex h-full flex-1 flex-col gap-6 p-4">
+                {/* Hero */}
+                <div className="flex flex-col gap-4 rounded-xl border bg-gradient-to-br from-primary/5 via-transparent to-transparent p-6 sm:flex-row sm:items-center sm:justify-between">
+                    <div className="flex items-start gap-3">
+                        <div className="rounded-lg bg-primary/10 p-2 text-primary">
+                            <Activity className="size-6" />
+                        </div>
+                        <div>
+                            <h1 className="text-xl font-semibold tracking-tight">
+                                Kidney health overview
+                            </h1>
+                            <p className="text-sm text-muted-foreground">
+                                {totalReadings > 0
+                                    ? `${totalReadings} reading${totalReadings === 1 ? '' : 's'} tracked. Latest value per metric below.`
+                                    : 'No readings yet — add your first to see trends here.'}
+                            </p>
+                        </div>
                     </div>
-                    <div className="relative aspect-video overflow-hidden rounded-xl border border-sidebar-border/70 dark:border-sidebar-border">
-                        <PlaceholderPattern className="absolute inset-0 size-full stroke-neutral-900/20 dark:stroke-neutral-100/20" />
-                    </div>
-                    <div className="relative aspect-video overflow-hidden rounded-xl border border-sidebar-border/70 dark:border-sidebar-border">
-                        <PlaceholderPattern className="absolute inset-0 size-full stroke-neutral-900/20 dark:stroke-neutral-100/20" />
-                    </div>
+                    <Button asChild>
+                        <Link href="/lab-results">
+                            <Plus className="size-4" /> Add reading
+                        </Link>
+                    </Button>
                 </div>
-                <div className="relative min-h-[100vh] flex-1 overflow-hidden rounded-xl border border-sidebar-border/70 md:min-h-min dark:border-sidebar-border">
-                    <PlaceholderPattern className="absolute inset-0 size-full stroke-neutral-900/20 dark:stroke-neutral-100/20" />
+
+                {/* Tiles */}
+                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                    {tiles.map((tile) => (
+                        <MetricTile key={tile.metric} tile={tile} />
+                    ))}
                 </div>
+
+                {/* Disclaimer */}
+                <p className="flex items-center gap-2 rounded-lg border border-amber-500/40 bg-amber-50 px-4 py-3 text-xs text-amber-900 dark:bg-amber-950/40 dark:text-amber-200">
+                    <ArrowRight className="size-3.5 shrink-0" />
+                    Personal tracking only — not medical advice or a diagnosis.
+                    Reference ranges are general adult values; confirm every result
+                    with the lab report and care team.
+                </p>
             </div>
         </>
     );
