@@ -88,7 +88,7 @@ export default function Report({
 }: PageProps) {
     return (
         <>
-            <Head title="Report — KidneyLove" />
+            <Head title="Report — Kidney-Love" />
 
             <div className="mx-auto max-w-3xl bg-white p-4 text-neutral-900 sm:p-8 print:p-0">
                 {/* Toolbar (hidden in print) */}
@@ -109,7 +109,7 @@ export default function Report({
 
                 {/* Header */}
                 <header className="mb-6 border-b border-neutral-200 pb-4">
-                    <h1 className="text-2xl font-bold">KidneyLove — Kidney Health Report</h1>
+                    <h1 className="text-2xl font-bold">Kidney-Love — Kidney Health Report</h1>
                     <div className="mt-1 text-sm text-neutral-500">
                         {patientName} · Generated {generatedAt} · {totalReadings} readings
                     </div>

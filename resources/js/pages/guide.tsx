@@ -59,7 +59,7 @@ const components = {
 export default function Guide() {
     return (
         <>
-            <Head title="User Guide — KidneyLove" />
+            <Head title="User Guide — Kidney-Love" />
 
             <div className="min-h-screen bg-background text-foreground">
                 <header className="mx-auto flex max-w-3xl items-center justify-between px-6 py-5">
@@ -67,7 +67,7 @@ export default function Guide() {
                         <span className="flex size-8 items-center justify-center rounded-lg bg-teal-600 text-white">
                             <HeartPulse className="size-5" />
                         </span>
-                        KidneyLove
+                        Kidney-Love
                     </Link>
                     <Link
                         href={home()}

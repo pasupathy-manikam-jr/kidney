@@ -57,7 +57,7 @@ export default function Welcome() {
 
     return (
         <>
-            <Head title="KidneyLove — track your kidney health" />
+            <Head title="Kidney-Love — track your kidney health" />
 
             <div className="min-h-screen bg-gradient-to-b from-teal-50 via-background to-background text-foreground dark:from-teal-950/30">
                 {/* Nav */}
@@ -69,7 +69,7 @@ export default function Welcome() {
                         <span className="flex size-8 items-center justify-center rounded-lg bg-teal-600 text-white">
                             <HeartPulse className="size-5" />
                         </span>
-                        KidneyLove
+                        Kidney-Love
                     </Link>
                     {/* Desktop nav */}
                     <nav className="hidden items-center gap-2 sm:flex">
@@ -118,7 +118,7 @@ export default function Welcome() {
                                     <span className="flex size-7 items-center justify-center rounded-lg bg-teal-600 text-white">
                                         <HeartPulse className="size-4" />
                                     </span>
-                                    KidneyLove
+                                    Kidney-Love
                                 </SheetTitle>
                             </SheetHeader>
                             <nav className="flex flex-col gap-1 px-4">
@@ -217,7 +217,7 @@ export default function Welcome() {
                     {/* Disclaimer */}
                     <section className="pb-16">
                         <p className="rounded-lg border border-amber-500/40 bg-amber-50 px-4 py-3 text-center text-xs text-amber-900 dark:bg-amber-950/40 dark:text-amber-200">
-                            KidneyLove is a personal tracking tool — not medical advice
+                            Kidney-Love is a personal tracking tool — not medical advice
                             or a diagnosis. Reference ranges are general adult values.
                             Always confirm every result with your lab report and care team.
                         </p>

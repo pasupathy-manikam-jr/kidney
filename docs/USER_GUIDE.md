@@ -1,11 +1,11 @@
-# KidneyLove — User Guide
+# Kidney-Love — User Guide
 
-KidneyLove helps you track kidney-related lab results, medications, diet & fluid,
+Kidney-Love helps you track kidney-related lab results, medications, diet & fluid,
 and symptoms over time — see the trends, understand where your numbers sit on the
 standard KDIGO risk map, and walk into each appointment with a clear picture
 instead of a pile of paper.
 
-> **Important:** KidneyLove is a personal tracking tool. It is **not** medical
+> **Important:** Kidney-Love is a personal tracking tool. It is **not** medical
 > advice and does **not** diagnose anything. Reference ranges and suggested
 > limits shown are general adult values and vary by lab, age and sex. Always
 > confirm every result and target with your lab report and your care team.
@@ -139,7 +139,7 @@ Click **Print / Save PDF** to hand it to your care team or save a copy.
 
 ## 9. Appearance
 
-KidneyLove defaults to a calm dark theme. Switch between light, dark or system in
+Kidney-Love defaults to a calm dark theme. Switch between light, dark or system in
 **Settings → Appearance** at any time.
 
 ---
@@ -152,5 +152,5 @@ KidneyLove defaults to a calm dark theme. Switch between light, dark or system i
 
 ---
 
-*KidneyLove is built to support people managing kidney health — it complements,
+*Kidney-Love is built to support people managing kidney health — it complements,
 but never replaces, professional medical care.*
