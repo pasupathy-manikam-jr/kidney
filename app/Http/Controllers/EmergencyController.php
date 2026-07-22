@@ -12,7 +12,7 @@ class EmergencyController extends Controller
     public function index(Request $request): Response
     {
         return Inertia::render('emergency/index', [
-            'contacts' => $request->user()->emergency_contacts ?? [],
+            'contacts' => $this->patient($request)->emergency_contacts ?? [],
         ]);
     }
 

@@ -4,6 +4,7 @@ use App\Enums\AlbuminuriaCategory;
 use App\Enums\GfrCategory;
 use App\Enums\LabMetric;
 use App\Http\Controllers\AppointmentController;
+use App\Http\Controllers\CareShareController;
 use App\Http\Controllers\CatheterController;
 use App\Http\Controllers\CatheterLogController;
 use App\Http\Controllers\DashboardController;
@@ -15,6 +16,7 @@ use App\Http\Controllers\LabResultController;
 use App\Http\Controllers\MedicationController;
 use App\Http\Controllers\PushSubscriptionController;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\SharedController;
 use App\Http\Controllers\SymptomEntryController;
 use App\Support\KdigoRisk;
 use Illuminate\Support\Facades\Route;
@@ -22,8 +24,18 @@ use Illuminate\Support\Facades\Route;
 Route::inertia('/', 'welcome')->name('home');
 Route::inertia('guide', 'guide')->name('guide');
 
-Route::middleware(['auth', 'verified'])->group(function () {
+Route::middleware(['auth', 'verified', \App\Http\Middleware\ResolveActivePatient::class])->group(function () {
     Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
+
+    // Caregiver sharing (patient side: invite/revoke).
+    Route::get('sharing', [CareShareController::class, 'index'])->name('sharing.index');
+    Route::post('sharing', [CareShareController::class, 'store'])->name('sharing.store');
+    Route::delete('sharing/{careShare}', [CareShareController::class, 'destroy'])->name('sharing.destroy');
+
+    // Caregiver side: patients who shared with me, enter/exit read-only view.
+    Route::get('shared', [SharedController::class, 'index'])->name('shared.index');
+    Route::post('shared/{careShare}/view', [SharedController::class, 'view'])->name('shared.view');
+    Route::post('shared/exit', [SharedController::class, 'exit'])->name('shared.exit');
 
     Route::get('lab-results', [LabResultController::class, 'index'])->name('lab-results.index');
     Route::get('lab-results/export', [LabResultController::class, 'export'])->name('lab-results.export');

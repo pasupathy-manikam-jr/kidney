@@ -14,7 +14,7 @@ class DashboardController extends Controller
 {
     public function index(Request $request): Response
     {
-        $results = $request->user()
+        $results = $this->patient($request)
             ->labResults()
             ->orderByDesc('measured_at')
             ->orderByDesc('id')
@@ -95,7 +95,7 @@ class DashboardController extends Controller
             ];
         }
 
-        $user = $request->user();
+        $user = $this->patient($request);
 
         $latestSymptom = $user->symptomEntries()
             ->orderByDesc('logged_on')

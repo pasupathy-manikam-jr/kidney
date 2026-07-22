@@ -11,7 +11,7 @@ class DialysisController extends Controller
 {
     public function index(Request $request): Response
     {
-        $user = $request->user();
+        $user = $this->patient($request);
         $catheter = $user->catheters()->latest('id')->first();
 
         $nextChange = $catheter?->nextTransferSetChange();

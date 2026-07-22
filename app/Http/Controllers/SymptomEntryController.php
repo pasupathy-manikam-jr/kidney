@@ -13,7 +13,7 @@ class SymptomEntryController extends Controller
 {
     public function index(Request $request): Response
     {
-        $entries = $request->user()
+        $entries = $this->patient($request)
             ->symptomEntries()
             ->orderByDesc('logged_on')
             ->orderByDesc('id')

@@ -13,7 +13,7 @@ class AppointmentController extends Controller
 {
     public function index(Request $request): Response
     {
-        $appointments = $request->user()
+        $appointments = $this->patient($request)
             ->appointments()
             ->orderBy('scheduled_for')
             ->orderBy('id')

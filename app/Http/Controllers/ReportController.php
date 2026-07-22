@@ -15,7 +15,7 @@ class ReportController extends Controller
 {
     public function index(Request $request): Response
     {
-        $user = $request->user();
+        $user = $this->patient($request);
 
         $results = $user->labResults()
             ->orderByDesc('measured_at')

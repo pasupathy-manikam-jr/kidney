@@ -15,14 +15,14 @@ class IntakeEntryController extends Controller
 {
     public function index(Request $request): Response
     {
-        $entries = $request->user()
+        $entries = $this->patient($request)
             ->intakeEntries()
             ->orderByDesc('logged_on')
             ->orderByDesc('id')
             ->limit(200)
             ->get();
 
-        $user = $request->user();
+        $user = $this->patient($request);
 
         // Effective target per category (user value or suggested fallback) and
         // the user's own set values (for the edit dialog).

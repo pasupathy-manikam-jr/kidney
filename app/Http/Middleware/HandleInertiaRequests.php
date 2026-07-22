@@ -47,6 +47,9 @@ class HandleInertiaRequests extends Middleware
                 'alert' => $request->session()->get('alert'),
             ],
             'vapidPublicKey' => config('services.webpush.public_key'),
+            'viewing' => $request->attributes->get('viewing')
+                ? ['name' => $request->attributes->get('patient')?->name]
+                : null,
             'sidebarOpen' => ! $request->hasCookie('sidebar_state') || $request->cookie('sidebar_state') === 'true',
         ];
     }

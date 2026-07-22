@@ -13,7 +13,7 @@ class MedicationController extends Controller
 {
     public function index(Request $request): Response
     {
-        $medications = $request->user()
+        $medications = $this->patient($request)
             ->medications()
             ->orderByDesc('active')
             ->orderBy('name')

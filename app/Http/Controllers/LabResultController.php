@@ -16,7 +16,9 @@ class LabResultController extends Controller
 {
     public function index(Request $request): Response
     {
-        $results = $request->user()
+        $patient = $this->patient($request);
+
+        $results = $patient
             ->labResults()
             ->orderByDesc('measured_at')
             ->orderByDesc('id')
@@ -26,8 +28,8 @@ class LabResultController extends Controller
             'results' => $results,
             'catalog' => LabMetric::catalog(),
             'profile' => [
-                'age' => $request->user()->age,
-                'sex' => $request->user()->sex,
+                'age' => $patient->age,
+                'sex' => $patient->sex,
             ],
         ]);
     }
@@ -91,7 +93,7 @@ class LabResultController extends Controller
 
     public function export(Request $request): StreamedResponse
     {
-        $results = $request->user()
+        $results = $this->patient($request)
             ->labResults()
             ->orderBy('measured_at')
             ->orderBy('id')

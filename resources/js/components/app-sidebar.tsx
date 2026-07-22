@@ -7,8 +7,10 @@ import {
     LayoutGrid,
     NotebookPen,
     Pill,
+    Share2,
     Siren,
     Table2,
+    Users,
     Utensils,
 } from 'lucide-react';
 import AppLogo from '@/components/app-logo';
@@ -76,6 +78,16 @@ const mainNavItems: NavItem[] = [
         title: 'Emergency',
         href: '/emergency',
         icon: Siren,
+    },
+    {
+        title: 'Sharing',
+        href: '/sharing',
+        icon: Share2,
+    },
+    {
+        title: 'Shared with me',
+        href: '/shared',
+        icon: Users,
     },
 ];
 
