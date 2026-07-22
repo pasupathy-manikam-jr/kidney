@@ -2,11 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\CareShareInvitation;
 use App\Models\CareShare;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -55,7 +58,21 @@ class CareShareController extends Controller
             ],
         );
 
-        return back()->with('status', 'Caregiver invited.');
+        // Notify the caregiver by email (best-effort — never block the invite).
+        try {
+            Mail::to($email)->send(new CareShareInvitation(
+                patientName: $request->user()->name,
+                label: $validated['label'] ?? null,
+                hasAccount: $caregiver !== null,
+                actionUrl: $caregiver ? route('shared.index') : route('register'),
+            ));
+        } catch (\Throwable $e) {
+            Log::warning('Care share invite email failed: '.$e->getMessage());
+
+            return back()->with('status', 'Caregiver added, but the email could not be sent.');
+        }
+
+        return back()->with('status', 'Caregiver invited — an email is on its way.');
     }
 
     public function destroy(Request $request, CareShare $careShare): RedirectResponse
