@@ -60,6 +60,7 @@ export default function IntakeIndex({ entries, catalog, today }: PageProps) {
     };
 
     const remove = (id: number) => {
+        if (!confirm('Delete this entry?')) return;
         form.delete(IntakeEntryController.destroy(id).url, { preserveScroll: true });
     };
 

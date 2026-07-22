@@ -66,6 +66,7 @@ export default function SymptomsIndex({ entries, today }: PageProps) {
     };
 
     const remove = (id: number) => {
+        if (!confirm('Delete this entry?')) return;
         form.delete(SymptomEntryController.destroy(id).url, { preserveScroll: true });
     };
 
