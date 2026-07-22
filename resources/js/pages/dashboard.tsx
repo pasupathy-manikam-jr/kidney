@@ -387,20 +387,70 @@ export default function Dashboard({ tiles, totalReadings, gfr, risk }: PageProps
                     </Button>
                 </div>
 
-                {/* GFR category + KDIGO risk map */}
-                {(gfr || risk) && (
-                    <div className={cn('grid gap-4', risk && 'lg:grid-cols-[1fr_auto]')}>
-                        {gfr && <GfrCard gfr={gfr} />}
-                        {risk && <RiskHeatMap risk={risk} />}
-                    </div>
-                )}
+                {totalReadings === 0 ? (
+                    /* Onboarding */
+                    <Card>
+                        <CardContent className="flex flex-col items-center gap-5 py-12 text-center">
+                            <span className="flex size-14 items-center justify-center rounded-2xl bg-primary/10 text-primary">
+                                <Activity className="size-7" />
+                            </span>
+                            <div>
+                                <h2 className="text-lg font-semibold">
+                                    Let's log your first reading
+                                </h2>
+                                <p className="mt-1 text-sm text-muted-foreground">
+                                    Add a value or two and your trends, GFR category and
+                                    risk map appear here automatically.
+                                </p>
+                            </div>
+                            <ol className="grid gap-3 text-left text-sm sm:grid-cols-3">
+                                <li className="rounded-lg border border-border p-3">
+                                    <span className="font-semibold text-primary">1.</span>{' '}
+                                    Open <span className="font-medium">Lab Results</span>.
+                                </li>
+                                <li className="rounded-lg border border-border p-3">
+                                    <span className="font-semibold text-primary">2.</span>{' '}
+                                    Pick a metric, enter the value and date.
+                                </li>
+                                <li className="rounded-lg border border-border p-3">
+                                    <span className="font-semibold text-primary">3.</span>{' '}
+                                    Come back here to see the picture.
+                                </li>
+                            </ol>
+                            <Button asChild>
+                                <Link href="/lab-results">
+                                    <Plus className="size-4" /> Add your first reading
+                                </Link>
+                            </Button>
+                            <p className="text-xs text-muted-foreground">
+                                Not sure? Import a CSV or use the eGFR calculator on the
+                                Lab Results page.
+                            </p>
+                        </CardContent>
+                    </Card>
+                ) : (
+                    <>
+                        {/* GFR category + KDIGO risk map */}
+                        {(gfr || risk) && (
+                            <div
+                                className={cn(
+                                    'grid gap-4',
+                                    risk && 'lg:grid-cols-[1fr_auto]',
+                                )}
+                            >
+                                {gfr && <GfrCard gfr={gfr} />}
+                                {risk && <RiskHeatMap risk={risk} />}
+                            </div>
+                        )}
 
-                {/* Tiles */}
-                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                    {tiles.map((tile) => (
-                        <MetricTile key={tile.metric} tile={tile} />
-                    ))}
-                </div>
+                        {/* Tiles */}
+                        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                            {tiles.map((tile) => (
+                                <MetricTile key={tile.metric} tile={tile} />
+                            ))}
+                        </div>
+                    </>
+                )}
 
                 {/* Disclaimer */}
                 <p className="flex items-center gap-2 rounded-lg border border-amber-500/40 bg-amber-50 px-4 py-3 text-xs text-amber-900 dark:bg-amber-950/40 dark:text-amber-200">
