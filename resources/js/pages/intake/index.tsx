@@ -2,6 +2,16 @@ import { Head, useForm } from '@inertiajs/react';
 import { useMemo } from 'react';
 import { SlidersHorizontal } from 'lucide-react';
 import { useState } from 'react';
+import {
+    Bar,
+    BarChart,
+    CartesianGrid,
+    ReferenceLine,
+    ResponsiveContainer,
+    Tooltip,
+    XAxis,
+    YAxis,
+} from 'recharts';
 import IntakeEntryController from '@/actions/App/Http/Controllers/IntakeEntryController';
 import IntakeTargetController from '@/actions/App/Http/Controllers/IntakeTargetController';
 import { ConfirmDelete } from '@/components/confirm-delete';
@@ -165,6 +175,20 @@ export default function IntakeIndex({
         return totals;
     }, [entries, catalog, today]);
 
+    // Daily fluid totals for the last 14 days, oldest -> newest.
+    const fluidHistory = useMemo(() => {
+        const totals: Record<string, number> = {};
+        for (const e of entries) {
+            if (e.category === 'fluid') {
+                totals[e.logged_on] = (totals[e.logged_on] ?? 0) + Number(e.amount);
+            }
+        }
+        return Object.entries(totals)
+            .sort(([a], [b]) => (a < b ? -1 : 1))
+            .slice(-14)
+            .map(([date, total]) => ({ date, total: Math.round(total) }));
+    }, [entries]);
+
     // Entries grouped by day (already newest-first).
     const byDay = useMemo(() => {
         const groups: { day: string; items: Entry[] }[] = [];
@@ -234,6 +258,61 @@ export default function IntakeIndex({
                         );
                     })}
                 </div>
+
+                {fluidHistory.length > 1 && (
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>Fluid history (mL/day)</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <ResponsiveContainer width="100%" height={220}>
+                                <BarChart data={fluidHistory}>
+                                    <CartesianGrid
+                                        strokeDasharray="3 3"
+                                        className="stroke-border"
+                                    />
+                                    <XAxis dataKey="date" fontSize={12} tickMargin={8} />
+                                    <YAxis width={40} fontSize={12} />
+                                    <Tooltip
+                                        cursor={{ fill: 'currentColor', fillOpacity: 0.05 }}
+                                        content={({ active, payload, label }) =>
+                                            active && payload?.length ? (
+                                                <div className="rounded-md border border-border bg-popover px-3 py-2 text-xs text-popover-foreground shadow-md">
+                                                    <div className="mb-0.5 text-muted-foreground">
+                                                        {label}
+                                                    </div>
+                                                    <div className="font-medium">
+                                                        {payload[0].value} mL
+                                                    </div>
+                                                </div>
+                                            ) : null
+                                        }
+                                    />
+                                    {targets.fluid && (
+                                        <ReferenceLine
+                                            y={targets.fluid}
+                                            stroke="currentColor"
+                                            strokeDasharray="4 4"
+                                            className="text-rose-500"
+                                            label={{
+                                                value: `Target ${targets.fluid}`,
+                                                position: 'insideTopRight',
+                                                fontSize: 11,
+                                                fill: 'currentColor',
+                                            }}
+                                        />
+                                    )}
+                                    <Bar
+                                        dataKey="total"
+                                        fill="currentColor"
+                                        className="text-teal-500"
+                                        radius={[4, 4, 0, 0]}
+                                    />
+                                </BarChart>
+                            </ResponsiveContainer>
+                        </CardContent>
+                    </Card>
+                )}
 
                 <div className="grid gap-6 lg:grid-cols-[360px_1fr]">
                     {/* Add form */}

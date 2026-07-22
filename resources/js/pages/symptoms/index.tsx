@@ -1,5 +1,15 @@
 import { Head, useForm } from '@inertiajs/react';
 import { HeartPulse } from 'lucide-react';
+import { useMemo } from 'react';
+import {
+    CartesianGrid,
+    Line,
+    LineChart,
+    ResponsiveContainer,
+    Tooltip,
+    XAxis,
+    YAxis,
+} from 'recharts';
 import SymptomEntryController from '@/actions/App/Http/Controllers/SymptomEntryController';
 import { ConfirmDelete } from '@/components/confirm-delete';
 import { Button } from '@/components/ui/button';
@@ -70,11 +80,69 @@ export default function SymptomsIndex({ entries, today }: PageProps) {
         form.delete(SymptomEntryController.destroy(id).url, { preserveScroll: true });
     };
 
+    // Severity over time, oldest -> newest.
+    const chartData = useMemo(
+        () =>
+            [...entries]
+                .reverse()
+                .map((e) => ({ date: e.logged_on, severity: e.severity, symptom: e.symptom })),
+        [entries],
+    );
+
     return (
         <>
             <Head title="Symptom Journal" />
 
             <div className="flex h-full flex-1 flex-col gap-6 p-4">
+                {chartData.length > 1 && (
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>Severity trend</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <ResponsiveContainer width="100%" height={220}>
+                                <LineChart data={chartData}>
+                                    <CartesianGrid
+                                        strokeDasharray="3 3"
+                                        className="stroke-border"
+                                    />
+                                    <XAxis dataKey="date" fontSize={12} tickMargin={8} />
+                                    <YAxis
+                                        domain={[0, 5]}
+                                        ticks={[1, 2, 3, 4, 5]}
+                                        width={28}
+                                        fontSize={12}
+                                    />
+                                    <Tooltip
+                                        cursor={{ stroke: 'currentColor', strokeOpacity: 0.2 }}
+                                        content={({ active, payload, label }) =>
+                                            active && payload?.length ? (
+                                                <div className="rounded-md border border-border bg-popover px-3 py-2 text-xs text-popover-foreground shadow-md">
+                                                    <div className="mb-0.5 text-muted-foreground">
+                                                        {label}
+                                                    </div>
+                                                    <div className="font-medium">
+                                                        {payload[0].payload.symptom} · severity{' '}
+                                                        {payload[0].value}
+                                                    </div>
+                                                </div>
+                                            ) : null
+                                        }
+                                    />
+                                    <Line
+                                        type="monotone"
+                                        dataKey="severity"
+                                        stroke="currentColor"
+                                        className="text-primary"
+                                        strokeWidth={2}
+                                        dot={{ r: 3 }}
+                                    />
+                                </LineChart>
+                            </ResponsiveContainer>
+                        </CardContent>
+                    </Card>
+                )}
+
                 <div className="grid gap-6 lg:grid-cols-[380px_1fr]">
                     {/* Add form */}
                     <Card>
