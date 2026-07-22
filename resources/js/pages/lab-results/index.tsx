@@ -43,6 +43,26 @@ function today(): string {
     return new Date().toISOString().slice(0, 10);
 }
 
+interface TooltipProps {
+    active?: boolean;
+    label?: string | number;
+    payload?: { value: number }[];
+    unit: string;
+    metricLabel: string;
+}
+
+function ChartTooltip({ active, label, payload, unit, metricLabel }: TooltipProps) {
+    if (!active || !payload?.length) return null;
+    return (
+        <div className="rounded-md border border-border bg-popover px-3 py-2 text-xs text-popover-foreground shadow-md">
+            <div className="mb-0.5 text-muted-foreground">{label}</div>
+            <div className="font-medium">
+                {metricLabel}: {payload[0].value} {unit}
+            </div>
+        </div>
+    );
+}
+
 export default function LabResultsIndex({ results, catalog }: PageProps) {
     const catalogMap = useMemo(
         () => Object.fromEntries(catalog.map((m) => [m.value, m])),
@@ -234,10 +254,13 @@ export default function LabResultsIndex({ results, catalog }: PageProps) {
                                                 />
                                             )}
                                         <Tooltip
-                                            formatter={(v) => [
-                                                `${v} ${selectedInfo?.unit ?? ''}`,
-                                                selectedInfo?.label ?? '',
-                                            ]}
+                                            cursor={{ stroke: 'currentColor', strokeOpacity: 0.2 }}
+                                            content={
+                                                <ChartTooltip
+                                                    unit={selectedInfo?.unit ?? ''}
+                                                    metricLabel={selectedInfo?.label ?? ''}
+                                                />
+                                            }
                                         />
                                         <Line
                                             type="monotone"
