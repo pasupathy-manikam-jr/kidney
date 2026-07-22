@@ -1,7 +1,9 @@
 import { Head, Link } from '@inertiajs/react';
+import GithubSlugger from 'github-slugger';
 import { ArrowLeft, HeartPulse } from 'lucide-react';
-import type { ComponentPropsWithoutRef } from 'react';
+import { type ComponentPropsWithoutRef, useMemo } from 'react';
 import Markdown from 'react-markdown';
+import rehypeSlug from 'rehype-slug';
 import remarkGfm from 'remark-gfm';
 // Single source of truth: the user guide markdown file.
 import guideContent from '../../../docs/USER_GUIDE.md?raw';
@@ -12,7 +14,10 @@ const components = {
         <h1 className="mt-2 mb-4 text-3xl font-bold tracking-tight" {...p} />
     ),
     h2: (p: ComponentPropsWithoutRef<'h2'>) => (
-        <h2 className="mt-10 mb-3 border-b border-border pb-2 text-xl font-semibold" {...p} />
+        <h2
+            className="mt-10 mb-3 scroll-mt-6 border-b border-border pb-2 text-xl font-semibold"
+            {...p}
+        />
     ),
     h3: (p: ComponentPropsWithoutRef<'h3'>) => (
         <h3 className="mt-6 mb-2 font-semibold" {...p} />
@@ -57,14 +62,27 @@ const components = {
 };
 
 export default function Guide() {
+    // Build the table of contents from the H2 headings, with slugs that match
+    // rehype-slug (github-slugger) so the anchor links line up.
+    const toc = useMemo(() => {
+        const slugger = new GithubSlugger();
+        return guideContent
+            .split('\n')
+            .filter((line) => /^##\s+/.test(line))
+            .map((line) => {
+                const title = line.replace(/^##\s+/, '').trim();
+                return { title, id: slugger.slug(title) };
+            });
+    }, []);
+
     return (
         <>
             <Head title="User Guide — Kidney-Love" />
 
             <div className="min-h-screen bg-background text-foreground">
-                <header className="mx-auto flex max-w-3xl items-center justify-between px-6 py-5">
+                <header className="mx-auto flex max-w-6xl items-center justify-between px-6 py-5">
                     <Link href={home()} className="flex items-center gap-2 font-semibold">
-                        <span className="flex size-8 items-center justify-center rounded-lg bg-teal-600 text-white">
+                        <span className="flex size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
                             <HeartPulse className="size-5" />
                         </span>
                         Kidney-Love
@@ -77,11 +95,38 @@ export default function Guide() {
                     </Link>
                 </header>
 
-                <main className="mx-auto max-w-3xl px-6 pb-20">
-                    <Markdown remarkPlugins={[remarkGfm]} components={components}>
-                        {guideContent}
-                    </Markdown>
-                </main>
+                <div className="mx-auto max-w-6xl gap-10 px-6 pb-20 lg:flex">
+                    {/* Table of contents */}
+                    <aside className="mb-8 shrink-0 lg:sticky lg:top-6 lg:mb-0 lg:h-[calc(100vh-3rem)] lg:w-60 lg:overflow-y-auto">
+                        <div className="rounded-lg border border-border p-4 lg:border-0 lg:p-0">
+                            <div className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                                Contents
+                            </div>
+                            <nav className="flex flex-col gap-0.5">
+                                {toc.map((item) => (
+                                    <a
+                                        key={item.id}
+                                        href={`#${item.id}`}
+                                        className="rounded px-2 py-1 text-sm text-muted-foreground transition hover:bg-muted hover:text-foreground"
+                                    >
+                                        {item.title}
+                                    </a>
+                                ))}
+                            </nav>
+                        </div>
+                    </aside>
+
+                    {/* Content */}
+                    <main className="min-w-0 max-w-3xl scroll-smooth">
+                        <Markdown
+                            remarkPlugins={[remarkGfm]}
+                            rehypePlugins={[rehypeSlug]}
+                            components={components}
+                        >
+                            {guideContent}
+                        </Markdown>
+                    </main>
+                </div>
             </div>
         </>
     );
