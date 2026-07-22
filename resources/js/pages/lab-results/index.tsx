@@ -15,6 +15,13 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
 import InputError from '@/components/input-error';
 
 interface MetricInfo {
@@ -127,20 +134,21 @@ export default function LabResultsIndex({ results, catalog }: PageProps) {
                             <form onSubmit={submit} className="flex flex-col gap-4">
                                 <div className="grid gap-2">
                                     <Label htmlFor="metric">Metric</Label>
-                                    <select
-                                        id="metric"
-                                        className="h-9 rounded-md border border-input bg-background px-3 text-sm"
+                                    <Select
                                         value={form.data.metric}
-                                        onChange={(e) =>
-                                            form.setData('metric', e.target.value)
-                                        }
+                                        onValueChange={(v) => form.setData('metric', v)}
                                     >
-                                        {catalog.map((m) => (
-                                            <option key={m.value} value={m.value}>
-                                                {m.label} ({m.unit})
-                                            </option>
-                                        ))}
-                                    </select>
+                                        <SelectTrigger id="metric" className="w-full">
+                                            <SelectValue placeholder="Select a metric" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            {catalog.map((m) => (
+                                                <SelectItem key={m.value} value={m.value}>
+                                                    {m.label} ({m.unit})
+                                                </SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
                                     <InputError message={form.errors.metric} />
                                 </div>
 
@@ -206,17 +214,21 @@ export default function LabResultsIndex({ results, catalog }: PageProps) {
                     <Card>
                         <CardHeader className="flex flex-row items-center justify-between gap-4">
                             <CardTitle>Trend</CardTitle>
-                            <select
-                                className="h-9 rounded-md border border-input bg-background px-3 text-sm"
+                            <Select
                                 value={selectedMetric}
-                                onChange={(e) => setSelectedMetric(e.target.value)}
+                                onValueChange={setSelectedMetric}
                             >
-                                {catalog.map((m) => (
-                                    <option key={m.value} value={m.value}>
-                                        {m.label}
-                                    </option>
-                                ))}
-                            </select>
+                                <SelectTrigger className="w-48">
+                                    <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    {catalog.map((m) => (
+                                        <SelectItem key={m.value} value={m.value}>
+                                            {m.label}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
                         </CardHeader>
                         <CardContent>
                             {chartData.length === 0 ? (
