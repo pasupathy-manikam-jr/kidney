@@ -3,9 +3,18 @@ import {
     Activity,
     HeartPulse,
     LineChart,
+    Menu,
     ShieldCheck,
     TrendingUp,
 } from 'lucide-react';
+import {
+    Sheet,
+    SheetClose,
+    SheetContent,
+    SheetHeader,
+    SheetTitle,
+    SheetTrigger,
+} from '@/components/ui/sheet';
 import { dashboard, guide, home, login, register } from '@/routes';
 
 const features = [
@@ -50,17 +59,18 @@ export default function Welcome() {
                         </span>
                         KidneyLove
                     </Link>
-                    <nav className="flex items-center gap-1 sm:gap-2">
+                    {/* Desktop nav */}
+                    <nav className="hidden items-center gap-2 sm:flex">
                         <Link
                             href={guide()}
-                            className="hidden rounded-md px-3 py-2 text-sm font-medium text-muted-foreground transition hover:text-foreground sm:inline-flex"
+                            className="rounded-md px-3 py-2 text-sm font-medium text-muted-foreground transition hover:text-foreground"
                         >
                             User guide
                         </Link>
                         {auth.user ? (
                             <Link
                                 href={dashboard()}
-                                className="rounded-md bg-teal-600 px-3 py-2 text-sm font-medium whitespace-nowrap text-white transition hover:bg-teal-700 sm:px-4"
+                                className="rounded-md bg-teal-600 px-4 py-2 text-sm font-medium whitespace-nowrap text-white transition hover:bg-teal-700"
                             >
                                 Dashboard
                             </Link>
@@ -74,13 +84,72 @@ export default function Welcome() {
                                 </Link>
                                 <Link
                                     href={register()}
-                                    className="rounded-md bg-teal-600 px-3 py-2 text-sm font-medium whitespace-nowrap text-white transition hover:bg-teal-700 sm:px-4"
+                                    className="rounded-md bg-teal-600 px-4 py-2 text-sm font-medium whitespace-nowrap text-white transition hover:bg-teal-700"
                                 >
                                     Get started
                                 </Link>
                             </>
                         )}
                     </nav>
+
+                    {/* Mobile hamburger */}
+                    <Sheet>
+                        <SheetTrigger
+                            aria-label="Open menu"
+                            className="inline-flex size-9 items-center justify-center rounded-md border border-border text-foreground transition hover:bg-muted sm:hidden"
+                        >
+                            <Menu className="size-5" />
+                        </SheetTrigger>
+                        <SheetContent side="right" className="w-72">
+                            <SheetHeader>
+                                <SheetTitle className="flex items-center gap-2">
+                                    <span className="flex size-7 items-center justify-center rounded-lg bg-teal-600 text-white">
+                                        <HeartPulse className="size-4" />
+                                    </span>
+                                    KidneyLove
+                                </SheetTitle>
+                            </SheetHeader>
+                            <nav className="flex flex-col gap-1 px-4">
+                                <SheetClose asChild>
+                                    <Link
+                                        href={guide()}
+                                        className="rounded-md px-3 py-2.5 text-sm font-medium text-muted-foreground transition hover:bg-muted hover:text-foreground"
+                                    >
+                                        User guide
+                                    </Link>
+                                </SheetClose>
+                                {auth.user ? (
+                                    <SheetClose asChild>
+                                        <Link
+                                            href={dashboard()}
+                                            className="mt-1 rounded-md bg-teal-600 px-3 py-2.5 text-center text-sm font-medium text-white transition hover:bg-teal-700"
+                                        >
+                                            Dashboard
+                                        </Link>
+                                    </SheetClose>
+                                ) : (
+                                    <>
+                                        <SheetClose asChild>
+                                            <Link
+                                                href={login()}
+                                                className="rounded-md px-3 py-2.5 text-sm font-medium text-muted-foreground transition hover:bg-muted hover:text-foreground"
+                                            >
+                                                Log in
+                                            </Link>
+                                        </SheetClose>
+                                        <SheetClose asChild>
+                                            <Link
+                                                href={register()}
+                                                className="mt-1 rounded-md bg-teal-600 px-3 py-2.5 text-center text-sm font-medium text-white transition hover:bg-teal-700"
+                                            >
+                                                Get started
+                                            </Link>
+                                        </SheetClose>
+                                    </>
+                                )}
+                            </nav>
+                        </SheetContent>
+                    </Sheet>
                 </header>
 
                 {/* Hero */}
