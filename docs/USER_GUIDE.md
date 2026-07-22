@@ -69,7 +69,11 @@ reading.
 
 **Trend chart** — pick any metric to see its history as a line chart with a
 shaded reference band. Use the **3M / 6M / 1Y / All** buttons to change the time
-range.
+range. Readings that have a **note** show as a filled dot — hover to read the
+note.
+
+**Search & filter** — the history table has a search box (matches metric, value,
+note or date) and a metric filter to quickly find a reading.
 
 **Import / Export CSV** — **Export CSV** downloads all your readings; **Import
 CSV** bulk-loads them back (same columns). Invalid rows are skipped.
@@ -158,14 +162,38 @@ Click **Print / Save PDF** to hand it to your care team or save a copy.
 
 ---
 
-## 10. Appearance
+## 10. Emergency
+
+The **Emergency** page is a quick reference for when things go wrong.
+
+- **Care team contacts** — save your unit, nurse, or doctor's name, role and
+  phone number. On a phone, tap a saved number to call it.
+- **When to get help urgently** — a reminder list (cloudy/bloody dialysis fluid,
+  fever or redness at the catheter site, chest pain or breathlessness, signs of
+  high potassium, passing little or no urine, confusion). General guidance — in a
+  life-threatening emergency, call your local emergency number.
+
+---
+
+## 11. Data & backup
+
+Under **Settings → Data & backup** you can look after your data.
+
+- **Export backup** — downloads a single JSON file with everything: labs,
+  medications, diet & fluid, symptoms, dialysis, targets and contacts.
+- **Restore from backup** — loads a backup file. This **replaces** all current
+  data in the account, so export first if unsure.
+
+---
+
+## 12. Appearance
 
 Kidney-Love defaults to a calm dark theme. Switch between light, dark or system in
 **Settings → Appearance** at any time.
 
 ---
 
-## 11. Tips for appointments
+## 13. Tips for appointments
 
 - Log results the same day you get them, straight from the lab report.
 - Bring the **Report** (or **Dashboard** + **Reference**) to your visit.
@@ -173,7 +201,7 @@ Kidney-Love defaults to a calm dark theme. Switch between light, dark or system 
 
 ---
 
-## 12. Sources & further reading
+## 14. Sources & further reading
 
 General guidance in the app (reference ranges, KDIGO categories, dialysis colour
 cues and the ~6-month transfer-set interval) draws on the sources below. They are
