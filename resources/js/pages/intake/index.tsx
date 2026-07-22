@@ -175,11 +175,13 @@ export default function IntakeIndex({
         return totals;
     }, [entries, catalog, today]);
 
-    // Daily fluid totals for the last 14 days, oldest -> newest.
-    const fluidHistory = useMemo(() => {
+    const [chartCategory, setChartCategory] = useState(catalog[0]?.value ?? 'fluid');
+
+    // Daily totals for the selected category, last 14 days, oldest -> newest.
+    const categoryHistory = useMemo(() => {
         const totals: Record<string, number> = {};
         for (const e of entries) {
-            if (e.category === 'fluid') {
+            if (e.category === chartCategory) {
                 totals[e.logged_on] = (totals[e.logged_on] ?? 0) + Number(e.amount);
             }
         }
@@ -187,7 +189,10 @@ export default function IntakeIndex({
             .sort(([a], [b]) => (a < b ? -1 : 1))
             .slice(-14)
             .map(([date, total]) => ({ date, total: Math.round(total) }));
-    }, [entries]);
+    }, [entries, chartCategory]);
+
+    const chartInfo = catalogMap[chartCategory];
+    const chartTarget = targets[chartCategory] ?? chartInfo?.suggestedLimit ?? null;
 
     // Entries grouped by day (already newest-first).
     const byDay = useMemo(() => {
@@ -259,14 +264,28 @@ export default function IntakeIndex({
                     })}
                 </div>
 
-                {fluidHistory.length > 1 && (
+                {categoryHistory.length > 1 && (
                     <Card>
-                        <CardHeader>
-                            <CardTitle>Fluid history (mL/day)</CardTitle>
+                        <CardHeader className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                            <CardTitle>
+                                {chartInfo?.label} history ({chartInfo?.unit}/day)
+                            </CardTitle>
+                            <Select value={chartCategory} onValueChange={setChartCategory}>
+                                <SelectTrigger className="w-44">
+                                    <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    {catalog.map((c) => (
+                                        <SelectItem key={c.value} value={c.value}>
+                                            {c.label}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
                         </CardHeader>
                         <CardContent>
                             <ResponsiveContainer width="100%" height={220}>
-                                <BarChart data={fluidHistory}>
+                                <BarChart data={categoryHistory}>
                                     <CartesianGrid
                                         strokeDasharray="3 3"
                                         className="stroke-border"
@@ -282,20 +301,20 @@ export default function IntakeIndex({
                                                         {label}
                                                     </div>
                                                     <div className="font-medium">
-                                                        {payload[0].value} mL
+                                                        {payload[0].value} {chartInfo?.unit}
                                                     </div>
                                                 </div>
                                             ) : null
                                         }
                                     />
-                                    {targets.fluid && (
+                                    {chartTarget && (
                                         <ReferenceLine
-                                            y={targets.fluid}
+                                            y={chartTarget}
                                             stroke="currentColor"
                                             strokeDasharray="4 4"
                                             className="text-rose-500"
                                             label={{
-                                                value: `Target ${targets.fluid}`,
+                                                value: `Target ${chartTarget}`,
                                                 position: 'insideTopRight',
                                                 fontSize: 11,
                                                 fill: 'currentColor',
