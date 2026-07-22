@@ -31,6 +31,7 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import InputError from '@/components/input-error';
+import { cn } from '@/lib/utils';
 
 interface MetricInfo {
     value: string;
@@ -203,6 +204,7 @@ export default function LabResultsIndex({ results, catalog }: PageProps) {
     );
 
     const [selectedMetric, setSelectedMetric] = useState(catalog[0]?.value ?? '');
+    const [timeRange, setTimeRange] = useState<'3m' | '6m' | '1y' | 'all'>('all');
 
     const form = useForm({
         metric: catalog[0]?.value ?? '',
@@ -224,16 +226,25 @@ export default function LabResultsIndex({ results, catalog }: PageProps) {
         form.delete(LabResultController.destroy(id).url, { preserveScroll: true });
     };
 
-    // Chart data for the selected metric, oldest -> newest.
+    // Chart data for the selected metric, oldest -> newest, within the range.
     const chartData = useMemo(() => {
+        const cutoff = new Date();
+        if (timeRange === '3m') cutoff.setMonth(cutoff.getMonth() - 3);
+        else if (timeRange === '6m') cutoff.setMonth(cutoff.getMonth() - 6);
+        else if (timeRange === '1y') cutoff.setFullYear(cutoff.getFullYear() - 1);
+        const cutoffStr =
+            timeRange === 'all' ? '0000-00-00' : cutoff.toISOString().slice(0, 10);
+
         return results
-            .filter((r) => r.metric === selectedMetric)
+            .filter(
+                (r) => r.metric === selectedMetric && r.measured_at >= cutoffStr,
+            )
             .map((r) => ({
                 date: r.measured_at,
                 value: Number(r.value),
             }))
             .reverse();
-    }, [results, selectedMetric]);
+    }, [results, selectedMetric, timeRange]);
 
     const selectedInfo = catalogMap[selectedMetric];
     const range = selectedInfo?.referenceRange ?? null;
@@ -344,23 +355,42 @@ export default function LabResultsIndex({ results, catalog }: PageProps) {
 
                     {/* Trend chart */}
                     <Card>
-                        <CardHeader className="flex flex-row items-center justify-between gap-4">
+                        <CardHeader className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                             <CardTitle>Trend</CardTitle>
-                            <Select
-                                value={selectedMetric}
-                                onValueChange={setSelectedMetric}
-                            >
-                                <SelectTrigger className="w-48">
-                                    <SelectValue />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    {catalog.map((m) => (
-                                        <SelectItem key={m.value} value={m.value}>
-                                            {m.label}
-                                        </SelectItem>
+                            <div className="flex flex-wrap items-center gap-2">
+                                <div className="flex rounded-md border border-border p-0.5">
+                                    {(['3m', '6m', '1y', 'all'] as const).map((r) => (
+                                        <button
+                                            key={r}
+                                            type="button"
+                                            onClick={() => setTimeRange(r)}
+                                            className={cn(
+                                                'rounded px-2.5 py-1 text-xs font-medium transition',
+                                                timeRange === r
+                                                    ? 'bg-primary text-primary-foreground'
+                                                    : 'text-muted-foreground hover:text-foreground',
+                                            )}
+                                        >
+                                            {r === 'all' ? 'All' : r.toUpperCase()}
+                                        </button>
                                     ))}
-                                </SelectContent>
-                            </Select>
+                                </div>
+                                <Select
+                                    value={selectedMetric}
+                                    onValueChange={setSelectedMetric}
+                                >
+                                    <SelectTrigger className="w-44">
+                                        <SelectValue />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {catalog.map((m) => (
+                                            <SelectItem key={m.value} value={m.value}>
+                                                {m.label}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                            </div>
                         </CardHeader>
                         <CardContent>
                             {chartData.length === 0 ? (
