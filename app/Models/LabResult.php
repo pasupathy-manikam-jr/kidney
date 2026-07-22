@@ -21,7 +21,7 @@ class LabResult extends Model
         return [
             'metric' => LabMetric::class,
             'value' => 'decimal:2',
-            'measured_at' => 'date',
+            'measured_at' => 'date:Y-m-d',
         ];
     }
 
