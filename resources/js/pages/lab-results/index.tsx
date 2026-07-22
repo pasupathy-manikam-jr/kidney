@@ -278,11 +278,17 @@ export default function LabResultsIndex({ results, catalog }: PageProps) {
             if (filterMetric !== 'all' && r.metric !== filterMetric) return false;
             if (!q) return true;
             const label = catalogMap[r.metric]?.label.toLowerCase() ?? r.metric;
-            return (
-                label.includes(q) ||
-                (r.note ?? '').toLowerCase().includes(q) ||
-                r.measured_at.includes(q)
-            );
+            const haystack = [
+                label,
+                r.note ?? '',
+                r.measured_at,
+                r.value,
+                r.unit,
+                `${r.value} ${r.unit}`,
+            ]
+                .join(' ')
+                .toLowerCase();
+            return haystack.includes(q);
         });
     }, [results, filterMetric, search, catalogMap]);
 
