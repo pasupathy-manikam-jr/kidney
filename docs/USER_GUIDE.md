@@ -26,6 +26,14 @@ Want to look around first? Sign in with the demo account:
 
 The demo account is pre-filled with fictional data so every screen is populated.
 
+**Install as an app** — Kidney-Love can be added to your phone or computer like a
+normal app:
+
+- **Android / Chrome / Edge:** open the menu and choose *Install app* / *Add to
+  Home screen*.
+- **iPhone / iPad (Safari):** tap Share → *Add to Home Screen*. This is also
+  required for medication reminders to work on iPhone.
+
 ---
 
 ## 2. The dashboard
@@ -75,6 +83,10 @@ note.
 **Search & filter** — the history table has a search box (matches metric, value,
 note or date) and a metric filter to quickly find a reading.
 
+**Safety alerts** — if you save a value that crosses a critical threshold (for
+example very high potassium or very low eGFR), a warning stays on screen
+reminding you to contact your care team. It's a prompt, not a diagnosis.
+
 **Import / Export CSV** — **Export CSV** downloads all your readings; **Import
 CSV** bulk-loads them back (same columns). Invalid rows are skipped.
 
@@ -87,10 +99,11 @@ The **Medications** page keeps your current list.
 - Add a medication with **name, dosage, time, frequency** and an optional
   **reminder time** and note.
 - **Mark inactive / active** to keep past medications without deleting them.
-- **Reminders** — click **Enable reminders** and allow notifications. While the
-  app is open in your browser, you'll get a notification at each active
-  medication's reminder time. *(Background reminders when the app is closed
-  aren't supported yet.)*
+- **Reminders** — click **Enable reminders** and allow notifications. You'll get
+  a notification at each active medication's reminder time — **even when the app
+  is closed**. Reminders use your device's local time, and the notification stays
+  on screen until you dismiss it. (On iPhone, add the app to your Home Screen
+  first — see *Install as an app* below.)
 
 ---
 
@@ -202,7 +215,21 @@ Under **Settings → Profile** you can set health details:
 
 ---
 
-## 13. Data & backup
+## 13. Sharing with a caregiver
+
+You can let a family member, carer or nurse **view** your data (read-only).
+
+- **Share access** (sidebar → **Sharing**) — enter their email and an optional
+  label (e.g. "PD nurse"). They need a Kidney-Love account with that email.
+- Once they sign in, your data appears under their **Shared with me** page; they
+  click **View** to see your dashboard, labs, report and more.
+- They can **only view** — never add, edit or delete anything. An amber bar shows
+  when someone is viewing, and they click **Exit** to leave.
+- Remove access any time from the Sharing page.
+
+---
+
+## 14. Data & backup
 
 Under **Settings → Data & backup** you can look after your data.
 
@@ -213,14 +240,18 @@ Under **Settings → Data & backup** you can look after your data.
 
 ---
 
-## 14. Appearance
+## 15. Appearance
 
-Kidney-Love defaults to a calm dark theme. Switch between light, dark or system in
-**Settings → Appearance** at any time.
+In **Settings → Appearance** you can make the app look and read the way you like:
+
+- **Mode** — light, dark or follow your system (dark by default).
+- **Colour theme** — Neutral, Teal, Ocean, Forest, Sunset, or a **High contrast**
+  theme for easier reading.
+- **Text size** — Normal, Large or Extra large.
 
 ---
 
-## 15. Tips for appointments
+## 16. Tips for appointments
 
 - Log results the same day you get them, straight from the lab report.
 - Bring the **Report** (or **Dashboard** + **Reference**) to your visit.
@@ -228,7 +259,7 @@ Kidney-Love defaults to a calm dark theme. Switch between light, dark or system 
 
 ---
 
-## 16. Sources & further reading
+## 17. Sources & further reading
 
 General guidance in the app (reference ranges, KDIGO categories, dialysis colour
 cues and the ~6-month transfer-set interval) draws on the sources below. They are
