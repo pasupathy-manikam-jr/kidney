@@ -207,6 +207,8 @@ export default function LabResultsIndex({ results, catalog }: PageProps) {
 
     const [selectedMetric, setSelectedMetric] = useState(catalog[0]?.value ?? '');
     const [timeRange, setTimeRange] = useState<'3m' | '6m' | '1y' | 'all'>('all');
+    const [filterMetric, setFilterMetric] = useState('all');
+    const [search, setSearch] = useState('');
 
     const form = useForm({
         metric: catalog[0]?.value ?? '',
@@ -262,6 +264,20 @@ export default function LabResultsIndex({ results, catalog }: PageProps) {
             }))
             .reverse();
     }, [results, selectedMetric, timeRange]);
+
+    const filteredResults = useMemo(() => {
+        const q = search.trim().toLowerCase();
+        return results.filter((r) => {
+            if (filterMetric !== 'all' && r.metric !== filterMetric) return false;
+            if (!q) return true;
+            const label = catalogMap[r.metric]?.label.toLowerCase() ?? r.metric;
+            return (
+                label.includes(q) ||
+                (r.note ?? '').toLowerCase().includes(q) ||
+                r.measured_at.includes(q)
+            );
+        });
+    }, [results, filterMetric, search, catalogMap]);
 
     const selectedInfo = catalogMap[selectedMetric];
     const range = selectedInfo?.referenceRange ?? null;
@@ -517,6 +533,37 @@ export default function LabResultsIndex({ results, catalog }: PageProps) {
                                 No readings yet. Add your first above.
                             </p>
                         ) : (
+                            <>
+                                <div className="mb-4 flex flex-col gap-2 sm:flex-row">
+                                    <Input
+                                        type="search"
+                                        placeholder="Search notes, metric or date…"
+                                        value={search}
+                                        onChange={(e) => setSearch(e.target.value)}
+                                        className="sm:max-w-xs"
+                                    />
+                                    <Select
+                                        value={filterMetric}
+                                        onValueChange={setFilterMetric}
+                                    >
+                                        <SelectTrigger className="w-full sm:w-48">
+                                            <SelectValue />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="all">All metrics</SelectItem>
+                                            {catalog.map((m) => (
+                                                <SelectItem key={m.value} value={m.value}>
+                                                    {m.label}
+                                                </SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                                {filteredResults.length === 0 ? (
+                                    <p className="py-8 text-center text-sm text-muted-foreground">
+                                        No readings match your filter.
+                                    </p>
+                                ) : (
                             <div className="overflow-x-auto">
                                 <table className="w-full text-sm">
                                     <thead>
@@ -529,7 +576,7 @@ export default function LabResultsIndex({ results, catalog }: PageProps) {
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {results.map((r) => (
+                                        {filteredResults.map((r) => (
                                             <tr key={r.id} className="border-b last:border-0">
                                                 <td className="py-2 pr-4">{r.measured_at}</td>
                                                 <td className="py-2 pr-4">
@@ -565,6 +612,8 @@ export default function LabResultsIndex({ results, catalog }: PageProps) {
                                     </tbody>
                                 </table>
                             </div>
+                                )}
+                            </>
                         )}
                     </CardContent>
                 </Card>
