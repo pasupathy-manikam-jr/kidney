@@ -1,6 +1,7 @@
 import { Head, useForm } from '@inertiajs/react';
 import { HeartPulse } from 'lucide-react';
 import SymptomEntryController from '@/actions/App/Http/Controllers/SymptomEntryController';
+import { ConfirmDelete } from '@/components/confirm-delete';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -66,7 +67,6 @@ export default function SymptomsIndex({ entries, today }: PageProps) {
     };
 
     const remove = (id: number) => {
-        if (!confirm('Delete this entry?')) return;
         form.delete(SymptomEntryController.destroy(id).url, { preserveScroll: true });
     };
 
@@ -196,12 +196,15 @@ export default function SymptomsIndex({ entries, today }: PageProps) {
                                                     </div>
                                                 </div>
                                             </div>
-                                            <button
-                                                onClick={() => remove(e.id)}
-                                                className="shrink-0 text-xs text-destructive hover:underline"
-                                            >
-                                                Delete
-                                            </button>
+                                            <ConfirmDelete
+                                                onConfirm={() => remove(e.id)}
+                                                title="Delete this entry?"
+                                                trigger={
+                                                    <button className="shrink-0 text-xs text-destructive hover:underline">
+                                                        Delete
+                                                    </button>
+                                                }
+                                            />
                                         </li>
                                     ))}
                                 </ul>

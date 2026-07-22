@@ -1,6 +1,7 @@
 import { Head, router, useForm } from '@inertiajs/react';
 import { Pill } from 'lucide-react';
 import MedicationController from '@/actions/App/Http/Controllers/MedicationController';
+import { ConfirmDelete } from '@/components/confirm-delete';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -57,7 +58,6 @@ export default function MedicationsIndex({ medications }: PageProps) {
     };
 
     const remove = (id: number) => {
-        if (!confirm('Remove this medication?')) return;
         form.delete(MedicationController.destroy(id).url, { preserveScroll: true });
     };
 
@@ -183,12 +183,16 @@ export default function MedicationsIndex({ medications }: PageProps) {
                                                 >
                                                     {m.active ? 'Mark inactive' : 'Mark active'}
                                                 </button>
-                                                <button
-                                                    onClick={() => remove(m.id)}
-                                                    className="text-xs text-destructive hover:underline"
-                                                >
-                                                    Remove
-                                                </button>
+                                                <ConfirmDelete
+                                                    onConfirm={() => remove(m.id)}
+                                                    title="Remove this medication?"
+                                                    confirmLabel="Remove"
+                                                    trigger={
+                                                        <button className="text-xs text-destructive hover:underline">
+                                                            Remove
+                                                        </button>
+                                                    }
+                                                />
                                             </div>
                                         </li>
                                     ))}

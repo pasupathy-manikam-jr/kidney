@@ -1,6 +1,7 @@
 import { Head, useForm } from '@inertiajs/react';
 import { useMemo } from 'react';
 import IntakeEntryController from '@/actions/App/Http/Controllers/IntakeEntryController';
+import { ConfirmDelete } from '@/components/confirm-delete';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -60,7 +61,6 @@ export default function IntakeIndex({ entries, catalog, today }: PageProps) {
     };
 
     const remove = (id: number) => {
-        if (!confirm('Delete this entry?')) return;
         form.delete(IntakeEntryController.destroy(id).url, { preserveScroll: true });
     };
 
@@ -256,12 +256,15 @@ export default function IntakeIndex({ entries, catalog, today }: PageProps) {
                                                             <span className="tabular-nums">
                                                                 {Number(e.amount)} {e.unit}
                                                             </span>
-                                                            <button
-                                                                onClick={() => remove(e.id)}
-                                                                className="text-xs text-destructive hover:underline"
-                                                            >
-                                                                Delete
-                                                            </button>
+                                                            <ConfirmDelete
+                                                                onConfirm={() => remove(e.id)}
+                                                                title="Delete this entry?"
+                                                                trigger={
+                                                                    <button className="text-xs text-destructive hover:underline">
+                                                                        Delete
+                                                                    </button>
+                                                                }
+                                                            />
                                                         </span>
                                                     </li>
                                                 ))}

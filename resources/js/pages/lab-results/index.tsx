@@ -12,6 +12,7 @@ import {
     YAxis,
 } from 'recharts';
 import LabResultController from '@/actions/App/Http/Controllers/LabResultController';
+import { ConfirmDelete } from '@/components/confirm-delete';
 import { EgfrCalculator } from '@/components/egfr-calculator';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -223,7 +224,6 @@ export default function LabResultsIndex({ results, catalog }: PageProps) {
     };
 
     const remove = (id: number) => {
-        if (!confirm('Delete this reading?')) return;
         form.delete(LabResultController.destroy(id).url, { preserveScroll: true });
     };
 
@@ -549,12 +549,15 @@ export default function LabResultsIndex({ results, catalog }: PageProps) {
                                                         >
                                                             Edit
                                                         </button>
-                                                        <button
-                                                            onClick={() => remove(r.id)}
-                                                            className="text-xs text-destructive hover:underline"
-                                                        >
-                                                            Delete
-                                                        </button>
+                                                        <ConfirmDelete
+                                                            onConfirm={() => remove(r.id)}
+                                                            title="Delete this reading?"
+                                                            trigger={
+                                                                <button className="text-xs text-destructive hover:underline">
+                                                                    Delete
+                                                                </button>
+                                                            }
+                                                        />
                                                     </div>
                                                 </td>
                                             </tr>
