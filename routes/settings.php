@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Settings\BackupController;
 use App\Http\Controllers\Settings\ProfileController;
 use App\Http\Controllers\Settings\SecurityController;
 use Illuminate\Auth\Middleware\RequirePassword;
@@ -24,6 +25,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('user-password.update');
 
     Route::inertia('settings/appearance', 'settings/appearance')->name('appearance.edit');
+
+    Route::get('settings/data', [BackupController::class, 'edit'])->name('data.edit');
+    Route::get('settings/data/export', [BackupController::class, 'export'])->name('data.export');
+    Route::post('settings/data/import', [BackupController::class, 'import'])->name('data.import');
 });
 
 Route::get('.well-known/passkey-endpoints', function () {
