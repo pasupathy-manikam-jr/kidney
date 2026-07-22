@@ -23,6 +23,8 @@ self.addEventListener('push', (event) => {
         badge: '/favicon.ico',
         data: { url: data.url || '/dashboard' },
         tag: data.tag,
+        requireInteraction: true, // stay on screen until the user dismisses it
+        renotify: !!data.tag,
     };
 
     event.waitUntil(self.registration.showNotification(title, options));

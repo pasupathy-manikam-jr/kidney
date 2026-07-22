@@ -135,4 +135,24 @@ class User extends Authenticatable implements PasskeyUser
     {
         return $this->hasMany(CatheterLog::class);
     }
+
+    /**
+     * People this user (as patient) invited to view their data.
+     *
+     * @return HasMany<CareShare, $this>
+     */
+    public function caregiverShares(): HasMany
+    {
+        return $this->hasMany(CareShare::class, 'patient_id');
+    }
+
+    /**
+     * Accepted shares where this user is the caregiver (patients they can view).
+     *
+     * @return HasMany<CareShare, $this>
+     */
+    public function patientShares(): HasMany
+    {
+        return $this->hasMany(CareShare::class, 'caregiver_id')->whereNotNull('accepted_at');
+    }
 }
