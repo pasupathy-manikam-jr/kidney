@@ -1,6 +1,17 @@
 import { Head, useForm } from '@inertiajs/react';
 import { AlertTriangle, CalendarClock, Droplets, Pencil } from 'lucide-react';
 import { useMemo } from 'react';
+import {
+    Bar,
+    BarChart,
+    CartesianGrid,
+    Cell,
+    ReferenceLine,
+    ResponsiveContainer,
+    Tooltip,
+    XAxis,
+    YAxis,
+} from 'recharts';
 import CatheterController from '@/actions/App/Http/Controllers/CatheterController';
 import CatheterLogController from '@/actions/App/Http/Controllers/CatheterLogController';
 import { ConfirmDelete } from '@/components/confirm-delete';
@@ -222,6 +233,17 @@ export default function DialysisIndex({
         (l) => l.effluent_color && colorMap[l.effluent_color]?.warning,
     );
 
+    // Ultrafiltration over time (oldest -> newest, last 14 with a UF value).
+    const ufData = useMemo(
+        () =>
+            [...logs]
+                .filter((l) => l.ultrafiltration !== null)
+                .reverse()
+                .slice(-14)
+                .map((l) => ({ date: l.logged_on, uf: l.ultrafiltration as number })),
+        [logs],
+    );
+
     // Transfer-set reminder status.
     const changeStatus =
         daysUntilChange === null
@@ -307,6 +329,63 @@ export default function DialysisIndex({
                         )}
                     </CardContent>
                 </Card>
+
+                {ufData.length > 1 && (
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>Ultrafiltration trend (mL)</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <ResponsiveContainer width="100%" height={220}>
+                                <BarChart data={ufData}>
+                                    <CartesianGrid
+                                        strokeDasharray="3 3"
+                                        className="stroke-border"
+                                    />
+                                    <XAxis dataKey="date" fontSize={12} tickMargin={8} />
+                                    <YAxis width={44} fontSize={12} />
+                                    <Tooltip
+                                        cursor={{ fill: 'currentColor', fillOpacity: 0.05 }}
+                                        content={({ active, payload, label }) =>
+                                            active && payload?.length ? (
+                                                <div className="rounded-md border border-border bg-popover px-3 py-2 text-xs text-popover-foreground shadow-md">
+                                                    <div className="mb-0.5 text-muted-foreground">
+                                                        {label}
+                                                    </div>
+                                                    <div className="font-medium">
+                                                        {(payload[0].value as number) > 0
+                                                            ? '+'
+                                                            : ''}
+                                                        {payload[0].value} mL
+                                                    </div>
+                                                </div>
+                                            ) : null
+                                        }
+                                    />
+                                    <ReferenceLine y={0} stroke="currentColor" />
+                                    <Bar dataKey="uf" radius={[4, 4, 0, 0]}>
+                                        {ufData.map((d, i) => (
+                                            <Cell
+                                                key={i}
+                                                className={
+                                                    d.uf < 0
+                                                        ? 'text-rose-500'
+                                                        : 'text-teal-500'
+                                                }
+                                                fill="currentColor"
+                                            />
+                                        ))}
+                                    </Bar>
+                                </BarChart>
+                            </ResponsiveContainer>
+                            <p className="mt-2 text-xs text-muted-foreground">
+                                Ultrafiltration = drain − fill. Negative values (red) mean
+                                less came out than went in — mention persistent low or
+                                negative UF to your care team.
+                            </p>
+                        </CardContent>
+                    </Card>
+                )}
 
                 <div className="grid gap-6 lg:grid-cols-[360px_1fr]">
                     {/* Log exchange */}
