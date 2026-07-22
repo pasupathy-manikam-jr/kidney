@@ -147,7 +147,7 @@ export default function MedicationsIndex({ medications }: PageProps) {
                                         <li
                                             key={m.id}
                                             className={cn(
-                                                'flex items-start justify-between gap-4 rounded-lg border border-border p-4',
+                                                'flex flex-col gap-3 rounded-lg border border-border p-4 sm:flex-row sm:items-start sm:justify-between sm:gap-4',
                                                 !m.active && 'opacity-60',
                                             )}
                                         >
@@ -176,7 +176,7 @@ export default function MedicationsIndex({ medications }: PageProps) {
                                                     )}
                                                 </div>
                                             </div>
-                                            <div className="flex shrink-0 flex-col items-end gap-1.5">
+                                            <div className="flex shrink-0 flex-row items-center gap-4 border-t border-border pt-3 pl-12 sm:flex-col sm:items-end sm:gap-1.5 sm:border-0 sm:pt-0 sm:pl-0">
                                                 <button
                                                     onClick={() => toggleActive(m)}
                                                     className="text-xs text-muted-foreground hover:text-foreground hover:underline"
