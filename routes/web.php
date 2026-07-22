@@ -16,6 +16,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     Route::get('lab-results', [LabResultController::class, 'index'])->name('lab-results.index');
+    Route::get('lab-results/export', [LabResultController::class, 'export'])->name('lab-results.export');
+    Route::post('lab-results/import', [LabResultController::class, 'import'])->name('lab-results.import');
     Route::post('lab-results', [LabResultController::class, 'store'])->name('lab-results.store');
     Route::put('lab-results/{labResult}', [LabResultController::class, 'update'])->name('lab-results.update');
     Route::delete('lab-results/{labResult}', [LabResultController::class, 'destroy'])->name('lab-results.destroy');

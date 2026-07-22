@@ -1,4 +1,5 @@
 import { Head, useForm } from '@inertiajs/react';
+import { Download, Upload } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import {
     CartesianGrid,
@@ -224,6 +225,22 @@ export default function LabResultsIndex({ results, catalog }: PageProps) {
     const remove = (id: number) => {
         if (!confirm('Delete this reading?')) return;
         form.delete(LabResultController.destroy(id).url, { preserveScroll: true });
+    };
+
+    const importForm = useForm<{ file: File | null }>({ file: null });
+
+    const handleImport = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+        importForm.setData('file', file);
+        importForm.post(LabResultController.import().url, {
+            preserveScroll: true,
+            forceFormData: true,
+            onFinish: () => {
+                e.target.value = '';
+                importForm.reset();
+            },
+        });
     };
 
     // Chart data for the selected metric, oldest -> newest, within the range.
@@ -464,8 +481,35 @@ export default function LabResultsIndex({ results, catalog }: PageProps) {
 
                 {/* History table */}
                 <Card>
-                    <CardHeader>
+                    <CardHeader className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                         <CardTitle>History</CardTitle>
+                        <div className="flex items-center gap-2">
+                            <a href={LabResultController.export().url}>
+                                <Button type="button" variant="outline" size="sm">
+                                    <Download className="size-4" /> Export CSV
+                                </Button>
+                            </a>
+                            <label>
+                                <input
+                                    type="file"
+                                    accept=".csv,text/csv"
+                                    className="hidden"
+                                    onChange={handleImport}
+                                    disabled={importForm.processing}
+                                />
+                                <Button
+                                    type="button"
+                                    variant="outline"
+                                    size="sm"
+                                    asChild
+                                    disabled={importForm.processing}
+                                >
+                                    <span className="cursor-pointer">
+                                        <Upload className="size-4" /> Import CSV
+                                    </span>
+                                </Button>
+                            </label>
+                        </div>
                     </CardHeader>
                     <CardContent>
                         {results.length === 0 ? (
