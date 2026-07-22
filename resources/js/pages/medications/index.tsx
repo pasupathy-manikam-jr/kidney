@@ -1,6 +1,13 @@
 import { Head, router, useForm } from '@inertiajs/react';
-import { Pill } from 'lucide-react';
+import { Bell, BellOff, Pill } from 'lucide-react';
+import { useState } from 'react';
+import { toast } from 'sonner';
 import MedicationController from '@/actions/App/Http/Controllers/MedicationController';
+import {
+    remindersEnabled,
+    setRemindersEnabled,
+    useMedReminders,
+} from '@/hooks/use-med-reminders';
 import { ConfirmDelete } from '@/components/confirm-delete';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -16,6 +23,7 @@ interface Medication {
     dosage: string | null;
     frequency: string | null;
     time_of_day: string | null;
+    reminder_time: string | null;
     notes: string | null;
     active: boolean;
 }
@@ -25,11 +33,38 @@ interface PageProps {
 }
 
 export default function MedicationsIndex({ medications }: PageProps) {
+    useMedReminders(medications);
+    const [remindersOn, setRemindersOn] = useState(
+        typeof window !== 'undefined' && remindersEnabled(),
+    );
+
+    const enableReminders = async () => {
+        if (!('Notification' in window)) {
+            toast.error('This browser does not support notifications.');
+            return;
+        }
+        const perm = await Notification.requestPermission();
+        if (perm === 'granted') {
+            setRemindersEnabled(true);
+            setRemindersOn(true);
+            toast.success('Reminders on. Notifications fire while the app is open.');
+        } else {
+            toast.error('Notification permission denied.');
+        }
+    };
+
+    const disableReminders = () => {
+        setRemindersEnabled(false);
+        setRemindersOn(false);
+        toast.success('Reminders off.');
+    };
+
     const form = useForm({
         name: '',
         dosage: '',
         frequency: '',
         time_of_day: '',
+        reminder_time: '',
         notes: '',
         active: true,
     });
@@ -50,6 +85,7 @@ export default function MedicationsIndex({ medications }: PageProps) {
                 dosage: m.dosage ?? '',
                 frequency: m.frequency ?? '',
                 time_of_day: m.time_of_day ?? '',
+                reminder_time: m.reminder_time ?? '',
                 notes: m.notes ?? '',
                 active: !m.active,
             },
@@ -106,6 +142,20 @@ export default function MedicationsIndex({ medications }: PageProps) {
                                     </div>
                                 </div>
                                 <div className="grid gap-2">
+                                    <Label htmlFor="reminder_time">
+                                        Reminder time (optional)
+                                    </Label>
+                                    <Input
+                                        id="reminder_time"
+                                        type="time"
+                                        value={form.data.reminder_time}
+                                        onChange={(e) =>
+                                            form.setData('reminder_time', e.target.value)
+                                        }
+                                    />
+                                    <InputError message={form.errors.reminder_time} />
+                                </div>
+                                <div className="grid gap-2">
                                     <Label htmlFor="frequency">Frequency</Label>
                                     <Input
                                         id="frequency"
@@ -132,8 +182,27 @@ export default function MedicationsIndex({ medications }: PageProps) {
 
                     {/* List */}
                     <Card>
-                        <CardHeader>
+                        <CardHeader className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                             <CardTitle>Your medications</CardTitle>
+                            {remindersOn ? (
+                                <Button
+                                    type="button"
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={disableReminders}
+                                >
+                                    <BellOff className="size-4" /> Reminders on
+                                </Button>
+                            ) : (
+                                <Button
+                                    type="button"
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={enableReminders}
+                                >
+                                    <Bell className="size-4" /> Enable reminders
+                                </Button>
+                            )}
                         </CardHeader>
                         <CardContent>
                             {medications.length === 0 ? (
@@ -165,7 +234,13 @@ export default function MedicationsIndex({ medications }: PageProps) {
                                                         )}
                                                     </div>
                                                     <div className="text-sm text-muted-foreground">
-                                                        {[m.frequency, m.time_of_day]
+                                                        {[
+                                                            m.frequency,
+                                                            m.time_of_day,
+                                                            m.reminder_time
+                                                                ? `⏰ ${m.reminder_time}`
+                                                                : null,
+                                                        ]
                                                             .filter(Boolean)
                                                             .join(' · ') || '—'}
                                                     </div>

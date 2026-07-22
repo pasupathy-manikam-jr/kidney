@@ -19,6 +19,19 @@ test('a user can add a medication', function () {
         ->and($user->medications()->first()->name)->toBe('Amlodipine');
 });
 
+test('a reminder time can be set and must be H:i', function () {
+    $user = User::factory()->create();
+
+    $this->actingAs($user)
+        ->post('/medications', ['name' => 'Furosemide', 'reminder_time' => '08:30', 'active' => true])
+        ->assertRedirect();
+    expect($user->medications()->first()->reminder_time)->toBe('08:30');
+
+    $this->actingAs($user)
+        ->post('/medications', ['name' => 'Bad', 'reminder_time' => '25:99', 'active' => true])
+        ->assertSessionHasErrors('reminder_time');
+});
+
 test('name is required', function () {
     $user = User::factory()->create();
 

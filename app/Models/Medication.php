@@ -12,6 +12,7 @@ class Medication extends Model
         'dosage',
         'frequency',
         'time_of_day',
+        'reminder_time',
         'notes',
         'active',
     ];

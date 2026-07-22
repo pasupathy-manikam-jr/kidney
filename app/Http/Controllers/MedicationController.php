@@ -56,6 +56,7 @@ class MedicationController extends Controller
             'dosage' => ['nullable', 'string', 'max:100'],
             'frequency' => ['nullable', 'string', 'max:100'],
             'time_of_day' => ['nullable', 'string', 'max:100'],
+            'reminder_time' => ['nullable', 'date_format:H:i'],
             'notes' => ['nullable', 'string', 'max:1000'],
             'active' => ['boolean'],
         ]);
