@@ -13,6 +13,7 @@ class PushSubscriptionController extends Controller
             'endpoint' => ['required', 'string', 'max:1024'],
             'keys.p256dh' => ['required', 'string'],
             'keys.auth' => ['required', 'string'],
+            'timezone' => ['nullable', 'timezone'],
         ]);
 
         $request->user()->pushSubscriptions()->updateOrCreate(
@@ -22,6 +23,11 @@ class PushSubscriptionController extends Controller
                 'auth_token' => $validated['keys']['auth'],
             ],
         );
+
+        // Remember the browser's timezone so time-of-day reminders fire locally.
+        if (! empty($validated['timezone'])) {
+            $request->user()->update(['timezone' => $validated['timezone']]);
+        }
 
         return response()->json(['ok' => true]);
     }

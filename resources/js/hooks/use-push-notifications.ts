@@ -72,7 +72,10 @@ export function usePushNotifications(): PushState {
                     'X-CSRF-TOKEN': getCsrf(),
                     'X-Requested-With': 'XMLHttpRequest',
                 },
-                body: JSON.stringify(sub.toJSON()),
+                body: JSON.stringify({
+                    ...sub.toJSON(),
+                    timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+                }),
             });
             setSubscribed(true);
         } finally {
