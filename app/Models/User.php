@@ -72,4 +72,12 @@ class User extends Authenticatable implements PasskeyUser
     {
         return $this->hasMany(IntakeEntry::class);
     }
+
+    /**
+     * @return HasMany<SymptomEntry, $this>
+     */
+    public function symptomEntries(): HasMany
+    {
+        return $this->hasMany(SymptomEntry::class);
+    }
 }

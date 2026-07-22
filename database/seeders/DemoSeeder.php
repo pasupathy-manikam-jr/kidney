@@ -88,5 +88,22 @@ class DemoSeeder extends Seeder
                 'logged_on' => now()->subDays($e['daysAgo'])->toDateString(),
             ]);
         }
+
+        // Fictional symptom journal.
+        $user->symptomEntries()->delete();
+        $symptoms = [
+            ['symptom' => 'Fatigue', 'severity' => 3, 'note' => 'Afternoons', 'daysAgo' => 0],
+            ['symptom' => 'Swelling', 'severity' => 2, 'note' => 'Ankles', 'daysAgo' => 1],
+            ['symptom' => 'Itching', 'severity' => 2, 'note' => null, 'daysAgo' => 3],
+            ['symptom' => 'Cramps', 'severity' => 4, 'note' => 'Night', 'daysAgo' => 5],
+        ];
+        foreach ($symptoms as $s) {
+            $user->symptomEntries()->create([
+                'symptom' => $s['symptom'],
+                'severity' => $s['severity'],
+                'note' => $s['note'],
+                'logged_on' => now()->subDays($s['daysAgo'])->toDateString(),
+            ]);
+        }
     }
 }

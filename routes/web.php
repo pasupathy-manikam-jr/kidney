@@ -8,6 +8,7 @@ use App\Http\Controllers\IntakeEntryController;
 use App\Http\Controllers\LabResultController;
 use App\Http\Controllers\MedicationController;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\SymptomEntryController;
 use App\Support\KdigoRisk;
 use Illuminate\Support\Facades\Route;
 
@@ -32,6 +33,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('intake', [IntakeEntryController::class, 'index'])->name('intake.index');
     Route::post('intake', [IntakeEntryController::class, 'store'])->name('intake.store');
     Route::delete('intake/{intakeEntry}', [IntakeEntryController::class, 'destroy'])->name('intake.destroy');
+
+    Route::get('symptoms', [SymptomEntryController::class, 'index'])->name('symptoms.index');
+    Route::post('symptoms', [SymptomEntryController::class, 'store'])->name('symptoms.store');
+    Route::delete('symptoms/{symptomEntry}', [SymptomEntryController::class, 'destroy'])->name('symptoms.destroy');
 
     Route::get('report', [ReportController::class, 'index'])->name('report');
 
