@@ -11,6 +11,7 @@ import {
     YAxis,
 } from 'recharts';
 import LabResultController from '@/actions/App/Http/Controllers/LabResultController';
+import { EgfrCalculator } from '@/components/egfr-calculator';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
@@ -252,8 +253,14 @@ export default function LabResultsIndex({ results, catalog }: PageProps) {
                 <div className="grid gap-6 lg:grid-cols-[380px_1fr]">
                     {/* Entry form */}
                     <Card>
-                        <CardHeader>
+                        <CardHeader className="flex flex-row items-center justify-between gap-2">
                             <CardTitle>Add a reading</CardTitle>
+                            <EgfrCalculator
+                                onUse={(egfr) => {
+                                    form.setData('metric', 'egfr');
+                                    form.setData('value', String(egfr));
+                                }}
+                            />
                         </CardHeader>
                         <CardContent>
                             <form onSubmit={submit} className="flex flex-col gap-4">
