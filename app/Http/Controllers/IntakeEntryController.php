@@ -22,9 +22,22 @@ class IntakeEntryController extends Controller
             ->limit(200)
             ->get();
 
+        $user = $request->user();
+
+        // Effective target per category (user value or suggested fallback) and
+        // the user's own set values (for the edit dialog).
+        $targets = [];
+        $customTargets = [];
+        foreach (IntakeCategory::cases() as $c) {
+            $targets[$c->value] = $user->intakeTarget($c);
+            $customTargets[$c->value] = $user->intake_targets[$c->value] ?? null;
+        }
+
         return Inertia::render('intake/index', [
             'entries' => $entries,
             'catalog' => IntakeCategory::catalog(),
+            'targets' => $targets,
+            'customTargets' => $customTargets,
             'today' => now()->toDateString(),
         ]);
     }

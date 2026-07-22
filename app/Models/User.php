@@ -28,7 +28,7 @@ use Laravel\Fortify\TwoFactorAuthenticatable;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  */
-#[Fillable(['name', 'email', 'password'])]
+#[Fillable(['name', 'email', 'password', 'intake_targets'])]
 #[Hidden(['password', 'two_factor_secret', 'two_factor_recovery_codes', 'remember_token'])]
 class User extends Authenticatable implements PasskeyUser
 {
@@ -46,7 +46,19 @@ class User extends Authenticatable implements PasskeyUser
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
             'two_factor_confirmed_at' => 'datetime',
+            'intake_targets' => 'array',
         ];
+    }
+
+    /**
+     * Effective daily target for an intake category: the user's own value if
+     * set, otherwise the general suggested limit from the enum.
+     */
+    public function intakeTarget(\App\Enums\IntakeCategory $category): ?int
+    {
+        $custom = $this->intake_targets[$category->value] ?? null;
+
+        return $custom !== null ? (int) $custom : $category->suggestedLimit();
     }
 
     /**

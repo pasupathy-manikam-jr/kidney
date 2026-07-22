@@ -1,9 +1,21 @@
 import { Head, useForm } from '@inertiajs/react';
 import { useMemo } from 'react';
+import { SlidersHorizontal } from 'lucide-react';
+import { useState } from 'react';
 import IntakeEntryController from '@/actions/App/Http/Controllers/IntakeEntryController';
+import IntakeTargetController from '@/actions/App/Http/Controllers/IntakeTargetController';
 import { ConfirmDelete } from '@/components/confirm-delete';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+} from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import {
@@ -36,10 +48,87 @@ interface Entry {
 interface PageProps {
     entries: Entry[];
     catalog: CategoryInfo[];
+    targets: Record<string, number | null>;
+    customTargets: Record<string, number | null>;
     today: string;
 }
 
-export default function IntakeIndex({ entries, catalog, today }: PageProps) {
+function TargetsDialog({
+    catalog,
+    customTargets,
+}: {
+    catalog: CategoryInfo[];
+    customTargets: Record<string, number | null>;
+}) {
+    const [open, setOpen] = useState(false);
+    const form = useForm<Record<string, string>>(
+        Object.fromEntries(
+            catalog.map((c) => [c.value, customTargets[c.value]?.toString() ?? '']),
+        ),
+    );
+
+    const submit = (e: React.FormEvent) => {
+        e.preventDefault();
+        form.put(IntakeTargetController.update().url, {
+            preserveScroll: true,
+            onSuccess: () => setOpen(false),
+        });
+    };
+
+    return (
+        <Dialog open={open} onOpenChange={setOpen}>
+            <DialogTrigger asChild>
+                <Button type="button" variant="outline" size="sm">
+                    <SlidersHorizontal className="size-4" /> Set targets
+                </Button>
+            </DialogTrigger>
+            <DialogContent>
+                <DialogHeader>
+                    <DialogTitle>Daily targets</DialogTitle>
+                    <DialogDescription>
+                        Leave blank to use the general suggested limit. Set your own to
+                        match your care team's advice.
+                    </DialogDescription>
+                </DialogHeader>
+                <form onSubmit={submit} className="flex flex-col gap-4">
+                    {catalog.map((c) => (
+                        <div key={c.value} className="grid gap-2">
+                            <Label htmlFor={`t-${c.value}`}>
+                                {c.label}{' '}
+                                <span className="text-muted-foreground">({c.unit})</span>
+                            </Label>
+                            <Input
+                                id={`t-${c.value}`}
+                                type="number"
+                                min="1"
+                                value={form.data[c.value]}
+                                onChange={(e) => form.setData(c.value, e.target.value)}
+                                placeholder={
+                                    c.suggestedLimit
+                                        ? `Suggested: ${c.suggestedLimit}`
+                                        : 'No suggestion'
+                                }
+                            />
+                        </div>
+                    ))}
+                    <DialogFooter>
+                        <Button type="submit" disabled={form.processing}>
+                            Save targets
+                        </Button>
+                    </DialogFooter>
+                </form>
+            </DialogContent>
+        </Dialog>
+    );
+}
+
+export default function IntakeIndex({
+    entries,
+    catalog,
+    targets,
+    customTargets,
+    today,
+}: PageProps) {
     const catalogMap = useMemo(
         () => Object.fromEntries(catalog.map((c) => [c.value, c])),
         [catalog],
@@ -95,11 +184,16 @@ export default function IntakeIndex({ entries, catalog, today }: PageProps) {
             <Head title="Diet & Fluid Log" />
 
             <div className="flex h-full flex-1 flex-col gap-6 p-4">
+                <div className="flex items-center justify-between gap-3">
+                    <h1 className="text-lg font-semibold">Today's totals</h1>
+                    <TargetsDialog catalog={catalog} customTargets={customTargets} />
+                </div>
+
                 {/* Today's totals */}
                 <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
                     {catalog.map((c) => {
                         const total = Math.round(todayTotals[c.value] ?? 0);
-                        const limit = c.suggestedLimit;
+                        const limit = targets[c.value] ?? c.suggestedLimit;
                         const pct = limit
                             ? Math.min(100, Math.round((total / limit) * 100))
                             : 0;

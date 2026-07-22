@@ -5,6 +5,7 @@ use App\Enums\GfrCategory;
 use App\Enums\LabMetric;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\IntakeEntryController;
+use App\Http\Controllers\IntakeTargetController;
 use App\Http\Controllers\LabResultController;
 use App\Http\Controllers\MedicationController;
 use App\Http\Controllers\ReportController;
@@ -33,6 +34,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('intake', [IntakeEntryController::class, 'index'])->name('intake.index');
     Route::post('intake', [IntakeEntryController::class, 'store'])->name('intake.store');
     Route::delete('intake/{intakeEntry}', [IntakeEntryController::class, 'destroy'])->name('intake.destroy');
+    Route::put('intake-targets', [IntakeTargetController::class, 'update'])->name('intake-targets.update');
 
     Route::get('symptoms', [SymptomEntryController::class, 'index'])->name('symptoms.index');
     Route::post('symptoms', [SymptomEntryController::class, 'store'])->name('symptoms.store');
