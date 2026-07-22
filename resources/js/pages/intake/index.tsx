@@ -264,7 +264,7 @@ export default function IntakeIndex({
                     })}
                 </div>
 
-                {categoryHistory.length > 1 && (
+                {(
                     <Card>
                         <CardHeader className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                             <CardTitle>
@@ -284,6 +284,11 @@ export default function IntakeIndex({
                             </Select>
                         </CardHeader>
                         <CardContent>
+                            {categoryHistory.length === 0 ? (
+                                <p className="py-16 text-center text-sm text-muted-foreground">
+                                    No {chartInfo?.label.toLowerCase()} entries yet.
+                                </p>
+                            ) : (
                             <ResponsiveContainer width="100%" height={220}>
                                 <BarChart data={categoryHistory}>
                                     <CartesianGrid
@@ -329,6 +334,7 @@ export default function IntakeIndex({
                                     />
                                 </BarChart>
                             </ResponsiveContainer>
+                            )}
                         </CardContent>
                     </Card>
                 )}
