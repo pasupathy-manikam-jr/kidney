@@ -1,14 +1,22 @@
 import { Head, Link } from '@inertiajs/react';
 import { ArrowLeft, Printer } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { display, displayBound, useUnits } from '@/lib/units';
 import { dashboard } from '@/routes';
 
 type Status = 'in_range' | 'low' | 'high' | 'none';
+
+interface SiInfo {
+    unit: string;
+    factor: number;
+    precision: number;
+}
 
 interface Latest {
     metric: string;
     label: string;
     unit: string;
+    si: SiInfo;
     referenceRange: [number | null, number | null] | null;
     value: number;
     status: Status;
@@ -27,6 +35,7 @@ interface PageProps {
         metric: string;
         value: number;
         unit: string;
+        si: SiInfo;
         measuredAt: string;
         note: string | null;
     }[];
@@ -99,6 +108,7 @@ export default function Report({
     symptoms,
     dialysis,
 }: PageProps) {
+    const units = useUnits();
     return (
         <>
             <Head title="Report — Kidney-Love" />
@@ -174,14 +184,22 @@ export default function Report({
                             </tr>
                         </thead>
                         <tbody>
-                            {latest.map((m) => (
+                            {latest.map((m) => {
+                                const d = display(m.value, m.unit, m.si, units);
+                                const dRange = m.referenceRange
+                                    ? ([
+                                          displayBound(m.referenceRange[0], m.si, units),
+                                          displayBound(m.referenceRange[1], m.si, units),
+                                      ] as [number | null, number | null])
+                                    : null;
+                                return (
                                 <tr key={m.metric} className="border-b border-neutral-100">
                                     <td className="py-1.5 pr-4">{m.label}</td>
                                     <td className="py-1.5 pr-4 font-medium">
-                                        {m.value} {m.unit}
+                                        {d.value} {d.unit}
                                     </td>
                                     <td className="py-1.5 pr-4 text-neutral-500">
-                                        {refRange(m.referenceRange, m.unit)}
+                                        {refRange(dRange, d.unit)}
                                     </td>
                                     <td
                                         className={cn(
@@ -195,7 +213,8 @@ export default function Report({
                                         {m.measuredAt}
                                     </td>
                                 </tr>
-                            ))}
+                                );
+                            })}
                         </tbody>
                     </table>
                     </div>
@@ -338,7 +357,10 @@ export default function Report({
                                     <td className="py-1.5 pr-4">{h.measuredAt}</td>
                                     <td className="py-1.5 pr-4">{h.metric}</td>
                                     <td className="py-1.5 pr-4">
-                                        {h.value} {h.unit}
+                                        {(() => {
+                                            const d = display(h.value, h.unit, h.si, units);
+                                            return `${d.value} ${d.unit}`;
+                                        })()}
                                     </td>
                                     <td className="py-1.5 text-neutral-500">
                                         {h.note ?? ''}

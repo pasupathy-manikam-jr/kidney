@@ -1,7 +1,14 @@
 import { Head } from '@inertiajs/react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
+import { display, displayBound, useUnits } from '@/lib/units';
 import { dashboard } from '@/routes';
+
+interface SiInfo {
+    unit: string;
+    factor: number;
+    precision: number;
+}
 
 interface Metric {
     value: string;
@@ -9,6 +16,7 @@ interface Metric {
     unit: string;
     referenceRange: [number | null, number | null] | null;
     precision: number;
+    si: SiInfo;
 }
 
 interface Category {
@@ -64,6 +72,7 @@ export default function Reference({
     albuminuriaCategories,
     riskGrid,
 }: PageProps) {
+    const units = useUnits();
     return (
         <>
             <Head title="Reference" />
@@ -91,17 +100,26 @@ export default function Reference({
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {metrics.map((m) => (
-                                        <tr key={m.value} className="border-b last:border-0">
-                                            <td className="py-2 pr-4 font-medium">{m.label}</td>
-                                            <td className="py-2 pr-4 text-muted-foreground">
-                                                {m.unit}
-                                            </td>
-                                            <td className="py-2">
-                                                {refRange(m.referenceRange, m.unit)}
-                                            </td>
-                                        </tr>
-                                    ))}
+                                    {metrics.map((m) => {
+                                        const dispUnit = display(0, m.unit, m.si, units).unit;
+                                        const dispRange = m.referenceRange
+                                            ? ([
+                                                  displayBound(m.referenceRange[0], m.si, units),
+                                                  displayBound(m.referenceRange[1], m.si, units),
+                                              ] as [number | null, number | null])
+                                            : null;
+                                        return (
+                                            <tr key={m.value} className="border-b last:border-0">
+                                                <td className="py-2 pr-4 font-medium">{m.label}</td>
+                                                <td className="py-2 pr-4 text-muted-foreground">
+                                                    {dispUnit}
+                                                </td>
+                                                <td className="py-2">
+                                                    {refRange(dispRange, dispUnit)}
+                                                </td>
+                                            </tr>
+                                        );
+                                    })}
                                 </tbody>
                             </table>
                         </div>

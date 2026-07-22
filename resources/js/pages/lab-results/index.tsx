@@ -34,6 +34,13 @@ import {
 } from '@/components/ui/select';
 import InputError from '@/components/input-error';
 import { cn } from '@/lib/utils';
+import { display, displayBound, useUnits } from '@/lib/units';
+
+interface SiInfo {
+    unit: string;
+    factor: number;
+    precision: number;
+}
 
 interface MetricInfo {
     value: string;
@@ -41,6 +48,7 @@ interface MetricInfo {
     unit: string;
     referenceRange: [number | null, number | null] | null;
     precision: number;
+    si: SiInfo;
 }
 
 interface LabResultRow {
@@ -206,6 +214,7 @@ function EditReadingDialog({
 }
 
 export default function LabResultsIndex({ results, catalog, profile }: PageProps) {
+    const units = useUnits();
     const [editing, setEditing] = useState<LabResultRow | null>(null);
     const catalogMap = useMemo(
         () => Object.fromEntries(catalog.map((m) => [m.value, m])),
@@ -267,11 +276,16 @@ export default function LabResultsIndex({ results, catalog, profile }: PageProps
             )
             .map((r) => ({
                 date: r.measured_at,
-                value: Number(r.value),
+                value: display(
+                    Number(r.value),
+                    catalogMap[selectedMetric]?.unit ?? r.unit,
+                    catalogMap[selectedMetric]?.si,
+                    units,
+                ).value,
                 note: r.note,
             }))
             .reverse();
-    }, [results, selectedMetric, timeRange]);
+    }, [results, selectedMetric, timeRange, catalogMap, units]);
 
     const filteredResults = useMemo(() => {
         const q = search.trim().toLowerCase();
@@ -294,7 +308,17 @@ export default function LabResultsIndex({ results, catalog, profile }: PageProps
     }, [results, filterMetric, search, catalogMap]);
 
     const selectedInfo = catalogMap[selectedMetric];
-    const range = selectedInfo?.referenceRange ?? null;
+    const rawRange = selectedInfo?.referenceRange ?? null;
+    // Reference band + unit label in the user's display units.
+    const range: [number | null, number | null] | null = rawRange
+        ? [
+              displayBound(rawRange[0], selectedInfo?.si, units),
+              displayBound(rawRange[1], selectedInfo?.si, units),
+          ]
+        : null;
+    const selectedUnit =
+        selectedInfo &&
+        display(0, selectedInfo.unit, selectedInfo.si, units).unit;
 
     return (
         <>
@@ -480,7 +504,7 @@ export default function LabResultsIndex({ results, catalog, profile }: PageProps
                                             cursor={{ stroke: 'currentColor', strokeOpacity: 0.2 }}
                                             content={
                                                 <ChartTooltip
-                                                    unit={selectedInfo?.unit ?? ''}
+                                                    unit={selectedUnit ?? ''}
                                                     metricLabel={selectedInfo?.label ?? ''}
                                                 />
                                             }
@@ -521,9 +545,9 @@ export default function LabResultsIndex({ results, catalog, profile }: PageProps
                                         <>
                                             Shaded band = general reference range
                                             {range[0] !== null && range[1] !== null
-                                                ? ` (${range[0]}–${range[1]} ${selectedInfo?.unit})`
+                                                ? ` (${range[0]}–${range[1]} ${selectedUnit})`
                                                 : range[0] !== null
-                                                  ? ` (≥${range[0]} ${selectedInfo?.unit})`
+                                                  ? ` (≥${range[0]} ${selectedUnit})`
                                                   : ''}
                                             . Confirm with your care team.{' '}
                                         </>
@@ -623,7 +647,16 @@ export default function LabResultsIndex({ results, catalog, profile }: PageProps
                                                     {catalogMap[r.metric]?.label ?? r.metric}
                                                 </td>
                                                 <td className="py-2 pr-4">
-                                                    {r.value} {r.unit}
+                                                    {(() => {
+                                                        const info = catalogMap[r.metric];
+                                                        const d = display(
+                                                            Number(r.value),
+                                                            info?.unit ?? r.unit,
+                                                            info?.si,
+                                                            units,
+                                                        );
+                                                        return `${d.value} ${d.unit}`;
+                                                    })()}
                                                 </td>
                                                 <td className="py-2 pr-4 text-muted-foreground">
                                                     {r.note ?? ''}

@@ -38,6 +38,7 @@ class DashboardController extends Controller
                 'metric' => $metric->value,
                 'label' => $metric->label(),
                 'unit' => $metric->unit(),
+                'si' => $metric->si(),
                 'referenceRange' => $metric->referenceRange(),
                 'value' => $value,
                 'previousValue' => $previous ? (float) $previous->value : null,

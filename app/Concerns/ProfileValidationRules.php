@@ -21,6 +21,7 @@ trait ProfileValidationRules
             'sex' => ['nullable', 'in:male,female'],
             'date_of_birth' => ['nullable', 'date', 'before:today'],
             'dry_weight' => ['nullable', 'numeric', 'min:0', 'max:500'],
+            'units' => ['nullable', 'in:conventional,si'],
         ];
     }
 

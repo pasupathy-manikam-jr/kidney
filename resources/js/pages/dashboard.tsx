@@ -17,6 +17,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
+import { display, displayBound, useUnits } from '@/lib/units';
 import { dashboard } from '@/routes';
 
 type Status = 'in_range' | 'low' | 'high' | 'none' | 'empty';
@@ -25,6 +26,7 @@ interface Tile {
     metric: string;
     label: string;
     unit: string;
+    si: { unit: string; factor: number; precision: number };
     referenceRange: [number | null, number | null] | null;
     value: number | null;
     previousValue: number | null;
@@ -320,8 +322,25 @@ function Delta({ value, previous }: { value: number; previous: number | null }) 
 }
 
 function MetricTile({ tile }: { tile: Tile }) {
+    const units = useUnits();
     const s = STATUS_STYLE[tile.status];
     const hasData = tile.value !== null;
+
+    const dispValue =
+        tile.value !== null
+            ? display(tile.value, tile.unit, tile.si, units)
+            : null;
+    const dispPrev =
+        tile.previousValue !== null
+            ? display(tile.previousValue, tile.unit, tile.si, units).value
+            : null;
+    const dispRange: [number | null, number | null] | null = tile.referenceRange
+        ? [
+              displayBound(tile.referenceRange[0], tile.si, units),
+              displayBound(tile.referenceRange[1], tile.si, units),
+          ]
+        : null;
+    const dispUnit = display(0, tile.unit, tile.si, units).unit;
 
     return (
         <Card className={cn('gap-0 overflow-hidden transition-shadow hover:shadow-md', s.ring)}>
@@ -343,14 +362,14 @@ function MetricTile({ tile }: { tile: Tile }) {
                                         s.text,
                                     )}
                                 >
-                                    {tile.value}
+                                    {dispValue?.value}
                                 </span>
                                 <span className="text-xs text-muted-foreground">
-                                    {tile.unit}
+                                    {dispUnit}
                                 </span>
                             </div>
                             <div className="mt-1">
-                                <Delta value={tile.value!} previous={tile.previousValue} />
+                                <Delta value={dispValue!.value} previous={dispPrev} />
                             </div>
                         </div>
 
@@ -379,7 +398,7 @@ function MetricTile({ tile }: { tile: Tile }) {
             </CardContent>
 
             <CardFooter className="flex items-center justify-between border-t bg-muted/30 py-2 text-xs text-muted-foreground">
-                <span>{rangeLabel(tile.referenceRange, tile.unit)}</span>
+                <span>{rangeLabel(dispRange, dispUnit)}</span>
                 <span>{tile.measuredAt ?? '—'}</span>
             </CardFooter>
         </Card>

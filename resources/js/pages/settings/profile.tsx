@@ -131,9 +131,29 @@ export default function Profile({
                                     <InputError message={errors.dry_weight} />
                                 </div>
                             </div>
+                            <div className="grid gap-2">
+                                <Label htmlFor="units">Lab result units</Label>
+                                <select
+                                    id="units"
+                                    name="units"
+                                    defaultValue={
+                                        (auth.user as { units?: string | null }).units ??
+                                        'conventional'
+                                    }
+                                    className="h-9 rounded-md border border-input bg-transparent px-3 text-sm shadow-xs dark:bg-input/30 sm:max-w-xs"
+                                >
+                                    <option value="conventional">
+                                        Conventional (mg/dL, mEq/L)
+                                    </option>
+                                    <option value="si">SI (mmol/L, µmol/L)</option>
+                                </select>
+                                <InputError message={errors.units} />
+                            </div>
                             <p className="-mt-2 text-xs text-muted-foreground">
                                 Sex and date of birth pre-fill the eGFR calculator. Dry
-                                weight is your target post-dialysis weight.
+                                weight is your target post-dialysis weight. Units change
+                                how lab values are displayed (creatinine, urea,
+                                phosphorus, albuminuria).
                             </p>
 
                             {mustVerifyEmail &&

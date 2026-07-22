@@ -78,6 +78,22 @@ enum LabMetric: string
     }
 
     /**
+     * SI-unit display info: [unit, factor (conventional × factor), precision].
+     * factor 1 with the same unit means the metric has no separate SI unit.
+     */
+    public function si(): array
+    {
+        return match ($this) {
+            self::Creatinine => ['unit' => 'µmol/L', 'factor' => 88.4, 'precision' => 0],
+            self::Bun => ['unit' => 'mmol/L', 'factor' => 0.357, 'precision' => 1], // as urea
+            self::Uacr => ['unit' => 'mg/mmol', 'factor' => 0.113, 'precision' => 1],
+            self::Potassium => ['unit' => 'mmol/L', 'factor' => 1.0, 'precision' => 1],
+            self::Phosphorus => ['unit' => 'mmol/L', 'factor' => 0.3229, 'precision' => 2],
+            default => ['unit' => $this->unit(), 'factor' => 1.0, 'precision' => $this->precision()],
+        };
+    }
+
+    /**
      * Classify a value against the general reference range.
      * Returns 'low' | 'in_range' | 'high' | 'none' (no range defined).
      */
@@ -111,6 +127,7 @@ enum LabMetric: string
             'unit' => $m->unit(),
             'referenceRange' => $m->referenceRange(),
             'precision' => $m->precision(),
+            'si' => $m->si(),
         ], self::cases());
     }
 }
