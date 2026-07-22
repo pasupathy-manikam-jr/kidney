@@ -4,6 +4,7 @@ use App\Enums\AlbuminuriaCategory;
 use App\Enums\GfrCategory;
 use App\Enums\LabMetric;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\IntakeEntryController;
 use App\Http\Controllers\LabResultController;
 use App\Http\Controllers\MedicationController;
 use App\Http\Controllers\ReportController;
@@ -27,6 +28,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('medications', [MedicationController::class, 'store'])->name('medications.store');
     Route::put('medications/{medication}', [MedicationController::class, 'update'])->name('medications.update');
     Route::delete('medications/{medication}', [MedicationController::class, 'destroy'])->name('medications.destroy');
+
+    Route::get('intake', [IntakeEntryController::class, 'index'])->name('intake.index');
+    Route::post('intake', [IntakeEntryController::class, 'store'])->name('intake.store');
+    Route::delete('intake/{intakeEntry}', [IntakeEntryController::class, 'destroy'])->name('intake.destroy');
 
     Route::get('report', [ReportController::class, 'index'])->name('report');
 

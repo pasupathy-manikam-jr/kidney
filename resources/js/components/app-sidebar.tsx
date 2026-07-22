@@ -1,5 +1,5 @@
 import { Link } from '@inertiajs/react';
-import { Activity, FileText, LayoutGrid, Pill, Table2 } from 'lucide-react';
+import { Activity, FileText, LayoutGrid, Pill, Table2, Utensils } from 'lucide-react';
 import AppLogo from '@/components/app-logo';
 import { NavMain } from '@/components/nav-main';
 import { NavUser } from '@/components/nav-user';
@@ -30,6 +30,11 @@ const mainNavItems: NavItem[] = [
         title: 'Medications',
         href: '/medications',
         icon: Pill,
+    },
+    {
+        title: 'Diet & Fluid',
+        href: '/intake',
+        icon: Utensils,
     },
     {
         title: 'Reference',

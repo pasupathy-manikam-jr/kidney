@@ -67,5 +67,26 @@ class DemoSeeder extends Seeder
         foreach ($meds as $med) {
             $user->medications()->create([...$med, 'active' => true]);
         }
+
+        // Fictional diet & fluid log for today and yesterday.
+        $user->intakeEntries()->delete();
+        $intake = [
+            ['category' => 'fluid', 'amount' => 250, 'unit' => 'mL', 'label' => 'Water', 'daysAgo' => 0],
+            ['category' => 'fluid', 'amount' => 200, 'unit' => 'mL', 'label' => 'Coffee', 'daysAgo' => 0],
+            ['category' => 'fluid', 'amount' => 300, 'unit' => 'mL', 'label' => 'Soup', 'daysAgo' => 0],
+            ['category' => 'sodium', 'amount' => 600, 'unit' => 'mg', 'label' => 'Lunch', 'daysAgo' => 0],
+            ['category' => 'potassium', 'amount' => 450, 'unit' => 'mg', 'label' => 'Banana', 'daysAgo' => 0],
+            ['category' => 'fluid', 'amount' => 900, 'unit' => 'mL', 'label' => 'Through the day', 'daysAgo' => 1],
+            ['category' => 'phosphorus', 'amount' => 300, 'unit' => 'mg', 'label' => 'Dairy', 'daysAgo' => 1],
+        ];
+        foreach ($intake as $e) {
+            $user->intakeEntries()->create([
+                'category' => $e['category'],
+                'amount' => $e['amount'],
+                'unit' => $e['unit'],
+                'label' => $e['label'],
+                'logged_on' => now()->subDays($e['daysAgo'])->toDateString(),
+            ]);
+        }
     }
 }
