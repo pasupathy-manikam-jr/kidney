@@ -13,6 +13,13 @@ import {
 import LabResultController from '@/actions/App/Http/Controllers/LabResultController';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+    Dialog,
+    DialogContent,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+} from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import {
@@ -70,7 +77,125 @@ function ChartTooltip({ active, label, payload, unit, metricLabel }: TooltipProp
     );
 }
 
+function EditReadingDialog({
+    reading,
+    catalog,
+    catalogMap,
+    onClose,
+}: {
+    reading: LabResultRow | null;
+    catalog: MetricInfo[];
+    catalogMap: Record<string, MetricInfo>;
+    onClose: () => void;
+}) {
+    const form = useForm({
+        metric: reading?.metric ?? '',
+        value: reading?.value ?? '',
+        measured_at: reading?.measured_at ?? today(),
+        note: reading?.note ?? '',
+    });
+
+    const submit = (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!reading) return;
+        form.put(LabResultController.update(reading.id).url, {
+            preserveScroll: true,
+            onSuccess: onClose,
+        });
+    };
+
+    return (
+        <Dialog open={!!reading} onOpenChange={(o) => !o && onClose()}>
+            <DialogContent>
+                <DialogHeader>
+                    <DialogTitle>Edit reading</DialogTitle>
+                </DialogHeader>
+                <form onSubmit={submit} className="flex flex-col gap-4">
+                    <div className="grid gap-2">
+                        <Label htmlFor="edit-metric">Metric</Label>
+                        <Select
+                            value={form.data.metric}
+                            onValueChange={(v) => form.setData('metric', v)}
+                        >
+                            <SelectTrigger id="edit-metric" className="w-full">
+                                <SelectValue placeholder="Select a metric" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                {catalog.map((m) => (
+                                    <SelectItem key={m.value} value={m.value}>
+                                        {m.label} ({m.unit})
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                        <InputError message={form.errors.metric} />
+                    </div>
+
+                    <div className="grid gap-2">
+                        <Label htmlFor="edit-value">
+                            Value{' '}
+                            {catalogMap[form.data.metric] && (
+                                <span className="text-muted-foreground">
+                                    ({catalogMap[form.data.metric].unit})
+                                </span>
+                            )}
+                        </Label>
+                        <Input
+                            id="edit-value"
+                            type="number"
+                            step="0.1"
+                            min="0"
+                            value={form.data.value}
+                            onChange={(e) => form.setData('value', e.target.value)}
+                            required
+                        />
+                        <InputError message={form.errors.value} />
+                    </div>
+
+                    <div className="grid gap-2">
+                        <Label htmlFor="edit-date">Date</Label>
+                        <Input
+                            id="edit-date"
+                            type="date"
+                            max={today()}
+                            value={form.data.measured_at}
+                            onChange={(e) => form.setData('measured_at', e.target.value)}
+                            required
+                        />
+                        <InputError message={form.errors.measured_at} />
+                    </div>
+
+                    <div className="grid gap-2">
+                        <Label htmlFor="edit-note">Note (optional)</Label>
+                        <Input
+                            id="edit-note"
+                            type="text"
+                            value={form.data.note}
+                            onChange={(e) => form.setData('note', e.target.value)}
+                        />
+                        <InputError message={form.errors.note} />
+                    </div>
+
+                    <DialogFooter>
+                        <Button
+                            type="button"
+                            variant="outline"
+                            onClick={onClose}
+                        >
+                            Cancel
+                        </Button>
+                        <Button type="submit" disabled={form.processing}>
+                            Save changes
+                        </Button>
+                    </DialogFooter>
+                </form>
+            </DialogContent>
+        </Dialog>
+    );
+}
+
 export default function LabResultsIndex({ results, catalog }: PageProps) {
+    const [editing, setEditing] = useState<LabResultRow | null>(null);
     const catalogMap = useMemo(
         () => Object.fromEntries(catalog.map((m) => [m.value, m])),
         [catalog],
@@ -336,12 +461,20 @@ export default function LabResultsIndex({ results, catalog }: PageProps) {
                                                     {r.note ?? ''}
                                                 </td>
                                                 <td className="py-2 text-right">
-                                                    <button
-                                                        onClick={() => remove(r.id)}
-                                                        className="text-xs text-destructive hover:underline"
-                                                    >
-                                                        Delete
-                                                    </button>
+                                                    <div className="flex justify-end gap-3">
+                                                        <button
+                                                            onClick={() => setEditing(r)}
+                                                            className="text-xs text-muted-foreground hover:text-foreground hover:underline"
+                                                        >
+                                                            Edit
+                                                        </button>
+                                                        <button
+                                                            onClick={() => remove(r.id)}
+                                                            className="text-xs text-destructive hover:underline"
+                                                        >
+                                                            Delete
+                                                        </button>
+                                                    </div>
                                                 </td>
                                             </tr>
                                         ))}
@@ -352,6 +485,14 @@ export default function LabResultsIndex({ results, catalog }: PageProps) {
                     </CardContent>
                 </Card>
             </div>
+
+            <EditReadingDialog
+                key={editing?.id ?? 'none'}
+                reading={editing}
+                catalog={catalog}
+                catalogMap={catalogMap}
+                onClose={() => setEditing(null)}
+            />
         </>
     );
 }

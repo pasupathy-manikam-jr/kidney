@@ -46,6 +46,27 @@ class LabResultController extends Controller
         return back()->with('status', 'Lab result saved.');
     }
 
+    public function update(Request $request, LabResult $labResult): RedirectResponse
+    {
+        abort_unless($labResult->user_id === Auth::id(), 403);
+
+        $validated = $request->validate([
+            'metric' => ['required', Rule::enum(LabMetric::class)],
+            'value' => ['required', 'numeric', 'min:0', 'max:999999'],
+            'measured_at' => ['required', 'date', 'before_or_equal:today'],
+            'note' => ['nullable', 'string', 'max:1000'],
+        ]);
+
+        $metric = LabMetric::from($validated['metric']);
+
+        $labResult->update([
+            ...$validated,
+            'unit' => $metric->unit(), // authoritative unit from catalog, not client
+        ]);
+
+        return back()->with('status', 'Lab result updated.');
+    }
+
     public function destroy(Request $request, LabResult $labResult): RedirectResponse
     {
         abort_unless($labResult->user_id === Auth::id(), 403);

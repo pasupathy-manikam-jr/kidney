@@ -48,6 +48,51 @@ test('a future measured_at date is rejected', function () {
         ->assertSessionHasErrors('measured_at');
 });
 
+test('a user can update their own lab result', function () {
+    $user = User::factory()->create();
+    $result = $user->labResults()->create([
+        'metric' => 'potassium',
+        'value' => 4.0,
+        'unit' => 'mEq/L',
+        'measured_at' => '2026-06-01',
+    ]);
+
+    $this->actingAs($user)
+        ->put("/lab-results/{$result->id}", [
+            'metric' => 'creatinine',
+            'value' => 1.2,
+            'measured_at' => '2026-06-15',
+            'unit' => 'BOGUS',
+        ])
+        ->assertRedirect();
+
+    $result->refresh();
+    expect($result->metric->value)->toBe('creatinine')
+        ->and((float) $result->value)->toBe(1.2)
+        ->and($result->unit)->toBe('mg/dL'); // from catalog, not client
+});
+
+test('a user cannot update another users lab result', function () {
+    $owner = User::factory()->create();
+    $other = User::factory()->create();
+    $result = $owner->labResults()->create([
+        'metric' => 'creatinine',
+        'value' => 1.1,
+        'unit' => 'mg/dL',
+        'measured_at' => '2026-07-01',
+    ]);
+
+    $this->actingAs($other)
+        ->put("/lab-results/{$result->id}", [
+            'metric' => 'creatinine',
+            'value' => 9.9,
+            'measured_at' => '2026-07-01',
+        ])
+        ->assertForbidden();
+
+    expect((float) $result->fresh()->value)->toBe(1.1);
+});
+
 test('a user cannot delete another users lab result', function () {
     $owner = User::factory()->create();
     $other = User::factory()->create();
