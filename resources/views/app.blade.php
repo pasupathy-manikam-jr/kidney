@@ -17,6 +17,13 @@
                         document.documentElement.classList.add('dark');
                     }
                 }
+
+                // Colour theme + text size (no flash).
+                const cookie = (n) => (document.cookie.match('(^|;)\\s*' + n + '\\s*=\\s*([^;]+)') || [])[2];
+                const theme = cookie('theme');
+                if (theme && theme !== 'default') document.documentElement.dataset.theme = theme;
+                const text = cookie('text');
+                if (text && text !== 'normal') document.documentElement.dataset.text = text;
             })();
         </script>
 
