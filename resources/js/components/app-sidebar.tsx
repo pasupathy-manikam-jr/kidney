@@ -6,6 +6,7 @@ import {
     LayoutGrid,
     NotebookPen,
     Pill,
+    Siren,
     Table2,
     Utensils,
 } from 'lucide-react';
@@ -64,6 +65,11 @@ const mainNavItems: NavItem[] = [
         title: 'Report',
         href: '/report',
         icon: FileText,
+    },
+    {
+        title: 'Emergency',
+        href: '/emergency',
+        icon: Siren,
     },
 ];
 

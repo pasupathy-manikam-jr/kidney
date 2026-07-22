@@ -7,6 +7,7 @@ use App\Http\Controllers\CatheterController;
 use App\Http\Controllers\CatheterLogController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DialysisController;
+use App\Http\Controllers\EmergencyController;
 use App\Http\Controllers\IntakeEntryController;
 use App\Http\Controllers\IntakeTargetController;
 use App\Http\Controllers\LabResultController;
@@ -47,6 +48,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::put('catheter', [CatheterController::class, 'update'])->name('catheter.update');
     Route::post('catheter-logs', [CatheterLogController::class, 'store'])->name('catheter-logs.store');
     Route::delete('catheter-logs/{catheterLog}', [CatheterLogController::class, 'destroy'])->name('catheter-logs.destroy');
+
+    Route::get('emergency', [EmergencyController::class, 'index'])->name('emergency.index');
+    Route::put('emergency-contacts', [EmergencyController::class, 'update'])->name('emergency-contacts.update');
 
     Route::get('report', [ReportController::class, 'index'])->name('report');
 
