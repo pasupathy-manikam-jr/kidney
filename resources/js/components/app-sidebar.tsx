@@ -1,5 +1,5 @@
 import { Link } from '@inertiajs/react';
-import { Activity, LayoutGrid, Table2 } from 'lucide-react';
+import { Activity, FileText, LayoutGrid, Table2 } from 'lucide-react';
 import AppLogo from '@/components/app-logo';
 import { NavMain } from '@/components/nav-main';
 import { NavUser } from '@/components/nav-user';
@@ -30,6 +30,11 @@ const mainNavItems: NavItem[] = [
         title: 'Reference',
         href: '/reference',
         icon: Table2,
+    },
+    {
+        title: 'Report',
+        href: '/report',
+        icon: FileText,
     },
 ];
 
