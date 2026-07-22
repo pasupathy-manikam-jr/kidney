@@ -1,11 +1,13 @@
 import { Head, Link, usePage } from '@inertiajs/react';
 import {
     Activity,
+    FileText,
     HeartPulse,
-    LineChart,
     Menu,
+    NotebookPen,
+    Pill,
     ShieldCheck,
-    TrendingUp,
+    Utensils,
 } from 'lucide-react';
 import {
     Sheet,
@@ -21,22 +23,32 @@ const features = [
     {
         icon: Activity,
         title: 'Track key labs',
-        body: 'Log eGFR, creatinine, potassium, phosphorus, albuminuria, BP and more — each with its reference range.',
-    },
-    {
-        icon: TrendingUp,
-        title: 'See the trend',
-        body: 'Every metric gets a sparkline and history so you can spot direction over months, not guess from one number.',
+        body: 'Log eGFR, creatinine, potassium, phosphorus, albuminuria, BP and more — with trends, reference bands and a built-in eGFR calculator.',
     },
     {
         icon: ShieldCheck,
         title: 'KDIGO risk map',
-        body: 'Your latest eGFR and albuminuria place you on the standard GFR × albuminuria risk grid, colour-coded.',
+        body: 'Your latest eGFR and albuminuria place you on the standard GFR × albuminuria risk grid, colour-coded from low to very high.',
     },
     {
-        icon: LineChart,
-        title: 'Ready for visits',
-        body: 'Bring a clear picture to the nephrologist instead of a shoebox of paper lab reports.',
+        icon: Pill,
+        title: 'Medications & reminders',
+        body: 'Keep your medication list with dosages and get in-app reminders at the times you set.',
+    },
+    {
+        icon: Utensils,
+        title: 'Diet & fluid',
+        body: 'Track fluid, sodium, potassium and phosphorus against daily targets you can set yourself.',
+    },
+    {
+        icon: NotebookPen,
+        title: 'Symptom journal',
+        body: 'Note symptoms and severity over time so patterns are easy to share at appointments.',
+    },
+    {
+        icon: FileText,
+        title: 'One-tap report',
+        body: 'Generate a printable summary — labs, meds, diet, symptoms and risk — to hand to your care team.',
     },
 ];
 
@@ -162,8 +174,9 @@ export default function Welcome() {
                             Understand your kidney numbers over time
                         </h1>
                         <p className="max-w-xl text-lg text-muted-foreground">
-                            Log lab results, watch the trends, and see where you sit on
-                            the KDIGO risk map — all in one calm, private place.
+                            Track labs, medications, diet & fluid and symptoms — see
+                            your trends and KDIGO risk, and print a report for every
+                            appointment. All in one calm, private place.
                         </p>
                         <div className="flex flex-wrap items-center justify-center gap-3">
                             <Link
@@ -184,7 +197,7 @@ export default function Welcome() {
                     </section>
 
                     {/* Features */}
-                    <section className="grid gap-4 pb-16 sm:grid-cols-2">
+                    <section className="grid gap-4 pb-16 sm:grid-cols-2 lg:grid-cols-3">
                         {features.map((f) => (
                             <div
                                 key={f.title}
