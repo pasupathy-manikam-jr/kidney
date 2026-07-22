@@ -5,6 +5,7 @@ use App\Enums\GfrCategory;
 use App\Enums\LabMetric;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\LabResultController;
+use App\Http\Controllers\MedicationController;
 use App\Http\Controllers\ReportController;
 use App\Support\KdigoRisk;
 use Illuminate\Support\Facades\Route;
@@ -21,6 +22,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('lab-results', [LabResultController::class, 'store'])->name('lab-results.store');
     Route::put('lab-results/{labResult}', [LabResultController::class, 'update'])->name('lab-results.update');
     Route::delete('lab-results/{labResult}', [LabResultController::class, 'destroy'])->name('lab-results.destroy');
+
+    Route::get('medications', [MedicationController::class, 'index'])->name('medications.index');
+    Route::post('medications', [MedicationController::class, 'store'])->name('medications.store');
+    Route::put('medications/{medication}', [MedicationController::class, 'update'])->name('medications.update');
+    Route::delete('medications/{medication}', [MedicationController::class, 'destroy'])->name('medications.destroy');
 
     Route::get('report', [ReportController::class, 'index'])->name('report');
 

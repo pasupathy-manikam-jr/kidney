@@ -55,5 +55,17 @@ class DemoSeeder extends Seeder
                 ]);
             }
         }
+
+        // Fictional medication list for the walkthrough.
+        $user->medications()->delete();
+        $meds = [
+            ['name' => 'Amlodipine', 'dosage' => '5 mg', 'frequency' => 'Once daily', 'time_of_day' => 'Morning', 'notes' => 'For blood pressure'],
+            ['name' => 'Furosemide', 'dosage' => '20 mg', 'frequency' => 'Once daily', 'time_of_day' => 'Morning', 'notes' => 'Diuretic'],
+            ['name' => 'Sevelamer', 'dosage' => '800 mg', 'frequency' => 'Three times daily', 'time_of_day' => 'With meals', 'notes' => 'Phosphate binder'],
+            ['name' => 'Atorvastatin', 'dosage' => '20 mg', 'frequency' => 'Once daily', 'time_of_day' => 'Evening', 'notes' => null],
+        ];
+        foreach ($meds as $med) {
+            $user->medications()->create([...$med, 'active' => true]);
+        }
     }
 }
