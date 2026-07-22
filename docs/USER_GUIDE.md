@@ -173,5 +173,20 @@ Kidney-Love defaults to a calm dark theme. Switch between light, dark or system 
 
 ---
 
+## 12. Sources & further reading
+
+General guidance in the app (reference ranges, KDIGO categories, dialysis colour
+cues and the ~6-month transfer-set interval) draws on the sources below. They are
+educational references, not personal medical advice — your care team sets your
+own targets and schedule.
+
+- [Home Dialysis Central — The Rainbow of PD Effluent Possibilities](https://homedialysis.org/news-and-research/blog/581-the-rainbow-of-peritoneal-dialysis-effluent-possibilities)
+- [Dossin et al. — When the colour of PD effluent can be used as a diagnostic tool (Seminars in Dialysis, 2019)](https://pubmed.ncbi.nlm.nih.gov/30032485/)
+- [Geeky Medics — Peritoneal Dialysis / Tenckhoff catheter](https://geekymedics.com/peritoneal-dialysis/)
+- [Memorial Sloan Kettering — About Your Tenckhoff Catheter](https://www.mskcc.org/cancer-care/patient-education/caring-your-tenckhoff-catheter)
+- [KDIGO — Clinical Practice Guidelines](https://kdigo.org/guidelines/)
+
+---
+
 *Kidney-Love is built to support people managing kidney health — it complements,
 but never replaces, professional medical care.*
