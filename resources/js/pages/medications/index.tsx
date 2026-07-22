@@ -8,6 +8,7 @@ import {
     setRemindersEnabled,
     useMedReminders,
 } from '@/hooks/use-med-reminders';
+import { usePushNotifications } from '@/hooks/use-push-notifications';
 import { ConfirmDelete } from '@/components/confirm-delete';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -33,10 +34,15 @@ interface PageProps {
 }
 
 export default function MedicationsIndex({ medications }: PageProps) {
+    // In-page timer still fires while the app is open (belt and braces).
     useMedReminders(medications);
+    const push = usePushNotifications();
     const [remindersOn, setRemindersOn] = useState(
         typeof window !== 'undefined' && remindersEnabled(),
     );
+
+    // Reminders count as "on" if either the local flag or a push subscription exists.
+    const on = remindersOn || push.subscribed;
 
     const enableReminders = async () => {
         if (!('Notification' in window)) {
@@ -44,18 +50,25 @@ export default function MedicationsIndex({ medications }: PageProps) {
             return;
         }
         const perm = await Notification.requestPermission();
-        if (perm === 'granted') {
-            setRemindersEnabled(true);
-            setRemindersOn(true);
-            toast.success('Reminders on. Notifications fire while the app is open.');
-        } else {
+        if (perm !== 'granted') {
             toast.error('Notification permission denied.');
+            return;
+        }
+        setRemindersEnabled(true);
+        setRemindersOn(true);
+
+        if (push.supported) {
+            await push.subscribe();
+            toast.success('Reminders on — they arrive even when the app is closed.');
+        } else {
+            toast.success('Reminders on. Notifications fire while the app is open.');
         }
     };
 
-    const disableReminders = () => {
+    const disableReminders = async () => {
         setRemindersEnabled(false);
         setRemindersOn(false);
+        if (push.subscribed) await push.unsubscribe();
         toast.success('Reminders off.');
     };
 
@@ -184,7 +197,7 @@ export default function MedicationsIndex({ medications }: PageProps) {
                     <Card>
                         <CardHeader className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                             <CardTitle>Your medications</CardTitle>
-                            {remindersOn ? (
+                            {on ? (
                                 <Button
                                     type="button"
                                     variant="outline"

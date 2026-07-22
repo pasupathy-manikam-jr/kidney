@@ -13,6 +13,7 @@ use App\Http\Controllers\IntakeEntryController;
 use App\Http\Controllers\IntakeTargetController;
 use App\Http\Controllers\LabResultController;
 use App\Http\Controllers\MedicationController;
+use App\Http\Controllers\PushSubscriptionController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\SymptomEntryController;
 use App\Support\KdigoRisk;
@@ -54,6 +55,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('appointments', [AppointmentController::class, 'store'])->name('appointments.store');
     Route::put('appointments/{appointment}', [AppointmentController::class, 'update'])->name('appointments.update');
     Route::delete('appointments/{appointment}', [AppointmentController::class, 'destroy'])->name('appointments.destroy');
+
+    Route::post('push-subscriptions', [PushSubscriptionController::class, 'store'])->name('push-subscriptions.store');
+    Route::delete('push-subscriptions', [PushSubscriptionController::class, 'destroy'])->name('push-subscriptions.destroy');
 
     Route::get('emergency', [EmergencyController::class, 'index'])->name('emergency.index');
     Route::put('emergency-contacts', [EmergencyController::class, 'update'])->name('emergency-contacts.update');

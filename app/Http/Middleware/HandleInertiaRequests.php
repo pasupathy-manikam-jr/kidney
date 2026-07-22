@@ -46,6 +46,7 @@ class HandleInertiaRequests extends Middleware
                 'error' => $request->session()->get('error'),
                 'alert' => $request->session()->get('alert'),
             ],
+            'vapidPublicKey' => config('services.webpush.public_key'),
             'sidebarOpen' => ! $request->hasCookie('sidebar_state') || $request->cookie('sidebar_state') === 'true',
         ];
     }

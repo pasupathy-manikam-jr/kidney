@@ -3,6 +3,7 @@
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="csrf-token" content="{{ csrf_token() }}">
 
         {{-- Inline script to detect system dark mode preference and apply it immediately --}}
         <script>
@@ -33,6 +34,8 @@
         <link rel="icon" href="/favicon.ico?v=2" sizes="any">
         <link rel="icon" href="/favicon.svg?v=2" type="image/svg+xml">
         <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=2">
+        <link rel="manifest" href="/manifest.webmanifest">
+        <meta name="theme-color" content="#0d9488">
 
         @fonts
 

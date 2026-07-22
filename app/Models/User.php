@@ -121,6 +121,14 @@ class User extends Authenticatable implements PasskeyUser
     }
 
     /**
+     * @return HasMany<PushSubscription, $this>
+     */
+    public function pushSubscriptions(): HasMany
+    {
+        return $this->hasMany(PushSubscription::class);
+    }
+
+    /**
      * @return HasMany<CatheterLog, $this>
      */
     public function catheterLogs(): HasMany
