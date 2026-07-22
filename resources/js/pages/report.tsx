@@ -69,7 +69,7 @@ export default function Report({
         <>
             <Head title="Report — KidneyLove" />
 
-            <div className="mx-auto max-w-3xl bg-white p-8 text-neutral-900 print:p-0">
+            <div className="mx-auto max-w-3xl bg-white p-4 text-neutral-900 sm:p-8 print:p-0">
                 {/* Toolbar (hidden in print) */}
                 <div className="mb-6 flex items-center justify-between print:hidden">
                     <Link
@@ -95,7 +95,7 @@ export default function Report({
                 </header>
 
                 {/* Summary */}
-                <section className="mb-6 grid grid-cols-3 gap-3">
+                <section className="mb-6 grid grid-cols-1 gap-3 sm:grid-cols-3 print:grid-cols-3">
                     <div className="rounded-lg border border-neutral-200 p-3">
                         <div className="text-xs text-neutral-500">GFR category</div>
                         <div className="text-lg font-semibold">{gfr?.code ?? '—'}</div>
@@ -128,7 +128,8 @@ export default function Report({
                 {/* Latest values */}
                 <section className="mb-6">
                     <h2 className="mb-2 font-semibold">Latest values</h2>
-                    <table className="w-full text-sm">
+                    <div className="overflow-x-auto">
+                    <table className="w-full min-w-[520px] text-sm print:min-w-0">
                         <thead>
                             <tr className="border-b border-neutral-200 text-left text-neutral-500">
                                 <th className="py-1.5 pr-4 font-medium">Metric</th>
@@ -163,12 +164,14 @@ export default function Report({
                             ))}
                         </tbody>
                     </table>
+                    </div>
                 </section>
 
                 {/* Full history */}
                 <section className="mb-6">
                     <h2 className="mb-2 font-semibold">Full history</h2>
-                    <table className="w-full text-sm">
+                    <div className="overflow-x-auto">
+                    <table className="w-full min-w-[480px] text-sm print:min-w-0">
                         <thead>
                             <tr className="border-b border-neutral-200 text-left text-neutral-500">
                                 <th className="py-1.5 pr-4 font-medium">Date</th>
@@ -192,6 +195,7 @@ export default function Report({
                             ))}
                         </tbody>
                     </table>
+                    </div>
                 </section>
 
                 <footer className="border-t border-neutral-200 pt-3 text-xs text-neutral-500">
