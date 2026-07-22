@@ -64,19 +64,25 @@ function today(): string {
 interface TooltipProps {
     active?: boolean;
     label?: string | number;
-    payload?: { value: number }[];
+    payload?: { value: number; payload?: { note?: string | null } }[];
     unit: string;
     metricLabel: string;
 }
 
 function ChartTooltip({ active, label, payload, unit, metricLabel }: TooltipProps) {
     if (!active || !payload?.length) return null;
+    const note = payload[0].payload?.note;
     return (
-        <div className="rounded-md border border-border bg-popover px-3 py-2 text-xs text-popover-foreground shadow-md">
+        <div className="max-w-56 rounded-md border border-border bg-popover px-3 py-2 text-xs text-popover-foreground shadow-md">
             <div className="mb-0.5 text-muted-foreground">{label}</div>
             <div className="font-medium">
                 {metricLabel}: {payload[0].value} {unit}
             </div>
+            {note && (
+                <div className="mt-1 border-t border-border pt-1 text-muted-foreground">
+                    📝 {note}
+                </div>
+            )}
         </div>
     );
 }
@@ -261,6 +267,7 @@ export default function LabResultsIndex({ results, catalog }: PageProps) {
             .map((r) => ({
                 date: r.measured_at,
                 value: Number(r.value),
+                note: r.note,
             }))
             .reverse();
     }, [results, selectedMetric, timeRange]);
@@ -475,20 +482,44 @@ export default function LabResultsIndex({ results, catalog }: PageProps) {
                                             stroke="currentColor"
                                             className="text-primary"
                                             strokeWidth={2}
-                                            dot={{ r: 3 }}
+                                            dot={(props) => {
+                                                const { cx, cy, payload, index } = props;
+                                                const hasNote = !!payload?.note;
+                                                return (
+                                                    <circle
+                                                        key={index}
+                                                        cx={cx}
+                                                        cy={cy}
+                                                        r={hasNote ? 5 : 3}
+                                                        className="text-primary"
+                                                        fill={
+                                                            hasNote
+                                                                ? 'currentColor'
+                                                                : 'var(--background)'
+                                                        }
+                                                        stroke="currentColor"
+                                                        strokeWidth={2}
+                                                    />
+                                                );
+                                            }}
                                         />
                                     </LineChart>
                                 </ResponsiveContainer>
                             )}
-                            {range && (
+                            {chartData.length > 0 && (
                                 <p className="mt-2 text-xs text-muted-foreground">
-                                    Shaded band = general reference range
-                                    {range[0] !== null && range[1] !== null
-                                        ? ` (${range[0]}–${range[1]} ${selectedInfo?.unit})`
-                                        : range[0] !== null
-                                          ? ` (≥${range[0]} ${selectedInfo?.unit})`
-                                          : ''}
-                                    . Confirm with your care team.
+                                    {range && (
+                                        <>
+                                            Shaded band = general reference range
+                                            {range[0] !== null && range[1] !== null
+                                                ? ` (${range[0]}–${range[1]} ${selectedInfo?.unit})`
+                                                : range[0] !== null
+                                                  ? ` (≥${range[0]} ${selectedInfo?.unit})`
+                                                  : ''}
+                                            . Confirm with your care team.{' '}
+                                        </>
+                                    )}
+                                    Filled dots have a note — hover to read it.
                                 </p>
                             )}
                         </CardContent>
