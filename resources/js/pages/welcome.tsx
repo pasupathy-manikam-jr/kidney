@@ -59,14 +59,14 @@ export default function Welcome() {
         <>
             <Head title="Kidney-Love — track your kidney health" />
 
-            <div className="min-h-screen bg-gradient-to-b from-teal-50 via-background to-background text-foreground dark:from-teal-950/30">
+            <div className="min-h-screen bg-gradient-to-b from-primary/5 via-background to-background text-foreground dark:from-primary/10">
                 {/* Nav */}
                 <header className="mx-auto flex max-w-5xl items-center justify-between gap-3 px-4 py-4 sm:px-6 sm:py-5">
                     <Link
                         href={home()}
                         className="flex shrink-0 items-center gap-2 font-semibold"
                     >
-                        <span className="flex size-8 items-center justify-center rounded-lg bg-teal-600 text-white">
+                        <span className="flex size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
                             <HeartPulse className="size-5" />
                         </span>
                         Kidney-Love
@@ -82,7 +82,7 @@ export default function Welcome() {
                         {auth.user ? (
                             <Link
                                 href={dashboard()}
-                                className="rounded-md bg-teal-600 px-4 py-2 text-sm font-medium whitespace-nowrap text-white transition hover:bg-teal-700"
+                                className="rounded-md bg-primary px-4 py-2 text-sm font-medium whitespace-nowrap text-white transition hover:bg-primary/90"
                             >
                                 Dashboard
                             </Link>
@@ -96,7 +96,7 @@ export default function Welcome() {
                                 </Link>
                                 <Link
                                     href={register()}
-                                    className="rounded-md bg-teal-600 px-4 py-2 text-sm font-medium whitespace-nowrap text-white transition hover:bg-teal-700"
+                                    className="rounded-md bg-primary px-4 py-2 text-sm font-medium whitespace-nowrap text-white transition hover:bg-primary/90"
                                 >
                                     Get started
                                 </Link>
@@ -115,7 +115,7 @@ export default function Welcome() {
                         <SheetContent side="right" className="w-72">
                             <SheetHeader>
                                 <SheetTitle className="flex items-center gap-2">
-                                    <span className="flex size-7 items-center justify-center rounded-lg bg-teal-600 text-white">
+                                    <span className="flex size-7 items-center justify-center rounded-lg bg-primary text-primary-foreground">
                                         <HeartPulse className="size-4" />
                                     </span>
                                     Kidney-Love
@@ -134,7 +134,7 @@ export default function Welcome() {
                                     <SheetClose asChild>
                                         <Link
                                             href={dashboard()}
-                                            className="mt-1 rounded-md bg-teal-600 px-3 py-2.5 text-center text-sm font-medium text-white transition hover:bg-teal-700"
+                                            className="mt-1 rounded-md bg-primary px-3 py-2.5 text-center text-sm font-medium text-white transition hover:bg-primary/90"
                                         >
                                             Dashboard
                                         </Link>
@@ -152,7 +152,7 @@ export default function Welcome() {
                                         <SheetClose asChild>
                                             <Link
                                                 href={register()}
-                                                className="mt-1 rounded-md bg-teal-600 px-3 py-2.5 text-center text-sm font-medium text-white transition hover:bg-teal-700"
+                                                className="mt-1 rounded-md bg-primary px-3 py-2.5 text-center text-sm font-medium text-white transition hover:bg-primary/90"
                                             >
                                                 Get started
                                             </Link>
@@ -167,7 +167,7 @@ export default function Welcome() {
                 {/* Hero */}
                 <main className="mx-auto max-w-5xl px-6">
                     <section className="flex flex-col items-center gap-6 py-16 text-center sm:py-24">
-                        <span className="inline-flex items-center gap-2 rounded-full border border-teal-500/30 bg-teal-500/10 px-3 py-1 text-xs font-medium text-teal-700 dark:text-teal-300">
+                        <span className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-3 py-1 text-xs font-medium text-primary">
                             <HeartPulse className="size-3.5" /> Kidney health, tracked simply
                         </span>
                         <h1 className="max-w-2xl text-4xl font-bold tracking-tight sm:text-5xl">
@@ -181,7 +181,7 @@ export default function Welcome() {
                         <div className="flex flex-wrap items-center justify-center gap-3">
                             <Link
                                 href={auth.user ? dashboard() : register()}
-                                className="rounded-lg bg-teal-600 px-6 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-teal-700"
+                                className="rounded-lg bg-primary px-6 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-primary/90"
                             >
                                 {auth.user ? 'Open dashboard' : 'Start tracking free'}
                             </Link>
@@ -203,7 +203,7 @@ export default function Welcome() {
                                 key={f.title}
                                 className="rounded-xl border border-border bg-card p-6 transition hover:shadow-md"
                             >
-                                <span className="flex size-10 items-center justify-center rounded-lg bg-teal-600/10 text-teal-600 dark:text-teal-400">
+                                <span className="flex size-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
                                     <f.icon className="size-5" />
                                 </span>
                                 <h3 className="mt-4 font-semibold">{f.title}</h3>
@@ -228,7 +228,7 @@ export default function Welcome() {
                     Built with care for people managing kidney health. ·{' '}
                     <Link
                         href={guide()}
-                        className="font-medium text-teal-600 hover:underline dark:text-teal-400"
+                        className="font-medium text-primary hover:underline"
                     >
                         Read the user guide
                     </Link>

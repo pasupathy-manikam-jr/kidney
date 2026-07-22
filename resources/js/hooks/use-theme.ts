@@ -60,6 +60,26 @@ export function initializeThemePrefs(): void {
     apply();
 }
 
+/**
+ * When logged in, the account's saved preference is the source of truth.
+ * Mirror it into local state + storage so it wins over any stale local value.
+ */
+export function syncThemeFromAccount(theme?: string | null, text?: string | null): void {
+    if (typeof window === 'undefined') return;
+    if (theme) {
+        currentTheme = theme as ColorTheme;
+        localStorage.setItem('theme', currentTheme);
+        setCookie('theme', currentTheme);
+    }
+    if (text) {
+        currentText = text as TextSize;
+        localStorage.setItem('text', currentText);
+        setCookie('text', currentText);
+    }
+    apply();
+    notify();
+}
+
 export function useThemePrefs() {
     const theme = useSyncExternalStore(
         (cb) => {
@@ -78,12 +98,29 @@ export function useThemePrefs() {
         () => 'normal' as TextSize,
     );
 
+    const persist = () => {
+        const csrf = document
+            .querySelector('meta[name="csrf-token"]')
+            ?.getAttribute('content');
+        if (!csrf) return; // guest (landing) — local only
+        fetch('/appearance-prefs', {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': csrf,
+                'X-Requested-With': 'XMLHttpRequest',
+            },
+            body: JSON.stringify({ theme: currentTheme, text_size: currentText }),
+        }).catch(() => {});
+    };
+
     const setTheme = (t: ColorTheme) => {
         currentTheme = t;
         localStorage.setItem('theme', t);
         setCookie('theme', t);
         apply();
         notify();
+        persist();
     };
     const setText = (t: TextSize) => {
         currentText = t;
@@ -91,6 +128,7 @@ export function useThemePrefs() {
         setCookie('text', t);
         apply();
         notify();
+        persist();
     };
 
     return { theme, text, setTheme, setText } as const;

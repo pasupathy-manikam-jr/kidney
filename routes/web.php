@@ -68,6 +68,8 @@ Route::middleware(['auth', 'verified', \App\Http\Middleware\ResolveActivePatient
     Route::put('appointments/{appointment}', [AppointmentController::class, 'update'])->name('appointments.update');
     Route::delete('appointments/{appointment}', [AppointmentController::class, 'destroy'])->name('appointments.destroy');
 
+    Route::put('appearance-prefs', [\App\Http\Controllers\AppearancePrefController::class, 'update'])->name('appearance-prefs.update');
+
     Route::post('push-subscriptions', [PushSubscriptionController::class, 'store'])->name('push-subscriptions.store');
     Route::delete('push-subscriptions', [PushSubscriptionController::class, 'destroy'])->name('push-subscriptions.destroy');
 
