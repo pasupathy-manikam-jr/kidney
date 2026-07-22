@@ -6,12 +6,13 @@ interface FlashProps {
     flash?: {
         success?: string | null;
         error?: string | null;
+        alert?: string | null;
     };
     [key: string]: unknown;
 }
 
 /**
- * Surface Laravel flash messages (session 'status' / 'error') as toasts.
+ * Surface Laravel flash messages (session 'status' / 'error' / 'alert') as toasts.
  */
 export function useFlashToasts(): void {
     const { flash } = usePage<FlashProps>().props;
@@ -23,5 +24,9 @@ export function useFlashToasts(): void {
         if (flash?.error) {
             toast.error(flash.error);
         }
-    }, [flash?.success, flash?.error]);
+        if (flash?.alert) {
+            // Critical health alert — stays until dismissed.
+            toast.warning(flash.alert, { duration: Infinity, closeButton: true });
+        }
+    }, [flash?.success, flash?.error, flash?.alert]);
 }

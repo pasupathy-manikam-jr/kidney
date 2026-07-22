@@ -48,6 +48,10 @@ class LabResultController extends Controller
             'unit' => $metric->unit(), // authoritative unit from catalog, not client
         ]);
 
+        if ($alert = $metric->criticalMessage((float) $validated['value'])) {
+            return back()->with('status', 'Lab result saved.')->with('alert', $alert);
+        }
+
         return back()->with('status', 'Lab result saved.');
     }
 
@@ -68,6 +72,10 @@ class LabResultController extends Controller
             ...$validated,
             'unit' => $metric->unit(), // authoritative unit from catalog, not client
         ]);
+
+        if ($alert = $metric->criticalMessage((float) $validated['value'])) {
+            return back()->with('status', 'Lab result updated.')->with('alert', $alert);
+        }
 
         return back()->with('status', 'Lab result updated.');
     }

@@ -94,6 +94,49 @@ enum LabMetric: string
     }
 
     /**
+     * Critical thresholds [low, high] that warrant prompt medical attention.
+     * General adult danger cut-offs — NOT a diagnosis. null = none defined.
+     */
+    public function criticalRange(): ?array
+    {
+        return match ($this) {
+            self::Potassium => [3.0, 6.0],     // mEq/L: severe hypo/hyperkalaemia
+            self::Egfr => [15, null],          // < 15 = kidney failure (G5)
+            self::SystolicBp => [null, 180],   // hypertensive range
+            self::DiastolicBp => [null, 120],
+            self::Phosphorus => [null, 7.0],   // severe hyperphosphataemia
+            default => null,
+        };
+    }
+
+    /** True when the value crosses a critical threshold. */
+    public function isCritical(float $value): bool
+    {
+        $range = $this->criticalRange();
+        if ($range === null) {
+            return false;
+        }
+
+        [$low, $high] = $range;
+
+        return ($low !== null && $value < $low)
+            || ($high !== null && $value > $high);
+    }
+
+    public function criticalMessage(float $value): ?string
+    {
+        if (! $this->isCritical($value)) {
+            return null;
+        }
+
+        [$low] = $this->criticalRange();
+        $dir = ($low !== null && $value < $low) ? 'low' : 'high';
+
+        return "{$this->label()} of {$value} {$this->unit()} is very {$dir}. "
+            .'If this is a new or unexpected result, contact your care team promptly.';
+    }
+
+    /**
      * Classify a value against the general reference range.
      * Returns 'low' | 'in_range' | 'high' | 'none' (no range defined).
      */
