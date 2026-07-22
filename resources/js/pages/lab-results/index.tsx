@@ -55,6 +55,7 @@ interface LabResultRow {
 interface PageProps {
     results: LabResultRow[];
     catalog: MetricInfo[];
+    profile: { age: number | null; sex: string | null };
 }
 
 function today(): string {
@@ -204,7 +205,7 @@ function EditReadingDialog({
     );
 }
 
-export default function LabResultsIndex({ results, catalog }: PageProps) {
+export default function LabResultsIndex({ results, catalog, profile }: PageProps) {
     const [editing, setEditing] = useState<LabResultRow | null>(null);
     const catalogMap = useMemo(
         () => Object.fromEntries(catalog.map((m) => [m.value, m])),
@@ -313,6 +314,8 @@ export default function LabResultsIndex({ results, catalog }: PageProps) {
                         <CardHeader className="flex flex-row items-center justify-between gap-2">
                             <CardTitle>Add a reading</CardTitle>
                             <EgfrCalculator
+                                defaultAge={profile.age}
+                                defaultSex={profile.sex}
                                 onUse={(egfr) => {
                                     form.setData('metric', 'egfr');
                                     form.setData('value', String(egfr));

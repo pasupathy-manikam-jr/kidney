@@ -43,13 +43,19 @@ function ckdEpi2021(scr: number, age: number, sex: Sex): number {
 
 export function EgfrCalculator({
     onUse,
+    defaultAge,
+    defaultSex,
 }: {
     onUse: (egfr: number) => void;
+    defaultAge?: number | null;
+    defaultSex?: string | null;
 }) {
     const [open, setOpen] = useState(false);
     const [scr, setScr] = useState('');
-    const [age, setAge] = useState('');
-    const [sex, setSex] = useState<Sex>('male');
+    const [age, setAge] = useState(defaultAge ? String(defaultAge) : '');
+    const [sex, setSex] = useState<Sex>(
+        defaultSex === 'female' ? 'female' : 'male',
+    );
 
     const scrNum = parseFloat(scr);
     const ageNum = parseFloat(age);

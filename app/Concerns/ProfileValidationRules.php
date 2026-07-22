@@ -18,6 +18,9 @@ trait ProfileValidationRules
         return [
             'name' => $this->nameRules(),
             'email' => $this->emailRules($userId),
+            'sex' => ['nullable', 'in:male,female'],
+            'date_of_birth' => ['nullable', 'date', 'before:today'],
+            'dry_weight' => ['nullable', 'numeric', 'min:0', 'max:500'],
         ];
     }
 

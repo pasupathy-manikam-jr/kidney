@@ -34,7 +34,7 @@ export default function Profile({
                 <Heading
                     variant="small"
                     title="Profile"
-                    description="Update your name and email address"
+                    description="Update your name, email and health details"
                 />
 
                 <Form
@@ -84,6 +84,58 @@ export default function Profile({
                                     message={errors.email}
                                 />
                             </div>
+
+                            <div className="grid gap-4 sm:grid-cols-3">
+                                <div className="grid gap-2">
+                                    <Label htmlFor="sex">Sex</Label>
+                                    <select
+                                        id="sex"
+                                        name="sex"
+                                        defaultValue={
+                                            (auth.user as { sex?: string | null }).sex ?? ''
+                                        }
+                                        className="h-9 rounded-md border border-input bg-transparent px-3 text-sm shadow-xs dark:bg-input/30"
+                                    >
+                                        <option value="">Prefer not to say</option>
+                                        <option value="male">Male</option>
+                                        <option value="female">Female</option>
+                                    </select>
+                                    <InputError message={errors.sex} />
+                                </div>
+                                <div className="grid gap-2">
+                                    <Label htmlFor="date_of_birth">Date of birth</Label>
+                                    <Input
+                                        id="date_of_birth"
+                                        type="date"
+                                        name="date_of_birth"
+                                        defaultValue={
+                                            (auth.user as { date_of_birth?: string | null })
+                                                .date_of_birth ?? ''
+                                        }
+                                    />
+                                    <InputError message={errors.date_of_birth} />
+                                </div>
+                                <div className="grid gap-2">
+                                    <Label htmlFor="dry_weight">Dry weight (kg)</Label>
+                                    <Input
+                                        id="dry_weight"
+                                        type="number"
+                                        step="0.1"
+                                        min="0"
+                                        name="dry_weight"
+                                        defaultValue={
+                                            (auth.user as { dry_weight?: string | null })
+                                                .dry_weight ?? ''
+                                        }
+                                        placeholder="e.g. 72"
+                                    />
+                                    <InputError message={errors.dry_weight} />
+                                </div>
+                            </div>
+                            <p className="-mt-2 text-xs text-muted-foreground">
+                                Sex and date of birth pre-fill the eGFR calculator. Dry
+                                weight is your target post-dialysis weight.
+                            </p>
 
                             {mustVerifyEmail &&
                                 auth.user.email_verified_at === null && (

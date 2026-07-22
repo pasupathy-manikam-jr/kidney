@@ -25,6 +25,10 @@ class LabResultController extends Controller
         return Inertia::render('lab-results/index', [
             'results' => $results,
             'catalog' => LabMetric::catalog(),
+            'profile' => [
+                'age' => $request->user()->age,
+                'sex' => $request->user()->sex,
+            ],
         ]);
     }
 

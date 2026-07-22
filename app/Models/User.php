@@ -28,7 +28,7 @@ use Laravel\Fortify\TwoFactorAuthenticatable;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  */
-#[Fillable(['name', 'email', 'password', 'intake_targets', 'emergency_contacts'])]
+#[Fillable(['name', 'email', 'password', 'sex', 'date_of_birth', 'dry_weight', 'intake_targets', 'emergency_contacts'])]
 #[Hidden(['password', 'two_factor_secret', 'two_factor_recovery_codes', 'remember_token'])]
 class User extends Authenticatable implements PasskeyUser
 {
@@ -48,7 +48,17 @@ class User extends Authenticatable implements PasskeyUser
             'two_factor_confirmed_at' => 'datetime',
             'intake_targets' => 'array',
             'emergency_contacts' => 'array',
+            'date_of_birth' => 'date:Y-m-d',
+            'dry_weight' => 'decimal:1',
         ];
+    }
+
+    /** Age in years from date_of_birth, or null. */
+    public function getAgeAttribute(): ?int
+    {
+        return $this->date_of_birth
+            ? (int) $this->date_of_birth->diffInYears(now())
+            : null;
     }
 
     /**
