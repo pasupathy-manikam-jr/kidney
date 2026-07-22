@@ -82,7 +82,7 @@ export default function Welcome() {
                         {auth.user ? (
                             <Link
                                 href={dashboard()}
-                                className="rounded-md bg-primary px-4 py-2 text-sm font-medium whitespace-nowrap text-white transition hover:bg-primary/90"
+                                className="rounded-md bg-primary px-4 py-2 text-sm font-medium whitespace-nowrap text-primary-foreground transition hover:bg-primary/90"
                             >
                                 Dashboard
                             </Link>
@@ -96,7 +96,7 @@ export default function Welcome() {
                                 </Link>
                                 <Link
                                     href={register()}
-                                    className="rounded-md bg-primary px-4 py-2 text-sm font-medium whitespace-nowrap text-white transition hover:bg-primary/90"
+                                    className="rounded-md bg-primary px-4 py-2 text-sm font-medium whitespace-nowrap text-primary-foreground transition hover:bg-primary/90"
                                 >
                                     Get started
                                 </Link>
@@ -134,7 +134,7 @@ export default function Welcome() {
                                     <SheetClose asChild>
                                         <Link
                                             href={dashboard()}
-                                            className="mt-1 rounded-md bg-primary px-3 py-2.5 text-center text-sm font-medium text-white transition hover:bg-primary/90"
+                                            className="mt-1 rounded-md bg-primary px-3 py-2.5 text-center text-sm font-medium text-primary-foreground transition hover:bg-primary/90"
                                         >
                                             Dashboard
                                         </Link>
@@ -152,7 +152,7 @@ export default function Welcome() {
                                         <SheetClose asChild>
                                             <Link
                                                 href={register()}
-                                                className="mt-1 rounded-md bg-primary px-3 py-2.5 text-center text-sm font-medium text-white transition hover:bg-primary/90"
+                                                className="mt-1 rounded-md bg-primary px-3 py-2.5 text-center text-sm font-medium text-primary-foreground transition hover:bg-primary/90"
                                             >
                                                 Get started
                                             </Link>
@@ -181,7 +181,7 @@ export default function Welcome() {
                         <div className="flex flex-wrap items-center justify-center gap-3">
                             <Link
                                 href={auth.user ? dashboard() : register()}
-                                className="rounded-lg bg-primary px-6 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-primary/90"
+                                className="rounded-lg bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground shadow-sm transition hover:bg-primary/90"
                             >
                                 {auth.user ? 'Open dashboard' : 'Start tracking free'}
                             </Link>
