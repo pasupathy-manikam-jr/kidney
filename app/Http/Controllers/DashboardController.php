@@ -94,12 +94,35 @@ class DashboardController extends Controller
             ];
         }
 
+        $user = $request->user();
+
+        $latestSymptom = $user->symptomEntries()
+            ->orderByDesc('logged_on')
+            ->orderByDesc('id')
+            ->first();
+
+        $summary = [
+            'activeMedications' => $user->medications()->where('active', true)->count(),
+            'fluidToday' => (int) round($user->intakeEntries()
+                ->where('category', \App\Enums\IntakeCategory::Fluid->value)
+                ->whereDate('logged_on', now()->toDateString())
+                ->sum('amount')),
+            'fluidTarget' => $user->intakeTarget(\App\Enums\IntakeCategory::Fluid),
+            'symptomsLogged' => $user->symptomEntries()->count(),
+            'latestSymptom' => $latestSymptom ? [
+                'symptom' => $latestSymptom->symptom,
+                'severity' => $latestSymptom->severity,
+                'loggedOn' => $latestSymptom->logged_on->toDateString(),
+            ] : null,
+        ];
+
         return Inertia::render('dashboard', [
             'tiles' => $tiles,
             'totalReadings' => $results->count(),
             'gfr' => $gfr,
             'albuminuria' => $albuminuria,
             'risk' => $risk,
+            'summary' => $summary,
         ]);
     }
 }

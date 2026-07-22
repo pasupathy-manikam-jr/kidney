@@ -30,6 +30,24 @@ interface PageProps {
         measuredAt: string;
         note: string | null;
     }[];
+    medications: {
+        name: string;
+        dosage: string | null;
+        frequency: string | null;
+        timeOfDay: string | null;
+    }[];
+    intakeToday: {
+        label: string;
+        unit: string;
+        total: number;
+        target: number | null;
+    }[];
+    symptoms: {
+        symptom: string;
+        severity: number;
+        note: string | null;
+        loggedOn: string;
+    }[];
 }
 
 const STATUS_TEXT: Record<Status, string> = {
@@ -64,6 +82,9 @@ export default function Report({
     albuminuria,
     risk,
     history,
+    medications,
+    intakeToday,
+    symptoms,
 }: PageProps) {
     return (
         <>
@@ -167,9 +188,78 @@ export default function Report({
                     </div>
                 </section>
 
+                {/* Medications */}
+                <section className="mb-6">
+                    <h2 className="mb-2 font-semibold">Current medications</h2>
+                    {medications.length === 0 ? (
+                        <p className="text-sm text-neutral-500">None recorded.</p>
+                    ) : (
+                        <ul className="grid gap-1 text-sm sm:grid-cols-2 print:grid-cols-2">
+                            {medications.map((m, i) => (
+                                <li key={i} className="rounded border border-neutral-200 px-3 py-2">
+                                    <span className="font-medium">{m.name}</span>
+                                    {m.dosage && <span> · {m.dosage}</span>}
+                                    <div className="text-xs text-neutral-500">
+                                        {[m.frequency, m.timeOfDay].filter(Boolean).join(' · ') || '—'}
+                                    </div>
+                                </li>
+                            ))}
+                        </ul>
+                    )}
+                </section>
+
+                {/* Today's intake */}
+                <section className="mb-6">
+                    <h2 className="mb-2 font-semibold">Today's diet &amp; fluid</h2>
+                    <div className="grid grid-cols-2 gap-2 text-sm sm:grid-cols-4 print:grid-cols-4">
+                        {intakeToday.map((c, i) => (
+                            <div key={i} className="rounded border border-neutral-200 px-3 py-2">
+                                <div className="text-xs text-neutral-500">{c.label}</div>
+                                <div className="font-medium">
+                                    {c.total} {c.unit}
+                                    {c.target ? (
+                                        <span className="text-neutral-500"> / {c.target}</span>
+                                    ) : null}
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </section>
+
+                {/* Symptoms */}
+                <section className="mb-6">
+                    <h2 className="mb-2 font-semibold">Recent symptoms</h2>
+                    {symptoms.length === 0 ? (
+                        <p className="text-sm text-neutral-500">None recorded.</p>
+                    ) : (
+                        <div className="overflow-x-auto">
+                            <table className="w-full min-w-[420px] text-sm print:min-w-0">
+                                <thead>
+                                    <tr className="border-b border-neutral-200 text-left text-neutral-500">
+                                        <th className="py-1.5 pr-4 font-medium">Date</th>
+                                        <th className="py-1.5 pr-4 font-medium">Symptom</th>
+                                        <th className="py-1.5 pr-4 font-medium">Severity</th>
+                                        <th className="py-1.5 font-medium">Note</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {symptoms.map((s, i) => (
+                                        <tr key={i} className="border-b border-neutral-100">
+                                            <td className="py-1.5 pr-4">{s.loggedOn}</td>
+                                            <td className="py-1.5 pr-4">{s.symptom}</td>
+                                            <td className="py-1.5 pr-4">{s.severity}/5</td>
+                                            <td className="py-1.5 text-neutral-500">{s.note ?? ''}</td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    )}
+                </section>
+
                 {/* Full history */}
                 <section className="mb-6">
-                    <h2 className="mb-2 font-semibold">Full history</h2>
+                    <h2 className="mb-2 font-semibold">Full lab history</h2>
                     <div className="overflow-x-auto">
                     <table className="w-full min-w-[480px] text-sm print:min-w-0">
                         <thead>

@@ -1,5 +1,15 @@
 import { Head, Link } from '@inertiajs/react';
-import { Activity, ArrowDownRight, ArrowRight, ArrowUpRight, Minus, Plus } from 'lucide-react';
+import {
+    Activity,
+    ArrowDownRight,
+    ArrowRight,
+    ArrowUpRight,
+    Minus,
+    NotebookPen,
+    Pill,
+    Plus,
+    Utensils,
+} from 'lucide-react';
 import { Line, LineChart, ResponsiveContainer, YAxis } from 'recharts';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -39,11 +49,20 @@ interface Risk {
     grid: Record<string, Record<string, number>>;
 }
 
+interface Summary {
+    activeMedications: number;
+    fluidToday: number;
+    fluidTarget: number | null;
+    symptomsLogged: number;
+    latestSymptom: { symptom: string; severity: number; loggedOn: string } | null;
+}
+
 interface PageProps {
     tiles: Tile[];
     totalReadings: number;
     gfr: Gfr | null;
     risk: Risk | null;
+    summary: Summary;
 }
 
 // KDIGO risk-level colors: 1 low -> 4 very high.
@@ -357,7 +376,92 @@ function MetricTile({ tile }: { tile: Tile }) {
     );
 }
 
-export default function Dashboard({ tiles, totalReadings, gfr, risk }: PageProps) {
+function SummaryCards({ summary }: { summary: Summary }) {
+    return (
+        <div className="grid gap-4 sm:grid-cols-3">
+            <Link href="/medications">
+                <Card className="transition hover:shadow-md">
+                    <CardContent className="flex items-center gap-3 pt-6">
+                        <span className="flex size-10 items-center justify-center rounded-lg bg-teal-600/10 text-teal-600 dark:text-teal-400">
+                            <Pill className="size-5" />
+                        </span>
+                        <div>
+                            <div className="text-2xl font-semibold tabular-nums">
+                                {summary.activeMedications}
+                            </div>
+                            <div className="text-xs text-muted-foreground">
+                                active medications
+                            </div>
+                        </div>
+                    </CardContent>
+                </Card>
+            </Link>
+
+            <Link href="/intake">
+                <Card className="transition hover:shadow-md">
+                    <CardContent className="flex items-center gap-3 pt-6">
+                        <span className="flex size-10 items-center justify-center rounded-lg bg-teal-600/10 text-teal-600 dark:text-teal-400">
+                            <Utensils className="size-5" />
+                        </span>
+                        <div>
+                            <div className="text-2xl font-semibold tabular-nums">
+                                {summary.fluidToday}
+                                <span className="text-xs font-normal text-muted-foreground">
+                                    {' '}
+                                    mL{summary.fluidTarget ? ` / ${summary.fluidTarget}` : ''}
+                                </span>
+                            </div>
+                            <div className="text-xs text-muted-foreground">fluid today</div>
+                        </div>
+                    </CardContent>
+                </Card>
+            </Link>
+
+            <Link href="/symptoms">
+                <Card className="transition hover:shadow-md">
+                    <CardContent className="flex items-center gap-3 pt-6">
+                        <span className="flex size-10 items-center justify-center rounded-lg bg-teal-600/10 text-teal-600 dark:text-teal-400">
+                            <NotebookPen className="size-5" />
+                        </span>
+                        <div>
+                            {summary.latestSymptom ? (
+                                <>
+                                    <div className="text-sm font-semibold">
+                                        {summary.latestSymptom.symptom}{' '}
+                                        <span className="text-muted-foreground">
+                                            · {summary.latestSymptom.severity}/5
+                                        </span>
+                                    </div>
+                                    <div className="text-xs text-muted-foreground">
+                                        latest of {summary.symptomsLogged} symptom
+                                        {summary.symptomsLogged === 1 ? '' : 's'}
+                                    </div>
+                                </>
+                            ) : (
+                                <>
+                                    <div className="text-2xl font-semibold tabular-nums">
+                                        {summary.symptomsLogged}
+                                    </div>
+                                    <div className="text-xs text-muted-foreground">
+                                        symptoms logged
+                                    </div>
+                                </>
+                            )}
+                        </div>
+                    </CardContent>
+                </Card>
+            </Link>
+        </div>
+    );
+}
+
+export default function Dashboard({
+    tiles,
+    totalReadings,
+    gfr,
+    risk,
+    summary,
+}: PageProps) {
     return (
         <>
             <Head title="Dashboard" />
@@ -386,6 +490,9 @@ export default function Dashboard({ tiles, totalReadings, gfr, risk }: PageProps
                         </Link>
                     </Button>
                 </div>
+
+                {/* Meds / fluid / symptoms summary */}
+                <SummaryCards summary={summary} />
 
                 {totalReadings === 0 ? (
                     /* Onboarding */
@@ -434,7 +541,7 @@ export default function Dashboard({ tiles, totalReadings, gfr, risk }: PageProps
                         {(gfr || risk) && (
                             <div
                                 className={cn(
-                                    'grid gap-4',
+                                    'grid items-start gap-4',
                                     risk && 'lg:grid-cols-[1fr_auto]',
                                 )}
                             >

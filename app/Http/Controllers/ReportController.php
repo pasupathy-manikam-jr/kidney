@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Enums\AlbuminuriaCategory;
 use App\Enums\GfrCategory;
+use App\Enums\IntakeCategory;
 use App\Enums\LabMetric;
 use App\Support\KdigoRisk;
 use Illuminate\Http\Request;
@@ -79,6 +80,40 @@ class ReportController extends Controller
                 'measuredAt' => $r->measured_at->toDateString(),
                 'note' => $r->note,
             ])->values(),
+            'medications' => $user->medications()
+                ->where('active', true)
+                ->orderBy('name')
+                ->get()
+                ->map(fn ($m) => [
+                    'name' => $m->name,
+                    'dosage' => $m->dosage,
+                    'frequency' => $m->frequency,
+                    'timeOfDay' => $m->time_of_day,
+                ])->values(),
+            'intakeToday' => collect(IntakeCategory::cases())->map(function ($c) use ($user) {
+                $total = (float) $user->intakeEntries()
+                    ->where('category', $c->value)
+                    ->whereDate('logged_on', now()->toDateString())
+                    ->sum('amount');
+
+                return [
+                    'label' => $c->label(),
+                    'unit' => $c->unit(),
+                    'total' => round($total),
+                    'target' => $user->intakeTarget($c),
+                ];
+            })->values(),
+            'symptoms' => $user->symptomEntries()
+                ->orderByDesc('logged_on')
+                ->orderByDesc('id')
+                ->limit(15)
+                ->get()
+                ->map(fn ($s) => [
+                    'symptom' => $s->symptom,
+                    'severity' => $s->severity,
+                    'note' => $s->note,
+                    'loggedOn' => $s->logged_on->toDateString(),
+                ])->values(),
         ]);
     }
 }
