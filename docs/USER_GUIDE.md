@@ -132,6 +132,9 @@ page tracks the catheter and your exchanges.
 - **Exchange log** — record each exchange: fill and drain volumes (the app works
   out **ultrafiltration** = drain − fill), the **colour of the drained fluid**,
   and a note.
+- **Ultrafiltration trend** — a chart of UF over recent exchanges; negative
+  values (less out than in) show in red. Mention persistent low or negative UF to
+  your care team.
 - **Safety** — clear or pale-straw fluid is normal. **Cloudy** fluid can signal
   infection (peritonitis) and **pink/bloody** fluid can signal bleeding — the app
   flags these in red. Contact your care team promptly for those, or for fever,
@@ -175,7 +178,31 @@ The **Emergency** page is a quick reference for when things go wrong.
 
 ---
 
-## 11. Data & backup
+## 11. Appointments
+
+The **Appointments** page tracks clinic visits and lab tests.
+
+- Add an appointment with a **title, date, time, location** and notes (e.g.
+  "Nephrology clinic" or "Monthly blood test").
+- Entries are split into **Upcoming** and **Past**, and your next one shows as a
+  banner on the dashboard.
+
+---
+
+## 12. Your profile & units
+
+Under **Settings → Profile** you can set health details:
+
+- **Sex** and **date of birth** — these pre-fill the eGFR calculator so you don't
+  re-enter them each time.
+- **Dry weight** — your target post-dialysis weight, for reference.
+- **Lab result units** — switch between **Conventional** (mg/dL, mEq/L) and **SI**
+  (mmol/L, µmol/L). This only changes how values are *shown* across the app; you
+  still enter readings in conventional units.
+
+---
+
+## 13. Data & backup
 
 Under **Settings → Data & backup** you can look after your data.
 
@@ -186,14 +213,14 @@ Under **Settings → Data & backup** you can look after your data.
 
 ---
 
-## 12. Appearance
+## 14. Appearance
 
 Kidney-Love defaults to a calm dark theme. Switch between light, dark or system in
 **Settings → Appearance** at any time.
 
 ---
 
-## 13. Tips for appointments
+## 15. Tips for appointments
 
 - Log results the same day you get them, straight from the lab report.
 - Bring the **Report** (or **Dashboard** + **Reference**) to your visit.
@@ -201,7 +228,7 @@ Kidney-Love defaults to a calm dark theme. Switch between light, dark or system 
 
 ---
 
-## 14. Sources & further reading
+## 16. Sources & further reading
 
 General guidance in the app (reference ranges, KDIGO categories, dialysis colour
 cues and the ~6-month transfer-set interval) draws on the sources below. They are
