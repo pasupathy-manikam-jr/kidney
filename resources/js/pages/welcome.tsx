@@ -6,7 +6,7 @@ import {
     ShieldCheck,
     TrendingUp,
 } from 'lucide-react';
-import { dashboard, guide, login, register } from '@/routes';
+import { dashboard, guide, home, login, register } from '@/routes';
 
 const features = [
     {
@@ -40,38 +40,41 @@ export default function Welcome() {
 
             <div className="min-h-screen bg-gradient-to-b from-teal-50 via-background to-background text-foreground dark:from-teal-950/30">
                 {/* Nav */}
-                <header className="mx-auto flex max-w-5xl items-center justify-between px-6 py-5">
-                    <span className="flex items-center gap-2 font-semibold">
+                <header className="mx-auto flex max-w-5xl items-center justify-between gap-3 px-4 py-4 sm:px-6 sm:py-5">
+                    <Link
+                        href={home()}
+                        className="flex shrink-0 items-center gap-2 font-semibold"
+                    >
                         <span className="flex size-8 items-center justify-center rounded-lg bg-teal-600 text-white">
                             <HeartPulse className="size-5" />
                         </span>
                         KidneyLove
-                    </span>
-                    <nav className="flex items-center gap-2">
+                    </Link>
+                    <nav className="flex items-center gap-1 sm:gap-2">
                         <Link
                             href={guide()}
-                            className="rounded-md px-4 py-2 text-sm font-medium text-muted-foreground transition hover:text-foreground"
+                            className="hidden rounded-md px-3 py-2 text-sm font-medium text-muted-foreground transition hover:text-foreground sm:inline-flex"
                         >
                             User guide
                         </Link>
                         {auth.user ? (
                             <Link
                                 href={dashboard()}
-                                className="rounded-md bg-teal-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-teal-700"
+                                className="rounded-md bg-teal-600 px-3 py-2 text-sm font-medium whitespace-nowrap text-white transition hover:bg-teal-700 sm:px-4"
                             >
-                                Go to dashboard
+                                Dashboard
                             </Link>
                         ) : (
                             <>
                                 <Link
                                     href={login()}
-                                    className="rounded-md px-4 py-2 text-sm font-medium text-muted-foreground transition hover:text-foreground"
+                                    className="rounded-md px-3 py-2 text-sm font-medium text-muted-foreground transition hover:text-foreground"
                                 >
                                     Log in
                                 </Link>
                                 <Link
                                     href={register()}
-                                    className="rounded-md bg-teal-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-teal-700"
+                                    className="rounded-md bg-teal-600 px-3 py-2 text-sm font-medium whitespace-nowrap text-white transition hover:bg-teal-700 sm:px-4"
                                 >
                                     Get started
                                 </Link>
