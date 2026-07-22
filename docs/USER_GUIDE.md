@@ -1,13 +1,14 @@
 # KidneyLove — User Guide
 
-KidneyLove helps you track kidney-related lab results over time, see the trends,
-and understand where those numbers sit on the standard KDIGO risk map — so you
-walk into each appointment with a clear picture instead of a pile of paper.
+KidneyLove helps you track kidney-related lab results, medications, diet & fluid,
+and symptoms over time — see the trends, understand where your numbers sit on the
+standard KDIGO risk map, and walk into each appointment with a clear picture
+instead of a pile of paper.
 
 > **Important:** KidneyLove is a personal tracking tool. It is **not** medical
-> advice and does **not** diagnose anything. Reference ranges shown are general
-> adult values and vary by lab, age and sex. Always confirm every result with
-> your lab report and your care team.
+> advice and does **not** diagnose anything. Reference ranges and suggested
+> limits shown are general adult values and vary by lab, age and sex. Always
+> confirm every result and target with your lab report and your care team.
 
 ---
 
@@ -23,75 +24,131 @@ Want to look around first? Sign in with the demo account:
 - **Email:** `demo@example.com`
 - **Password:** `password`
 
-The demo account is pre-filled with fictional readings so every screen is
-populated.
+The demo account is pre-filled with fictional data so every screen is populated.
 
 ---
 
-## 2. Adding a lab result
+## 2. The dashboard
 
-1. Go to **Lab Results** in the sidebar (or click **Add reading** on the
-   dashboard).
-2. Pick a **metric** (eGFR, creatinine, potassium, albuminuria, blood pressure,
-   and more).
-3. Enter the **value** — the unit is shown for you.
-4. Set the **date** the sample was taken.
-5. Add an optional **note** (e.g. "fasting", "after dialysis").
-6. Click **Save reading**.
+Your at-a-glance overview:
 
-Each metric shows its reference range so you know what "normal" generally looks
-like. You can delete any reading from the history table.
-
----
-
-## 3. Reading the dashboard
-
-The dashboard summarises your latest numbers:
-
-- **Metric tiles** — the most recent value for each metric, colour-coded:
-  - 🟢 in range 🟡 below range 🔴 above range
-  - Each tile shows a mini **trend line** and the change since your last reading.
+- **Metric tiles** — the latest value for each lab metric, colour-coded
+  (🟢 in range · 🟡 below · 🔴 above), each with a mini **trend line** and the
+  change since your last reading.
 - **GFR category card** — your latest eGFR mapped to a KDIGO category (G1–G5),
   from *normal* to *kidney failure*.
 - **KDIGO risk map** — appears once you have both an **eGFR** and an
-  **albuminuria (UACR)** reading. It places you on the standard risk grid
+  **albuminuria (UACR)** reading, placing you on the standard risk grid
   (Low → Very high).
+- **Summary cards** — active medications, today's fluid, and your latest
+  symptom, each linking to its section.
+
+If you're brand new, the dashboard shows a short **getting-started card** until
+you add your first reading.
 
 ---
 
-## 4. Trends
+## 3. Lab results
 
-On the **Lab Results** page, pick a metric to see its full history as a line
-chart. A shaded band marks the general reference range so you can see at a glance
-whether a value is drifting in or out of it.
+Go to **Lab Results** in the sidebar (or **Add reading** on the dashboard).
+
+**Add a reading**
+
+1. Pick a **metric** (eGFR, creatinine, BUN, potassium, phosphorus, albuminuria,
+   blood pressure, weight).
+2. Enter the **value** — the unit is shown for you.
+3. Set the **date** the sample was taken, and an optional **note**.
+4. Click **Save reading**.
+
+**Edit or delete** — every row in the history table has **Edit** and **Delete**
+(with a confirmation prompt so nothing is removed by accident).
+
+**eGFR calculator** — no eGFR on your report? Click **eGFR calculator**, enter
+creatinine, age and sex (CKD-EPI 2021, race-free), and use the result as a
+reading.
+
+**Trend chart** — pick any metric to see its history as a line chart with a
+shaded reference band. Use the **3M / 6M / 1Y / All** buttons to change the time
+range.
+
+**Import / Export CSV** — **Export CSV** downloads all your readings; **Import
+CSV** bulk-loads them back (same columns). Invalid rows are skipped.
 
 ---
 
-## 5. Reference tables
+## 4. Medications
+
+The **Medications** page keeps your current list.
+
+- Add a medication with **name, dosage, time, frequency** and an optional
+  **reminder time** and note.
+- **Mark inactive / active** to keep past medications without deleting them.
+- **Reminders** — click **Enable reminders** and allow notifications. While the
+  app is open in your browser, you'll get a notification at each active
+  medication's reminder time. *(Background reminders when the app is closed
+  aren't supported yet.)*
+
+---
+
+## 5. Diet & fluid
+
+The **Diet & Fluid** page tracks fluid, sodium, potassium and phosphorus.
+
+- **Today's totals** show each category against its daily target with a progress
+  bar (turns red when over).
+- **Log intake** — pick a category, enter the amount, add an optional label
+  (e.g. "Coffee", "Banana") and date.
+- **History chart** — pick any category to see its daily totals as a bar chart,
+  with your target drawn as a reference line.
+- **Set targets** — set your own daily limits. Leave a field blank to fall back
+  to the general suggested value.
+
+---
+
+## 6. Symptoms
+
+The **Symptoms** page is a simple journal.
+
+- Log a **symptom** (quick-pick chips for common ones), a **severity** (1–5) and
+  an optional note and date.
+- The **severity trend** chart shows how things change over time.
+
+---
+
+## 7. Reference tables
 
 The **Reference** page lists, in one place:
 
 - Every tracked metric and its general reference range.
-- KDIGO **GFR** categories (G1–G5).
-- KDIGO **albuminuria** categories (A1–A3).
+- KDIGO **GFR** categories (G1–G5) and **albuminuria** categories (A1–A3).
 - The full **risk map** (GFR × albuminuria).
 
-Handy to review before or during an appointment.
+---
+
+## 8. Printable report
+
+The **Report** page pulls everything together for an appointment:
+
+- Latest values, GFR & albuminuria categories, and KDIGO risk.
+- Current medications, today's diet & fluid vs targets, and recent symptoms.
+- Full lab history.
+
+Click **Print / Save PDF** to hand it to your care team or save a copy.
 
 ---
 
-## 6. Tips for appointments
+## 9. Appearance
+
+KidneyLove defaults to a calm dark theme. Switch between light, dark or system in
+**Settings → Appearance** at any time.
+
+---
+
+## 10. Tips for appointments
 
 - Log results the same day you get them, straight from the lab report.
-- Bring the **Dashboard** and **Reference** pages to your nephrologist visit.
-- Use notes to capture context your doctor may ask about.
-
----
-
-## 7. Appearance
-
-KidneyLove defaults to a calm dark theme. Switch between light, dark or system
-in **Settings → Appearance** at any time.
+- Bring the **Report** (or **Dashboard** + **Reference**) to your visit.
+- Use notes and the symptom journal to capture context your doctor may ask about.
 
 ---
 
