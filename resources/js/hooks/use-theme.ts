@@ -24,9 +24,12 @@ export const TEXT_SIZES: { value: TextSize; label: string }[] = [
     { value: 'xl', label: 'Extra large' },
 ];
 
+const DEFAULT_THEME: ColorTheme = 'ocean';
+const DEFAULT_TEXT: TextSize = 'large';
+
 const listeners = new Set<() => void>();
-let currentTheme: ColorTheme = 'default';
-let currentText: TextSize = 'normal';
+let currentTheme: ColorTheme = DEFAULT_THEME;
+let currentText: TextSize = DEFAULT_TEXT;
 
 function setCookie(name: string, value: string, days = 365): void {
     if (typeof document === 'undefined') return;
@@ -52,8 +55,8 @@ const notify = () => listeners.forEach((l) => l());
 
 export function initializeThemePrefs(): void {
     if (typeof window === 'undefined') return;
-    currentTheme = (localStorage.getItem('theme') as ColorTheme) || 'default';
-    currentText = (localStorage.getItem('text') as TextSize) || 'normal';
+    currentTheme = (localStorage.getItem('theme') as ColorTheme) || DEFAULT_THEME;
+    currentText = (localStorage.getItem('text') as TextSize) || DEFAULT_TEXT;
     apply();
 }
 

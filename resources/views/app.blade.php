@@ -18,12 +18,12 @@
                     }
                 }
 
-                // Colour theme + text size (no flash).
+                // Colour theme + text size (no flash). Defaults: ocean + large.
                 const cookie = (n) => (document.cookie.match('(^|;)\\s*' + n + '\\s*=\\s*([^;]+)') || [])[2];
-                const theme = cookie('theme');
-                if (theme && theme !== 'default') document.documentElement.dataset.theme = theme;
-                const text = cookie('text');
-                if (text && text !== 'normal') document.documentElement.dataset.text = text;
+                const theme = cookie('theme') || 'ocean';
+                if (theme !== 'default') document.documentElement.dataset.theme = theme;
+                const text = cookie('text') || 'large';
+                if (text !== 'normal') document.documentElement.dataset.text = text;
             })();
         </script>
 
