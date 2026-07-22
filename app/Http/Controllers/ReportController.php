@@ -114,6 +114,27 @@ class ReportController extends Controller
                     'note' => $s->note,
                     'loggedOn' => $s->logged_on->toDateString(),
                 ])->values(),
+            'dialysis' => (function () use ($user) {
+                $catheter = $user->catheters()->latest('id')->first();
+                if (! $catheter) {
+                    return null;
+                }
+
+                return [
+                    'brand' => $catheter->brand,
+                    'type' => $catheter->catheter_type,
+                    'nextTransferSetChange' => $catheter->nextTransferSetChange()?->toDateString(),
+                    'exchanges' => $user->catheterLogs()
+                        ->orderByDesc('logged_on')->orderByDesc('id')->limit(7)->get()
+                        ->map(fn ($l) => [
+                            'loggedOn' => $l->logged_on->toDateString(),
+                            'fill' => $l->fill_volume,
+                            'drain' => $l->drain_volume,
+                            'uf' => $l->ultrafiltration(),
+                            'color' => $l->effluent_color?->label(),
+                        ])->values(),
+                ];
+            })(),
         ]);
     }
 }

@@ -4,6 +4,7 @@ import {
     ArrowDownRight,
     ArrowRight,
     ArrowUpRight,
+    Droplets,
     Minus,
     NotebookPen,
     Pill,
@@ -51,6 +52,8 @@ interface Risk {
 
 interface Summary {
     activeMedications: number;
+    transferSetDue: string | null;
+    transferSetDaysUntil: number | null;
     fluidToday: number;
     fluidTarget: number | null;
     symptomsLogged: number;
@@ -490,6 +493,26 @@ export default function Dashboard({
                         </Link>
                     </Button>
                 </div>
+
+                {/* Transfer-set reminder */}
+                {summary.transferSetDaysUntil !== null &&
+                    summary.transferSetDaysUntil <= 30 && (
+                        <Link
+                            href="/dialysis"
+                            className={cn(
+                                'flex items-center gap-2 rounded-lg border px-4 py-3 text-sm transition hover:opacity-90',
+                                summary.transferSetDaysUntil < 0
+                                    ? 'border-rose-500/40 bg-rose-50 text-rose-900 dark:bg-rose-950/40 dark:text-rose-200'
+                                    : 'border-amber-500/40 bg-amber-50 text-amber-900 dark:bg-amber-950/40 dark:text-amber-200',
+                            )}
+                        >
+                            <Droplets className="size-4 shrink-0" />
+                            {summary.transferSetDaysUntil < 0
+                                ? `Transfer set change overdue by ${Math.abs(summary.transferSetDaysUntil)} day(s)`
+                                : `Transfer set change due in ${summary.transferSetDaysUntil} day(s)`}{' '}
+                            · due {summary.transferSetDue}
+                        </Link>
+                    )}
 
                 {/* Meds / fluid / symptoms summary */}
                 <SummaryCards summary={summary} />

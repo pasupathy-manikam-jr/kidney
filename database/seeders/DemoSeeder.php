@@ -105,5 +105,33 @@ class DemoSeeder extends Seeder
                 'logged_on' => now()->subDays($s['daysAgo'])->toDateString(),
             ]);
         }
+
+        // Fictional peritoneal dialysis catheter + exchange log.
+        $user->catheters()->delete();
+        $user->catheters()->create([
+            'brand' => 'Covidien',
+            'catheter_type' => 'Tenckhoff coiled',
+            'inserted_on' => now()->subMonths(8)->toDateString(),
+            'transfer_set_changed_on' => now()->subMonths(5)->subDays(20)->toDateString(),
+            'transfer_set_interval_months' => 6,
+            'notes' => 'PD catheter, exit site on left abdomen.',
+        ]);
+
+        $user->catheterLogs()->delete();
+        $exchanges = [
+            ['daysAgo' => 0, 'fill' => 2000, 'drain' => 2300, 'color' => 'pale_yellow', 'note' => 'Morning exchange'],
+            ['daysAgo' => 1, 'fill' => 2000, 'drain' => 2250, 'color' => 'clear', 'note' => null],
+            ['daysAgo' => 2, 'fill' => 2000, 'drain' => 1950, 'color' => 'pale_yellow', 'note' => 'Low output'],
+            ['daysAgo' => 3, 'fill' => 2000, 'drain' => 2280, 'color' => 'clear', 'note' => null],
+        ];
+        foreach ($exchanges as $e) {
+            $user->catheterLogs()->create([
+                'logged_on' => now()->subDays($e['daysAgo'])->toDateString(),
+                'fill_volume' => $e['fill'],
+                'drain_volume' => $e['drain'],
+                'effluent_color' => $e['color'],
+                'notes' => $e['note'],
+            ]);
+        }
     }
 }

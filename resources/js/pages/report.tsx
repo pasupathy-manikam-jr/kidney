@@ -48,6 +48,18 @@ interface PageProps {
         note: string | null;
         loggedOn: string;
     }[];
+    dialysis: {
+        brand: string | null;
+        type: string | null;
+        nextTransferSetChange: string | null;
+        exchanges: {
+            loggedOn: string;
+            fill: number | null;
+            drain: number | null;
+            uf: number | null;
+            color: string | null;
+        }[];
+    } | null;
 }
 
 const STATUS_TEXT: Record<Status, string> = {
@@ -85,6 +97,7 @@ export default function Report({
     medications,
     intakeToday,
     symptoms,
+    dialysis,
 }: PageProps) {
     return (
         <>
@@ -256,6 +269,55 @@ export default function Report({
                         </div>
                     )}
                 </section>
+
+                {/* Dialysis */}
+                {dialysis && (
+                    <section className="mb-6">
+                        <h2 className="mb-2 font-semibold">Peritoneal dialysis</h2>
+                        <div className="mb-2 text-sm">
+                            {[dialysis.brand, dialysis.type].filter(Boolean).join(' · ') ||
+                                'Catheter on record'}
+                            {dialysis.nextTransferSetChange && (
+                                <span className="text-neutral-500">
+                                    {' '}
+                                    · next transfer-set change {dialysis.nextTransferSetChange}
+                                </span>
+                            )}
+                        </div>
+                        {dialysis.exchanges.length > 0 && (
+                            <div className="overflow-x-auto">
+                                <table className="w-full min-w-[420px] text-sm print:min-w-0">
+                                    <thead>
+                                        <tr className="border-b border-neutral-200 text-left text-neutral-500">
+                                            <th className="py-1.5 pr-4 font-medium">Date</th>
+                                            <th className="py-1.5 pr-4 font-medium">Fill</th>
+                                            <th className="py-1.5 pr-4 font-medium">Drain</th>
+                                            <th className="py-1.5 pr-4 font-medium">UF</th>
+                                            <th className="py-1.5 font-medium">Colour</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {dialysis.exchanges.map((e, i) => (
+                                            <tr key={i} className="border-b border-neutral-100">
+                                                <td className="py-1.5 pr-4">{e.loggedOn}</td>
+                                                <td className="py-1.5 pr-4">{e.fill ?? '—'}</td>
+                                                <td className="py-1.5 pr-4">{e.drain ?? '—'}</td>
+                                                <td className="py-1.5 pr-4">
+                                                    {e.uf !== null
+                                                        ? `${e.uf > 0 ? '+' : ''}${e.uf}`
+                                                        : '—'}
+                                                </td>
+                                                <td className="py-1.5 text-neutral-500">
+                                                    {e.color ?? '—'}
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
+                        )}
+                    </section>
+                )}
 
                 {/* Full history */}
                 <section className="mb-6">

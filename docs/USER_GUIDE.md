@@ -115,7 +115,27 @@ The **Symptoms** page is a simple journal.
 
 ---
 
-## 7. Reference tables
+## 7. Dialysis (peritoneal dialysis)
+
+For anyone on peritoneal dialysis with a **Tenckhoff catheter**, the **Dialysis**
+page tracks the catheter and your exchanges.
+
+- **Catheter details** — record the brand, type, insertion date, and when the
+  **transfer set** was last changed. The transfer set (the tubing on the
+  catheter) is usually replaced about every 6 months to lower infection risk.
+- **Reminder** — the page (and dashboard) shows when the next transfer-set
+  change is due, and warns when it's close or overdue.
+- **Exchange log** — record each exchange: fill and drain volumes (the app works
+  out **ultrafiltration** = drain − fill), the **colour of the drained fluid**,
+  and a note.
+- **Safety** — clear or pale-straw fluid is normal. **Cloudy** fluid can signal
+  infection (peritonitis) and **pink/bloody** fluid can signal bleeding — the app
+  flags these in red. Contact your care team promptly for those, or for fever,
+  redness, swelling or pain at the exit site.
+
+---
+
+## 8. Reference tables
 
 The **Reference** page lists, in one place:
 
@@ -125,26 +145,27 @@ The **Reference** page lists, in one place:
 
 ---
 
-## 8. Printable report
+## 9. Printable report
 
 The **Report** page pulls everything together for an appointment:
 
 - Latest values, GFR & albuminuria categories, and KDIGO risk.
 - Current medications, today's diet & fluid vs targets, and recent symptoms.
+- Dialysis catheter and recent exchanges (if you use the Dialysis page).
 - Full lab history.
 
 Click **Print / Save PDF** to hand it to your care team or save a copy.
 
 ---
 
-## 9. Appearance
+## 10. Appearance
 
 Kidney-Love defaults to a calm dark theme. Switch between light, dark or system in
 **Settings → Appearance** at any time.
 
 ---
 
-## 10. Tips for appointments
+## 11. Tips for appointments
 
 - Log results the same day you get them, straight from the lab report.
 - Bring the **Report** (or **Dashboard** + **Reference**) to your visit.

@@ -92,4 +92,20 @@ class User extends Authenticatable implements PasskeyUser
     {
         return $this->hasMany(SymptomEntry::class);
     }
+
+    /**
+     * @return HasMany<Catheter, $this>
+     */
+    public function catheters(): HasMany
+    {
+        return $this->hasMany(Catheter::class);
+    }
+
+    /**
+     * @return HasMany<CatheterLog, $this>
+     */
+    public function catheterLogs(): HasMany
+    {
+        return $this->hasMany(CatheterLog::class);
+    }
 }

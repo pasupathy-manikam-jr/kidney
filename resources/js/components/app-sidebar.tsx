@@ -1,6 +1,7 @@
 import { Link } from '@inertiajs/react';
 import {
     Activity,
+    Droplets,
     FileText,
     LayoutGrid,
     NotebookPen,
@@ -48,6 +49,11 @@ const mainNavItems: NavItem[] = [
         title: 'Symptoms',
         href: '/symptoms',
         icon: NotebookPen,
+    },
+    {
+        title: 'Dialysis',
+        href: '/dialysis',
+        icon: Droplets,
     },
     {
         title: 'Reference',

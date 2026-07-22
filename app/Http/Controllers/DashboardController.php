@@ -101,8 +101,15 @@ class DashboardController extends Controller
             ->orderByDesc('id')
             ->first();
 
+        $catheter = $user->catheters()->latest('id')->first();
+        $nextChange = $catheter?->nextTransferSetChange();
+
         $summary = [
             'activeMedications' => $user->medications()->where('active', true)->count(),
+            'transferSetDue' => $nextChange?->toDateString(),
+            'transferSetDaysUntil' => $nextChange
+                ? (int) now()->startOfDay()->diffInDays($nextChange, false)
+                : null,
             'fluidToday' => (int) round($user->intakeEntries()
                 ->where('category', \App\Enums\IntakeCategory::Fluid->value)
                 ->whereDate('logged_on', now()->toDateString())

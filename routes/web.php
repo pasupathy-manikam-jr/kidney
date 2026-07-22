@@ -3,7 +3,10 @@
 use App\Enums\AlbuminuriaCategory;
 use App\Enums\GfrCategory;
 use App\Enums\LabMetric;
+use App\Http\Controllers\CatheterController;
+use App\Http\Controllers\CatheterLogController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\DialysisController;
 use App\Http\Controllers\IntakeEntryController;
 use App\Http\Controllers\IntakeTargetController;
 use App\Http\Controllers\LabResultController;
@@ -39,6 +42,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('symptoms', [SymptomEntryController::class, 'index'])->name('symptoms.index');
     Route::post('symptoms', [SymptomEntryController::class, 'store'])->name('symptoms.store');
     Route::delete('symptoms/{symptomEntry}', [SymptomEntryController::class, 'destroy'])->name('symptoms.destroy');
+
+    Route::get('dialysis', [DialysisController::class, 'index'])->name('dialysis.index');
+    Route::put('catheter', [CatheterController::class, 'update'])->name('catheter.update');
+    Route::post('catheter-logs', [CatheterLogController::class, 'store'])->name('catheter-logs.store');
+    Route::delete('catheter-logs/{catheterLog}', [CatheterLogController::class, 'destroy'])->name('catheter-logs.destroy');
 
     Route::get('report', [ReportController::class, 'index'])->name('report');
 
