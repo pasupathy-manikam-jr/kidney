@@ -117,6 +117,22 @@ class DemoSeeder extends Seeder
             'notes' => 'PD catheter, exit site on left abdomen.',
         ]);
 
+        // Fictional upcoming appointments.
+        $user->appointments()->delete();
+        $user->appointments()->create([
+            'title' => 'Nephrology clinic',
+            'scheduled_for' => now()->addDays(9)->toDateString(),
+            'time_of_day' => '10:00',
+            'location' => 'City Renal Unit',
+            'notes' => 'Bring the printed report.',
+        ]);
+        $user->appointments()->create([
+            'title' => 'Monthly blood test',
+            'scheduled_for' => now()->addDays(2)->toDateString(),
+            'time_of_day' => '08:30',
+            'location' => 'Lab',
+        ]);
+
         $user->catheterLogs()->delete();
         $exchanges = [
             ['daysAgo' => 0, 'fill' => 2000, 'drain' => 2300, 'color' => 'pale_yellow', 'note' => 'Morning exchange'],

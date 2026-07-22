@@ -1,6 +1,7 @@
 import { Link } from '@inertiajs/react';
 import {
     Activity,
+    CalendarDays,
     Droplets,
     FileText,
     LayoutGrid,
@@ -55,6 +56,11 @@ const mainNavItems: NavItem[] = [
         title: 'Dialysis',
         href: '/dialysis',
         icon: Droplets,
+    },
+    {
+        title: 'Appointments',
+        href: '/appointments',
+        icon: CalendarDays,
     },
     {
         title: 'Reference',

@@ -3,6 +3,7 @@
 use App\Enums\AlbuminuriaCategory;
 use App\Enums\GfrCategory;
 use App\Enums\LabMetric;
+use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\CatheterController;
 use App\Http\Controllers\CatheterLogController;
 use App\Http\Controllers\DashboardController;
@@ -48,6 +49,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::put('catheter', [CatheterController::class, 'update'])->name('catheter.update');
     Route::post('catheter-logs', [CatheterLogController::class, 'store'])->name('catheter-logs.store');
     Route::delete('catheter-logs/{catheterLog}', [CatheterLogController::class, 'destroy'])->name('catheter-logs.destroy');
+
+    Route::get('appointments', [AppointmentController::class, 'index'])->name('appointments.index');
+    Route::post('appointments', [AppointmentController::class, 'store'])->name('appointments.store');
+    Route::put('appointments/{appointment}', [AppointmentController::class, 'update'])->name('appointments.update');
+    Route::delete('appointments/{appointment}', [AppointmentController::class, 'destroy'])->name('appointments.destroy');
 
     Route::get('emergency', [EmergencyController::class, 'index'])->name('emergency.index');
     Route::put('emergency-contacts', [EmergencyController::class, 'update'])->name('emergency-contacts.update');

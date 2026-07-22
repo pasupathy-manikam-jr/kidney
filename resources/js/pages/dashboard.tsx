@@ -4,6 +4,7 @@ import {
     ArrowDownRight,
     ArrowRight,
     ArrowUpRight,
+    CalendarDays,
     Droplets,
     Minus,
     NotebookPen,
@@ -51,6 +52,12 @@ interface Risk {
 }
 
 interface Summary {
+    nextAppointment: {
+        title: string;
+        date: string;
+        time: string | null;
+        daysUntil: number;
+    } | null;
     activeMedications: number;
     transferSetDue: string | null;
     transferSetDaysUntil: number | null;
@@ -513,6 +520,25 @@ export default function Dashboard({
                             · due {summary.transferSetDue}
                         </Link>
                     )}
+
+                {/* Next appointment */}
+                {summary.nextAppointment && (
+                    <Link
+                        href="/appointments"
+                        className="flex items-center gap-2 rounded-lg border border-teal-500/40 bg-teal-500/10 px-4 py-3 text-sm text-teal-800 transition hover:opacity-90 dark:text-teal-200"
+                    >
+                        <CalendarDays className="size-4 shrink-0" />
+                        Next: <strong>{summary.nextAppointment.title}</strong> ·{' '}
+                        {summary.nextAppointment.date}
+                        {summary.nextAppointment.time
+                            ? ` ${summary.nextAppointment.time}`
+                            : ''}{' '}
+                        ·{' '}
+                        {summary.nextAppointment.daysUntil === 0
+                            ? 'today'
+                            : `in ${summary.nextAppointment.daysUntil} day(s)`}
+                    </Link>
+                )}
 
                 {/* Meds / fluid / symptoms summary */}
                 <SummaryCards summary={summary} />

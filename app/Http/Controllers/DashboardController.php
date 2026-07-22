@@ -104,7 +104,18 @@ class DashboardController extends Controller
         $catheter = $user->catheters()->latest('id')->first();
         $nextChange = $catheter?->nextTransferSetChange();
 
+        $nextAppointment = $user->appointments()
+            ->whereDate('scheduled_for', '>=', now()->toDateString())
+            ->orderBy('scheduled_for')
+            ->first();
+
         $summary = [
+            'nextAppointment' => $nextAppointment ? [
+                'title' => $nextAppointment->title,
+                'date' => $nextAppointment->scheduled_for->toDateString(),
+                'time' => $nextAppointment->time_of_day,
+                'daysUntil' => (int) now()->startOfDay()->diffInDays($nextAppointment->scheduled_for, false),
+            ] : null,
             'activeMedications' => $user->medications()->where('active', true)->count(),
             'transferSetDue' => $nextChange?->toDateString(),
             'transferSetDaysUntil' => $nextChange

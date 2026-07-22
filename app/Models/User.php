@@ -113,6 +113,14 @@ class User extends Authenticatable implements PasskeyUser
     }
 
     /**
+     * @return HasMany<Appointment, $this>
+     */
+    public function appointments(): HasMany
+    {
+        return $this->hasMany(Appointment::class);
+    }
+
+    /**
      * @return HasMany<CatheterLog, $this>
      */
     public function catheterLogs(): HasMany
