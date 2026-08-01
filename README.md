@@ -59,6 +59,11 @@ php artisan serve                 # app server
 Then open the app, click **Get started** to register, or sign in with the demo
 account above to look around first.
 
+## Native apps
+
+Kidney-Love is a web app today. **Android, iOS, or other native applications are
+available on request** — get in touch and they will be developed.
+
 ## License
 
 MIT — provided as-is, with no warranty, for personal use. See the disclaimer
