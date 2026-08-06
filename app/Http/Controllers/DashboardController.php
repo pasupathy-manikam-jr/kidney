@@ -47,7 +47,7 @@ class DashboardController extends Controller
                 'spark' => $spark,
                 'count' => $readings->count(),
             ];
-        }, LabMetric::cases());
+        }, array_values(array_filter(LabMetric::cases(), fn (LabMetric $m) => $m->onDashboard())));
 
         // GFR category from the latest eGFR reading, if any.
         $latestEgfr = $byMetric->get(LabMetric::Egfr->value, collect())->first();

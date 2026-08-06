@@ -3,14 +3,16 @@
 namespace App\Enums;
 
 /**
- * Catalog of trackable kidney-related lab metrics.
+ * Catalog of trackable lab metrics.
  *
- * Reference ranges below are widely-cited GENERAL adult ranges. They are NOT a
- * diagnosis and vary by lab, age, sex, and clinical context. Always confirm the
- * ranges printed on the patient's own lab report and with their care team.
+ * Reference ranges below are widely-cited GENERAL adult ranges (several taken
+ * from a Malaysian MOH dialysis chart). They are NOT a diagnosis and vary by
+ * lab, age, sex, and clinical context. Always confirm against the patient's own
+ * lab report and care team.
  */
 enum LabMetric: string
 {
+    // Core kidney metrics (shown on the dashboard).
     case Egfr = 'egfr';
     case Creatinine = 'creatinine';
     case Bun = 'bun';
@@ -21,65 +23,117 @@ enum LabMetric: string
     case DiastolicBp = 'diastolic_bp';
     case Weight = 'weight';
 
+    // Extended biochemistry.
+    case Urea = 'urea';
+    case Sodium = 'sodium';
+    case Chloride = 'chloride';
+    case UricAcid = 'uric_acid';
+    case TotalProtein = 'total_protein';
+    case Albumin = 'albumin';
+    case TotalBilirubin = 'total_bilirubin';
+    case AlkPhosphatase = 'alk_phosphatase';
+    case Alt = 'alt';
+    case Calcium = 'calcium';
+    case Magnesium = 'magnesium';
+    case TotalCholesterol = 'total_cholesterol';
+    case Triglyceride = 'triglyceride';
+    case LdlCholesterol = 'ldl_cholesterol';
+    case HdlCholesterol = 'hdl_cholesterol';
+    case Fbs = 'fbs';
+
+    // Haematology.
+    case Hb = 'hb';
+    case Twdc = 'twdc';
+    case Hct = 'hct';
+    case Platelets = 'platelets';
+    case Mcv = 'mcv';
+    case Mchc = 'mchc';
+    case SrIron = 'sr_iron';
+    case Tibc = 'tibc';
+    case TransferrinRatio = 'transferrin_ratio';
+    case SrFerritin = 'sr_ferritin';
+
+    /**
+     * Per-metric metadata: [label, unit, [low, high] range (nulls allowed) or
+     * null, decimal precision].
+     */
+    private const META = [
+        'egfr' => ['eGFR', 'mL/min/1.73m²', [90, null], 0],
+        'creatinine' => ['Creatinine', 'mg/dL', [0.6, 1.3], 1],
+        'bun' => ['BUN', 'mg/dL', [7, 20], 0],
+        'uacr' => ['Albuminuria (UACR)', 'mg/g', [null, 30], 0],
+        'potassium' => ['Potassium', 'mEq/L', [3.5, 5.0], 1],
+        'phosphorus' => ['Phosphorus', 'mg/dL', [2.5, 4.5], 1],
+        'systolic_bp' => ['Systolic BP', 'mmHg', [90, 120], 0],
+        'diastolic_bp' => ['Diastolic BP', 'mmHg', [60, 80], 0],
+        'weight' => ['Weight', 'kg', null, 1],
+
+        'urea' => ['Urea', 'mmol/L', [1.7, 8.3], 1],
+        'sodium' => ['Sodium', 'mmol/L', [135, 145], 0],
+        'chloride' => ['Chloride', 'mmol/L', [96, 108], 0],
+        'uric_acid' => ['Uric Acid', 'µmol/L', [142, 416], 0],
+        'total_protein' => ['Total Protein', 'g/L', [66, 87], 0],
+        'albumin' => ['Albumin', 'g/L', [35, 50], 0],
+        'total_bilirubin' => ['Total Bilirubin', 'µmol/L', [null, 21], 1],
+        'alk_phosphatase' => ['Alk Phosphatase', 'U/L', [53, 128], 0],
+        'alt' => ['Alanine Transaminase (ALT)', 'U/L', [null, 42], 0],
+        'calcium' => ['Calcium', 'mmol/L', [2.0, 2.6], 2],
+        'magnesium' => ['Magnesium', 'mmol/L', [0.7, 1.10], 2],
+        'total_cholesterol' => ['Total Cholesterol', 'mmol/L', [null, 5.7], 1],
+        'triglyceride' => ['Triglyceride', 'mmol/L', [null, 1.7], 1],
+        'ldl_cholesterol' => ['LDL Cholesterol', 'mmol/L', [null, 3.9], 1],
+        'hdl_cholesterol' => ['HDL Cholesterol', 'mmol/L', [1.4, null], 1],
+        'fbs' => ['Fasting Blood Sugar', 'mmol/L', [3.5, 6.0], 1],
+
+        'hb' => ['Haemoglobin', 'g/dL', null, 1],
+        'twdc' => ['White Cell Count', '×10⁹/L', null, 1],
+        'hct' => ['Haematocrit', '%', null, 1],
+        'platelets' => ['Platelets', '×10⁹/L', null, 0],
+        'mcv' => ['MCV', 'fL', null, 1],
+        'mchc' => ['MCHC', 'g/dL', null, 1],
+        'sr_iron' => ['Serum Iron', 'µmol/L', [10.6, 28.3], 1],
+        'tibc' => ['TIBC', 'µmol/L', [44, 75], 1],
+        'transferrin_ratio' => ['Transferrin Ratio', '%', [20, null], 1],
+        'sr_ferritin' => ['Serum Ferritin', 'µg/L', null, 1],
+    ];
+
+    /** Core metrics surfaced as dashboard tiles. */
+    private const DASHBOARD = [
+        'egfr', 'creatinine', 'bun', 'uacr', 'potassium', 'phosphorus',
+        'systolic_bp', 'diastolic_bp', 'weight',
+    ];
+
     public function label(): string
     {
-        return match ($this) {
-            self::Egfr => 'eGFR',
-            self::Creatinine => 'Creatinine',
-            self::Bun => 'BUN',
-            self::Uacr => 'Albuminuria (UACR)',
-            self::Potassium => 'Potassium',
-            self::Phosphorus => 'Phosphorus',
-            self::SystolicBp => 'Systolic BP',
-            self::DiastolicBp => 'Diastolic BP',
-            self::Weight => 'Weight',
-        };
+        return self::META[$this->value][0];
     }
 
     public function unit(): string
     {
-        return match ($this) {
-            self::Egfr => 'mL/min/1.73m²',
-            self::Creatinine, self::Phosphorus => 'mg/dL',
-            self::Bun => 'mg/dL',
-            self::Uacr => 'mg/g',
-            self::Potassium => 'mEq/L',
-            self::SystolicBp, self::DiastolicBp => 'mmHg',
-            self::Weight => 'kg',
-        };
+        return self::META[$this->value][1];
     }
 
-    /**
-     * General adult reference range [low, high], or null if not applicable.
-     * Displayed as guidance only — see class-level warning.
-     */
+    /** General adult reference range [low, high], or null if not applicable. */
     public function referenceRange(): ?array
     {
-        return match ($this) {
-            self::Egfr => [90, null],        // >=90 normal; lower stages kidney disease
-            self::Creatinine => [0.6, 1.3],
-            self::Bun => [7, 20],
-            self::Uacr => [null, 30],        // <30 mg/g normal (A1); higher = albuminuria
-            self::Potassium => [3.5, 5.0],
-            self::Phosphorus => [2.5, 4.5],
-            self::SystolicBp => [90, 120],
-            self::DiastolicBp => [60, 80],
-            self::Weight => null,
-        };
+        return self::META[$this->value][2];
     }
 
     /** Decimal places sensible for display/entry. */
     public function precision(): int
     {
-        return match ($this) {
-            self::Egfr, self::Bun, self::Uacr, self::SystolicBp, self::DiastolicBp => 0,
-            self::Creatinine, self::Potassium, self::Phosphorus, self::Weight => 1,
-        };
+        return self::META[$this->value][3];
+    }
+
+    /** Whether this metric appears as a dashboard tile. */
+    public function onDashboard(): bool
+    {
+        return in_array($this->value, self::DASHBOARD, true);
     }
 
     /**
      * SI-unit display info: [unit, factor (conventional × factor), precision].
-     * factor 1 with the same unit means the metric has no separate SI unit.
+     * Only the US-conventional metrics convert; the rest already use SI units.
      */
     public function si(): array
     {
@@ -100,11 +154,13 @@ enum LabMetric: string
     public function criticalRange(): ?array
     {
         return match ($this) {
-            self::Potassium => [3.0, 6.0],     // mEq/L: severe hypo/hyperkalaemia
-            self::Egfr => [15, null],          // < 15 = kidney failure (G5)
-            self::SystolicBp => [null, 180],   // hypertensive range
+            self::Potassium => [3.0, 6.0],
+            self::Egfr => [15, null],
+            self::SystolicBp => [null, 180],
             self::DiastolicBp => [null, 120],
-            self::Phosphorus => [null, 7.0],   // severe hyperphosphataemia
+            self::Phosphorus => [null, 7.0],
+            self::Sodium => [120, 160],
+            self::Calcium => [1.7, 3.2],
             default => null,
         };
     }
