@@ -2,10 +2,23 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
+use Carbon\CarbonImmutable;
 use Carbon\CarbonInterface;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+/**
+ * @property int $id
+ * @property int $user_id
+ * @property string|null $brand
+ * @property string|null $catheter_type
+ * @property CarbonImmutable|null $inserted_on
+ * @property CarbonImmutable|null $transfer_set_changed_on
+ * @property int $transfer_set_interval_months
+ * @property string|null $notes
+ * @property CarbonImmutable|null $created_at
+ * @property CarbonImmutable|null $updated_at
+ */
 class Catheter extends Model
 {
     protected $fillable = [
@@ -17,6 +30,9 @@ class Catheter extends Model
         'notes',
     ];
 
+    /**
+     * @return array<string, string>
+     */
     protected function casts(): array
     {
         return [
@@ -26,6 +42,9 @@ class Catheter extends Model
         ];
     }
 
+    /**
+     * @return BelongsTo<User, $this>
+     */
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);

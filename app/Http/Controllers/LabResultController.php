@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use Inertia\Response;
+use RuntimeException;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class LabResultController extends Controller
@@ -103,6 +104,9 @@ class LabResultController extends Controller
 
         return response()->streamDownload(function () use ($results) {
             $out = fopen('php://output', 'w');
+            if ($out === false) {
+                throw new RuntimeException('Could not open the output stream.');
+            }
             fputcsv($out, ['metric', 'value', 'unit', 'measured_at', 'note']);
             foreach ($results as $r) {
                 fputcsv($out, [
@@ -130,7 +134,7 @@ class LabResultController extends Controller
 
         $header = fgetcsv($handle);
         $expected = ['metric', 'value', 'unit', 'measured_at', 'note'];
-        if ($header === false || array_map('strtolower', array_map('trim', $header)) !== $expected) {
+        if ($header === false || array_map(fn (?string $h) => strtolower(trim($h ?? '')), $header) !== $expected) {
             fclose($handle);
 
             return back()->with('error', 'CSV header must be: '.implode(', ', $expected));
@@ -147,11 +151,12 @@ class LabResultController extends Controller
             [$metricRaw, $value, , $measuredAt, $note] = array_pad($row, 5, null);
 
             $metric = LabMetric::tryFrom(trim((string) $metricRaw));
+            $measuredTs = strtotime((string) $measuredAt);
             $valid = $metric
                 && is_numeric($value)
                 && (float) $value >= 0
-                && strtotime((string) $measuredAt) !== false
-                && strtotime((string) $measuredAt) <= strtotime('today 23:59:59');
+                && $measuredTs !== false
+                && $measuredTs <= strtotime('today 23:59:59');
 
             if (! $valid) {
                 $skipped++;
@@ -163,7 +168,7 @@ class LabResultController extends Controller
                 'metric' => $metric->value,
                 'value' => (float) $value,
                 'unit' => $metric->unit(),
-                'measured_at' => date('Y-m-d', strtotime((string) $measuredAt)),
+                'measured_at' => date('Y-m-d', $measuredTs),
                 'note' => $note ? trim((string) $note) : null,
             ]);
             $imported++;

@@ -21,12 +21,17 @@ export function useFlashToasts(): void {
         if (flash?.success) {
             toast.success(flash.success);
         }
+
         if (flash?.error) {
             toast.error(flash.error);
         }
+
         if (flash?.alert) {
             // Critical health alert — stays until dismissed.
-            toast.warning(flash.alert, { duration: Infinity, closeButton: true });
+            toast.warning(flash.alert, {
+                duration: Infinity,
+                closeButton: true,
+            });
         }
     }, [flash?.success, flash?.error, flash?.alert]);
 }

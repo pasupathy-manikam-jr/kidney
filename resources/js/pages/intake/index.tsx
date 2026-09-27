@@ -1,6 +1,6 @@
 import { Head, useForm } from '@inertiajs/react';
-import { useMemo } from 'react';
 import { SlidersHorizontal } from 'lucide-react';
+import { useMemo } from 'react';
 import { useState } from 'react';
 import {
     Bar,
@@ -15,6 +15,7 @@ import {
 import IntakeEntryController from '@/actions/App/Http/Controllers/IntakeEntryController';
 import IntakeTargetController from '@/actions/App/Http/Controllers/IntakeTargetController';
 import { ConfirmDelete } from '@/components/confirm-delete';
+import InputError from '@/components/input-error';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
@@ -35,7 +36,6 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
-import InputError from '@/components/input-error';
 import { cn } from '@/lib/utils';
 import { dashboard } from '@/routes';
 
@@ -73,7 +73,10 @@ function TargetsDialog({
     const [open, setOpen] = useState(false);
     const form = useForm<Record<string, string>>(
         Object.fromEntries(
-            catalog.map((c) => [c.value, customTargets[c.value]?.toString() ?? '']),
+            catalog.map((c) => [
+                c.value,
+                customTargets[c.value]?.toString() ?? '',
+            ]),
         ),
     );
 
@@ -96,8 +99,8 @@ function TargetsDialog({
                 <DialogHeader>
                     <DialogTitle>Daily targets</DialogTitle>
                     <DialogDescription>
-                        Leave blank to use the general suggested limit. Set your own to
-                        match your care team's advice.
+                        Leave blank to use the general suggested limit. Set your
+                        own to match your care team's advice.
                     </DialogDescription>
                 </DialogHeader>
                 <form onSubmit={submit} className="flex flex-col gap-4">
@@ -105,14 +108,18 @@ function TargetsDialog({
                         <div key={c.value} className="grid gap-2">
                             <Label htmlFor={`t-${c.value}`}>
                                 {c.label}{' '}
-                                <span className="text-muted-foreground">({c.unit})</span>
+                                <span className="text-muted-foreground">
+                                    ({c.unit})
+                                </span>
                             </Label>
                             <Input
                                 id={`t-${c.value}`}
                                 type="number"
                                 min="1"
                                 value={form.data[c.value]}
-                                onChange={(e) => form.setData(c.value, e.target.value)}
+                                onChange={(e) =>
+                                    form.setData(c.value, e.target.value)
+                                }
                                 placeholder={
                                     c.suggestedLimit
                                         ? `Suggested: ${c.suggestedLimit}`
@@ -160,31 +167,44 @@ export default function IntakeIndex({
     };
 
     const remove = (id: number) => {
-        form.delete(IntakeEntryController.destroy(id).url, { preserveScroll: true });
+        form.delete(IntakeEntryController.destroy(id).url, {
+            preserveScroll: true,
+        });
     };
 
     // Today's total per category.
     const todayTotals = useMemo(() => {
         const totals: Record<string, number> = {};
-        for (const c of catalog) totals[c.value] = 0;
+
+        for (const c of catalog) {
+            totals[c.value] = 0;
+        }
+
         for (const e of entries) {
             if (e.logged_on === today) {
-                totals[e.category] = (totals[e.category] ?? 0) + Number(e.amount);
+                totals[e.category] =
+                    (totals[e.category] ?? 0) + Number(e.amount);
             }
         }
+
         return totals;
     }, [entries, catalog, today]);
 
-    const [chartCategory, setChartCategory] = useState(catalog[0]?.value ?? 'fluid');
+    const [chartCategory, setChartCategory] = useState(
+        catalog[0]?.value ?? 'fluid',
+    );
 
     // Daily totals for the selected category, last 14 days, oldest -> newest.
     const categoryHistory = useMemo(() => {
         const totals: Record<string, number> = {};
+
         for (const e of entries) {
             if (e.category === chartCategory) {
-                totals[e.logged_on] = (totals[e.logged_on] ?? 0) + Number(e.amount);
+                totals[e.logged_on] =
+                    (totals[e.logged_on] ?? 0) + Number(e.amount);
             }
         }
+
         return Object.entries(totals)
             .sort(([a], [b]) => (a < b ? -1 : 1))
             .slice(-14)
@@ -192,19 +212,24 @@ export default function IntakeIndex({
     }, [entries, chartCategory]);
 
     const chartInfo = catalogMap[chartCategory];
-    const chartTarget = targets[chartCategory] ?? chartInfo?.suggestedLimit ?? null;
+    const chartTarget =
+        targets[chartCategory] ?? chartInfo?.suggestedLimit ?? null;
 
     // Entries grouped by day (already newest-first).
     const byDay = useMemo(() => {
         const groups: { day: string; items: Entry[] }[] = [];
+
         for (const e of entries) {
             let g = groups.find((x) => x.day === e.logged_on);
+
             if (!g) {
                 g = { day: e.logged_on, items: [] };
                 groups.push(g);
             }
+
             g.items.push(e);
         }
+
         return groups;
     }, [entries]);
 
@@ -215,7 +240,10 @@ export default function IntakeIndex({
             <div className="flex h-full flex-1 flex-col gap-6 p-4">
                 <div className="flex items-center justify-between gap-3">
                     <h1 className="text-lg font-semibold">Today's totals</h1>
-                    <TargetsDialog catalog={catalog} customTargets={customTargets} />
+                    <TargetsDialog
+                        catalog={catalog}
+                        customTargets={customTargets}
+                    />
                 </div>
 
                 {/* Today's totals */}
@@ -227,6 +255,7 @@ export default function IntakeIndex({
                             ? Math.min(100, Math.round((total / limit) * 100))
                             : 0;
                         const over = limit ? total > limit : false;
+
                         return (
                             <Card key={c.value}>
                                 <CardContent className="pt-6">
@@ -237,7 +266,8 @@ export default function IntakeIndex({
                                         <span
                                             className={cn(
                                                 'text-2xl font-semibold tabular-nums',
-                                                over && 'text-rose-600 dark:text-rose-400',
+                                                over &&
+                                                    'text-rose-600 dark:text-rose-400',
                                             )}
                                         >
                                             {total}
@@ -252,7 +282,9 @@ export default function IntakeIndex({
                                             <div
                                                 className={cn(
                                                     'h-full rounded-full transition-all',
-                                                    over ? 'bg-rose-500' : 'bg-teal-500',
+                                                    over
+                                                        ? 'bg-rose-500'
+                                                        : 'bg-teal-500',
                                                 )}
                                                 style={{ width: `${pct}%` }}
                                             />
@@ -264,19 +296,26 @@ export default function IntakeIndex({
                     })}
                 </div>
 
-                {(
+                {
                     <Card>
                         <CardHeader className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                             <CardTitle>
-                                {chartInfo?.label} history ({chartInfo?.unit}/day)
+                                {chartInfo?.label} history ({chartInfo?.unit}
+                                /day)
                             </CardTitle>
-                            <Select value={chartCategory} onValueChange={setChartCategory}>
+                            <Select
+                                value={chartCategory}
+                                onValueChange={setChartCategory}
+                            >
                                 <SelectTrigger className="w-44">
                                     <SelectValue />
                                 </SelectTrigger>
                                 <SelectContent>
                                     {catalog.map((c) => (
-                                        <SelectItem key={c.value} value={c.value}>
+                                        <SelectItem
+                                            key={c.value}
+                                            value={c.value}
+                                        >
                                             {c.label}
                                         </SelectItem>
                                     ))}
@@ -286,58 +325,71 @@ export default function IntakeIndex({
                         <CardContent>
                             {categoryHistory.length === 0 ? (
                                 <p className="py-16 text-center text-sm text-muted-foreground">
-                                    No {chartInfo?.label.toLowerCase()} entries yet.
+                                    No {chartInfo?.label.toLowerCase()} entries
+                                    yet.
                                 </p>
                             ) : (
-                            <ResponsiveContainer width="100%" height={220}>
-                                <BarChart data={categoryHistory}>
-                                    <CartesianGrid
-                                        strokeDasharray="3 3"
-                                        className="stroke-border"
-                                    />
-                                    <XAxis dataKey="date" fontSize={12} tickMargin={8} />
-                                    <YAxis width={40} fontSize={12} />
-                                    <Tooltip
-                                        cursor={{ fill: 'currentColor', fillOpacity: 0.05 }}
-                                        content={({ active, payload, label }) =>
-                                            active && payload?.length ? (
-                                                <div className="rounded-md border border-border bg-popover px-3 py-2 text-xs text-popover-foreground shadow-md">
-                                                    <div className="mb-0.5 text-muted-foreground">
-                                                        {label}
-                                                    </div>
-                                                    <div className="font-medium">
-                                                        {payload[0].value} {chartInfo?.unit}
-                                                    </div>
-                                                </div>
-                                            ) : null
-                                        }
-                                    />
-                                    {chartTarget && (
-                                        <ReferenceLine
-                                            y={chartTarget}
-                                            stroke="currentColor"
-                                            strokeDasharray="4 4"
-                                            className="text-rose-500"
-                                            label={{
-                                                value: `Target ${chartTarget}`,
-                                                position: 'insideTopRight',
-                                                fontSize: 11,
-                                                fill: 'currentColor',
-                                            }}
+                                <ResponsiveContainer width="100%" height={220}>
+                                    <BarChart data={categoryHistory}>
+                                        <CartesianGrid
+                                            strokeDasharray="3 3"
+                                            className="stroke-border"
                                         />
-                                    )}
-                                    <Bar
-                                        dataKey="total"
-                                        fill="currentColor"
-                                        className="text-teal-500"
-                                        radius={[4, 4, 0, 0]}
-                                    />
-                                </BarChart>
-                            </ResponsiveContainer>
+                                        <XAxis
+                                            dataKey="date"
+                                            fontSize={12}
+                                            tickMargin={8}
+                                        />
+                                        <YAxis width={40} fontSize={12} />
+                                        <Tooltip
+                                            cursor={{
+                                                fill: 'currentColor',
+                                                fillOpacity: 0.05,
+                                            }}
+                                            content={({
+                                                active,
+                                                payload,
+                                                label,
+                                            }) =>
+                                                active && payload?.length ? (
+                                                    <div className="rounded-md border border-border bg-popover px-3 py-2 text-xs text-popover-foreground shadow-md">
+                                                        <div className="mb-0.5 text-muted-foreground">
+                                                            {label}
+                                                        </div>
+                                                        <div className="font-medium">
+                                                            {payload[0].value}{' '}
+                                                            {chartInfo?.unit}
+                                                        </div>
+                                                    </div>
+                                                ) : null
+                                            }
+                                        />
+                                        {chartTarget && (
+                                            <ReferenceLine
+                                                y={chartTarget}
+                                                stroke="currentColor"
+                                                strokeDasharray="4 4"
+                                                className="text-rose-500"
+                                                label={{
+                                                    value: `Target ${chartTarget}`,
+                                                    position: 'insideTopRight',
+                                                    fontSize: 11,
+                                                    fill: 'currentColor',
+                                                }}
+                                            />
+                                        )}
+                                        <Bar
+                                            dataKey="total"
+                                            fill="currentColor"
+                                            className="text-teal-500"
+                                            radius={[4, 4, 0, 0]}
+                                        />
+                                    </BarChart>
+                                </ResponsiveContainer>
                             )}
                         </CardContent>
                     </Card>
-                )}
+                }
 
                 <div className="grid gap-6 lg:grid-cols-[360px_1fr]">
                     {/* Add form */}
@@ -346,32 +398,51 @@ export default function IntakeIndex({
                             <CardTitle>Log intake</CardTitle>
                         </CardHeader>
                         <CardContent>
-                            <form onSubmit={submit} className="flex flex-col gap-4">
+                            <form
+                                onSubmit={submit}
+                                className="flex flex-col gap-4"
+                            >
                                 <div className="grid gap-2">
                                     <Label htmlFor="category">Category</Label>
                                     <Select
                                         value={form.data.category}
-                                        onValueChange={(v) => form.setData('category', v)}
+                                        onValueChange={(v) =>
+                                            form.setData('category', v)
+                                        }
                                     >
-                                        <SelectTrigger id="category" className="w-full">
+                                        <SelectTrigger
+                                            id="category"
+                                            className="w-full"
+                                        >
                                             <SelectValue />
                                         </SelectTrigger>
                                         <SelectContent>
                                             {catalog.map((c) => (
-                                                <SelectItem key={c.value} value={c.value}>
+                                                <SelectItem
+                                                    key={c.value}
+                                                    value={c.value}
+                                                >
                                                     {c.label} ({c.unit})
                                                 </SelectItem>
                                             ))}
                                         </SelectContent>
                                     </Select>
-                                    <InputError message={form.errors.category} />
+                                    <InputError
+                                        message={form.errors.category}
+                                    />
                                 </div>
                                 <div className="grid gap-2">
                                     <Label htmlFor="amount">
                                         Amount{' '}
                                         {catalogMap[form.data.category] && (
                                             <span className="text-muted-foreground">
-                                                ({catalogMap[form.data.category].unit})
+                                                (
+                                                {
+                                                    catalogMap[
+                                                        form.data.category
+                                                    ].unit
+                                                }
+                                                )
                                             </span>
                                         )}
                                     </Label>
@@ -381,17 +452,29 @@ export default function IntakeIndex({
                                         step="1"
                                         min="0"
                                         value={form.data.amount}
-                                        onChange={(e) => form.setData('amount', e.target.value)}
+                                        onChange={(e) =>
+                                            form.setData(
+                                                'amount',
+                                                e.target.value,
+                                            )
+                                        }
                                         required
                                     />
                                     <InputError message={form.errors.amount} />
                                 </div>
                                 <div className="grid gap-2">
-                                    <Label htmlFor="label">Label (optional)</Label>
+                                    <Label htmlFor="label">
+                                        Label (optional)
+                                    </Label>
                                     <Input
                                         id="label"
                                         value={form.data.label}
-                                        onChange={(e) => form.setData('label', e.target.value)}
+                                        onChange={(e) =>
+                                            form.setData(
+                                                'label',
+                                                e.target.value,
+                                            )
+                                        }
                                         placeholder="e.g. Coffee, banana"
                                     />
                                 </div>
@@ -402,12 +485,22 @@ export default function IntakeIndex({
                                         type="date"
                                         max={today}
                                         value={form.data.logged_on}
-                                        onChange={(e) => form.setData('logged_on', e.target.value)}
+                                        onChange={(e) =>
+                                            form.setData(
+                                                'logged_on',
+                                                e.target.value,
+                                            )
+                                        }
                                         required
                                     />
-                                    <InputError message={form.errors.logged_on} />
+                                    <InputError
+                                        message={form.errors.logged_on}
+                                    />
                                 </div>
-                                <Button type="submit" disabled={form.processing}>
+                                <Button
+                                    type="submit"
+                                    disabled={form.processing}
+                                >
                                     Log entry
                                 </Button>
                             </form>
@@ -440,7 +533,9 @@ export default function IntakeIndex({
                                                     >
                                                         <span>
                                                             <span className="font-medium">
-                                                                {catalogMap[e.category]?.label ??
+                                                                {catalogMap[
+                                                                    e.category
+                                                                ]?.label ??
                                                                     e.category}
                                                             </span>
                                                             {e.label && (
@@ -452,10 +547,15 @@ export default function IntakeIndex({
                                                         </span>
                                                         <span className="flex items-center gap-3">
                                                             <span className="tabular-nums">
-                                                                {Number(e.amount)} {e.unit}
+                                                                {Number(
+                                                                    e.amount,
+                                                                )}{' '}
+                                                                {e.unit}
                                                             </span>
                                                             <ConfirmDelete
-                                                                onConfirm={() => remove(e.id)}
+                                                                onConfirm={() =>
+                                                                    remove(e.id)
+                                                                }
                                                                 title="Delete this entry?"
                                                                 trigger={
                                                                     <button className="text-xs text-destructive hover:underline">
@@ -476,8 +576,9 @@ export default function IntakeIndex({
                 </div>
 
                 <p className="rounded-lg border border-amber-500/40 bg-amber-50 px-4 py-3 text-xs text-amber-900 dark:bg-amber-950/40 dark:text-amber-200">
-                    Suggested limits are general CKD-oriented values, not a prescription.
-                    Your target fluid and diet limits come from your care team.
+                    Suggested limits are general CKD-oriented values, not a
+                    prescription. Your target fluid and diet limits come from
+                    your care team.
                 </p>
             </div>
         </>

@@ -31,8 +31,9 @@ export default function SharedIndex({ patients }: PageProps) {
                     <CardContent>
                         {patients.length === 0 ? (
                             <p className="py-8 text-center text-sm text-muted-foreground">
-                                No one has shared their data with you yet. Ask them to
-                                invite your account email under their Sharing page.
+                                No one has shared their data with you yet. Ask
+                                them to invite your account email under their
+                                Sharing page.
                             </p>
                         ) : (
                             <ul className="flex flex-col gap-3">
@@ -53,7 +54,9 @@ export default function SharedIndex({ patients }: PageProps) {
                                         <Button
                                             size="sm"
                                             onClick={() =>
-                                                router.post(`/shared/${p.shareId}/view`)
+                                                router.post(
+                                                    `/shared/${p.shareId}/view`,
+                                                )
                                             }
                                         >
                                             <Eye className="size-4" /> View
@@ -66,8 +69,8 @@ export default function SharedIndex({ patients }: PageProps) {
                 </Card>
 
                 <p className="rounded-lg border border-amber-500/40 bg-amber-50 px-4 py-3 text-xs text-amber-900 dark:bg-amber-950/40 dark:text-amber-200">
-                    Viewing is read-only — you can see the patient's data but can't
-                    change anything.
+                    Viewing is read-only — you can see the patient's data but
+                    can't change anything.
                 </p>
             </div>
         </>

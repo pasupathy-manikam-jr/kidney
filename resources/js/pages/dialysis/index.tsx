@@ -15,6 +15,7 @@ import {
 import CatheterController from '@/actions/App/Http/Controllers/CatheterController';
 import CatheterLogController from '@/actions/App/Http/Controllers/CatheterLogController';
 import { ConfirmDelete } from '@/components/confirm-delete';
+import InputError from '@/components/input-error';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
@@ -34,7 +35,6 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
-import InputError from '@/components/input-error';
 import { cn } from '@/lib/utils';
 import { dashboard } from '@/routes';
 
@@ -78,7 +78,8 @@ function CatheterDialog({ catheter }: { catheter: Catheter | null }) {
         catheter_type: catheter?.catheter_type ?? '',
         inserted_on: catheter?.inserted_on ?? '',
         transfer_set_changed_on: catheter?.transfer_set_changed_on ?? '',
-        transfer_set_interval_months: catheter?.transfer_set_interval_months ?? 6,
+        transfer_set_interval_months:
+            catheter?.transfer_set_interval_months ?? 6,
         notes: catheter?.notes ?? '',
     });
 
@@ -91,7 +92,8 @@ function CatheterDialog({ catheter }: { catheter: Catheter | null }) {
         <Dialog>
             <DialogTrigger asChild>
                 <Button type="button" variant="outline" size="sm">
-                    <Pencil className="size-4" /> {catheter ? 'Edit' : 'Add details'}
+                    <Pencil className="size-4" />{' '}
+                    {catheter ? 'Edit' : 'Add details'}
                 </Button>
             </DialogTrigger>
             <DialogContent>
@@ -105,7 +107,9 @@ function CatheterDialog({ catheter }: { catheter: Catheter | null }) {
                             <Input
                                 id="brand"
                                 value={form.data.brand}
-                                onChange={(e) => form.setData('brand', e.target.value)}
+                                onChange={(e) =>
+                                    form.setData('brand', e.target.value)
+                                }
                                 placeholder="e.g. Covidien"
                             />
                         </div>
@@ -115,7 +119,10 @@ function CatheterDialog({ catheter }: { catheter: Catheter | null }) {
                                 id="catheter_type"
                                 value={form.data.catheter_type}
                                 onChange={(e) =>
-                                    form.setData('catheter_type', e.target.value)
+                                    form.setData(
+                                        'catheter_type',
+                                        e.target.value,
+                                    )
                                 }
                                 placeholder="Tenckhoff coiled"
                             />
@@ -144,7 +151,10 @@ function CatheterDialog({ catheter }: { catheter: Catheter | null }) {
                                 max={new Date().toISOString().slice(0, 10)}
                                 value={form.data.transfer_set_changed_on}
                                 onChange={(e) =>
-                                    form.setData('transfer_set_changed_on', e.target.value)
+                                    form.setData(
+                                        'transfer_set_changed_on',
+                                        e.target.value,
+                                    )
                                 }
                             />
                         </div>
@@ -176,7 +186,9 @@ function CatheterDialog({ catheter }: { catheter: Catheter | null }) {
                         <Input
                             id="cath-notes"
                             value={form.data.notes}
-                            onChange={(e) => form.setData('notes', e.target.value)}
+                            onChange={(e) =>
+                                form.setData('notes', e.target.value)
+                            }
                         />
                     </div>
                     <DialogFooter>
@@ -220,7 +232,9 @@ export default function DialysisIndex({
     };
 
     const remove = (id: number) => {
-        form.delete(CatheterLogController.destroy(id).url, { preserveScroll: true });
+        form.delete(CatheterLogController.destroy(id).url, {
+            preserveScroll: true,
+        });
     };
 
     const liveUf =
@@ -240,7 +254,10 @@ export default function DialysisIndex({
                 .filter((l) => l.ultrafiltration !== null)
                 .reverse()
                 .slice(-14)
-                .map((l) => ({ date: l.logged_on, uf: l.ultrafiltration as number })),
+                .map((l) => ({
+                    date: l.logged_on,
+                    uf: l.ultrafiltration as number,
+                })),
         [logs],
     );
 
@@ -249,10 +266,19 @@ export default function DialysisIndex({
         daysUntilChange === null
             ? null
             : daysUntilChange < 0
-              ? { tone: 'over', text: `Transfer set change overdue by ${Math.abs(daysUntilChange)} day(s)` }
+              ? {
+                    tone: 'over',
+                    text: `Transfer set change overdue by ${Math.abs(daysUntilChange)} day(s)`,
+                }
               : daysUntilChange <= 30
-                ? { tone: 'soon', text: `Transfer set change due in ${daysUntilChange} day(s)` }
-                : { tone: 'ok', text: `Next transfer set change in ${daysUntilChange} day(s)` };
+                ? {
+                      tone: 'soon',
+                      text: `Transfer set change due in ${daysUntilChange} day(s)`,
+                  }
+                : {
+                      tone: 'ok',
+                      text: `Next transfer set change in ${daysUntilChange} day(s)`,
+                  };
 
     return (
         <>
@@ -274,7 +300,9 @@ export default function DialysisIndex({
                     >
                         <CalendarClock className="size-4 shrink-0" />
                         {changeStatus.text}
-                        {nextTransferSetChange && <span>· due {nextTransferSetChange}</span>}
+                        {nextTransferSetChange && (
+                            <span>· due {nextTransferSetChange}</span>
+                        )}
                     </div>
                 )}
 
@@ -284,9 +312,12 @@ export default function DialysisIndex({
                         <AlertTriangle className="mt-0.5 size-4 shrink-0" />
                         <span>
                             Recent drained fluid was recorded as{' '}
-                            <strong>{colorMap[latestWarning.effluent_color!]?.label}</strong>
-                            . Cloudy fluid can signal infection (peritonitis) and pink/red
-                            can signal bleeding — contact your care team promptly.
+                            <strong>
+                                {colorMap[latestWarning.effluent_color!]?.label}
+                            </strong>
+                            . Cloudy fluid can signal infection (peritonitis)
+                            and pink/red can signal bleeding — contact your care
+                            team promptly.
                         </span>
                     </div>
                 )}
@@ -304,8 +335,14 @@ export default function DialysisIndex({
                         {catheter ? (
                             <dl className="grid grid-cols-2 gap-x-6 gap-y-3 text-sm sm:grid-cols-4">
                                 <Detail label="Brand" value={catheter.brand} />
-                                <Detail label="Type" value={catheter.catheter_type} />
-                                <Detail label="Inserted" value={catheter.inserted_on} />
+                                <Detail
+                                    label="Type"
+                                    value={catheter.catheter_type}
+                                />
+                                <Detail
+                                    label="Inserted"
+                                    value={catheter.inserted_on}
+                                />
                                 <Detail
                                     label="Set last changed"
                                     value={catheter.transfer_set_changed_on}
@@ -316,15 +353,17 @@ export default function DialysisIndex({
                                 />
                                 {catheter.notes && (
                                     <div className="col-span-2 sm:col-span-4">
-                                        <dt className="text-muted-foreground">Notes</dt>
+                                        <dt className="text-muted-foreground">
+                                            Notes
+                                        </dt>
                                         <dd>{catheter.notes}</dd>
                                     </div>
                                 )}
                             </dl>
                         ) : (
                             <p className="text-sm text-muted-foreground">
-                                No catheter details yet. Add brand, type and the last
-                                transfer-set change to get a reminder.
+                                No catheter details yet. Add brand, type and the
+                                last transfer-set change to get a reminder.
                             </p>
                         )}
                     </CardContent>
@@ -342,18 +381,31 @@ export default function DialysisIndex({
                                         strokeDasharray="3 3"
                                         className="stroke-border"
                                     />
-                                    <XAxis dataKey="date" fontSize={12} tickMargin={8} />
+                                    <XAxis
+                                        dataKey="date"
+                                        fontSize={12}
+                                        tickMargin={8}
+                                    />
                                     <YAxis width={44} fontSize={12} />
                                     <Tooltip
-                                        cursor={{ fill: 'currentColor', fillOpacity: 0.05 }}
-                                        content={({ active, payload, label }) =>
+                                        cursor={{
+                                            fill: 'currentColor',
+                                            fillOpacity: 0.05,
+                                        }}
+                                        content={({
+                                            active,
+                                            payload,
+                                            label,
+                                        }) =>
                                             active && payload?.length ? (
                                                 <div className="rounded-md border border-border bg-popover px-3 py-2 text-xs text-popover-foreground shadow-md">
                                                     <div className="mb-0.5 text-muted-foreground">
                                                         {label}
                                                     </div>
                                                     <div className="font-medium">
-                                                        {(payload[0].value as number) > 0
+                                                        {(payload[0]
+                                                            .value as number) >
+                                                        0
                                                             ? '+'
                                                             : ''}
                                                         {payload[0].value} mL
@@ -362,7 +414,10 @@ export default function DialysisIndex({
                                             ) : null
                                         }
                                     />
-                                    <ReferenceLine y={0} stroke="currentColor" />
+                                    <ReferenceLine
+                                        y={0}
+                                        stroke="currentColor"
+                                    />
                                     <Bar dataKey="uf" radius={[4, 4, 0, 0]}>
                                         {ufData.map((d, i) => (
                                             <Cell
@@ -379,9 +434,9 @@ export default function DialysisIndex({
                                 </BarChart>
                             </ResponsiveContainer>
                             <p className="mt-2 text-xs text-muted-foreground">
-                                Ultrafiltration = drain − fill. Negative values (red) mean
-                                less came out than went in — mention persistent low or
-                                negative UF to your care team.
+                                Ultrafiltration = drain − fill. Negative values
+                                (red) mean less came out than went in — mention
+                                persistent low or negative UF to your care team.
                             </p>
                         </CardContent>
                     </Card>
@@ -394,7 +449,10 @@ export default function DialysisIndex({
                             <CardTitle>Log an exchange</CardTitle>
                         </CardHeader>
                         <CardContent>
-                            <form onSubmit={submit} className="flex flex-col gap-4">
+                            <form
+                                onSubmit={submit}
+                                className="flex flex-col gap-4"
+                            >
                                 <div className="grid gap-2">
                                     <Label htmlFor="logged_on">Date</Label>
                                     <Input
@@ -403,35 +461,50 @@ export default function DialysisIndex({
                                         max={today}
                                         value={form.data.logged_on}
                                         onChange={(e) =>
-                                            form.setData('logged_on', e.target.value)
+                                            form.setData(
+                                                'logged_on',
+                                                e.target.value,
+                                            )
                                         }
                                         required
                                     />
-                                    <InputError message={form.errors.logged_on} />
+                                    <InputError
+                                        message={form.errors.logged_on}
+                                    />
                                 </div>
                                 <div className="grid grid-cols-2 gap-4">
                                     <div className="grid gap-2">
-                                        <Label htmlFor="fill_volume">Fill (mL)</Label>
+                                        <Label htmlFor="fill_volume">
+                                            Fill (mL)
+                                        </Label>
                                         <Input
                                             id="fill_volume"
                                             type="number"
                                             min="0"
                                             value={form.data.fill_volume}
                                             onChange={(e) =>
-                                                form.setData('fill_volume', e.target.value)
+                                                form.setData(
+                                                    'fill_volume',
+                                                    e.target.value,
+                                                )
                                             }
                                             placeholder="2000"
                                         />
                                     </div>
                                     <div className="grid gap-2">
-                                        <Label htmlFor="drain_volume">Drain (mL)</Label>
+                                        <Label htmlFor="drain_volume">
+                                            Drain (mL)
+                                        </Label>
                                         <Input
                                             id="drain_volume"
                                             type="number"
                                             min="0"
                                             value={form.data.drain_volume}
                                             onChange={(e) =>
-                                                form.setData('drain_volume', e.target.value)
+                                                form.setData(
+                                                    'drain_volume',
+                                                    e.target.value,
+                                                )
                                             }
                                             placeholder="2300"
                                         />
@@ -463,31 +536,47 @@ export default function DialysisIndex({
                                             form.setData('effluent_color', v)
                                         }
                                     >
-                                        <SelectTrigger id="effluent_color" className="w-full">
+                                        <SelectTrigger
+                                            id="effluent_color"
+                                            className="w-full"
+                                        >
                                             <SelectValue placeholder="Select colour" />
                                         </SelectTrigger>
                                         <SelectContent>
                                             {colors.map((c) => (
-                                                <SelectItem key={c.value} value={c.value}>
+                                                <SelectItem
+                                                    key={c.value}
+                                                    value={c.value}
+                                                >
                                                     {c.label}
                                                     {c.warning ? ' ⚠️' : ''}
                                                 </SelectItem>
                                             ))}
                                         </SelectContent>
                                     </Select>
-                                    <InputError message={form.errors.effluent_color} />
+                                    <InputError
+                                        message={form.errors.effluent_color}
+                                    />
                                 </div>
                                 <div className="grid gap-2">
-                                    <Label htmlFor="log-notes">Note (optional)</Label>
+                                    <Label htmlFor="log-notes">
+                                        Note (optional)
+                                    </Label>
                                     <Input
                                         id="log-notes"
                                         value={form.data.notes}
                                         onChange={(e) =>
-                                            form.setData('notes', e.target.value)
+                                            form.setData(
+                                                'notes',
+                                                e.target.value,
+                                            )
                                         }
                                     />
                                 </div>
-                                <Button type="submit" disabled={form.processing}>
+                                <Button
+                                    type="submit"
+                                    disabled={form.processing}
+                                >
                                     Log exchange
                                 </Button>
                             </form>
@@ -509,11 +598,21 @@ export default function DialysisIndex({
                                     <table className="w-full text-sm">
                                         <thead>
                                             <tr className="border-b text-left text-muted-foreground">
-                                                <th className="py-2 pr-4 font-medium">Date</th>
-                                                <th className="py-2 pr-4 font-medium">Fill</th>
-                                                <th className="py-2 pr-4 font-medium">Drain</th>
-                                                <th className="py-2 pr-4 font-medium">UF</th>
-                                                <th className="py-2 pr-4 font-medium">Colour</th>
+                                                <th className="py-2 pr-4 font-medium">
+                                                    Date
+                                                </th>
+                                                <th className="py-2 pr-4 font-medium">
+                                                    Fill
+                                                </th>
+                                                <th className="py-2 pr-4 font-medium">
+                                                    Drain
+                                                </th>
+                                                <th className="py-2 pr-4 font-medium">
+                                                    UF
+                                                </th>
+                                                <th className="py-2 pr-4 font-medium">
+                                                    Colour
+                                                </th>
                                                 <th className="py-2" />
                                             </tr>
                                         </thead>
@@ -522,6 +621,7 @@ export default function DialysisIndex({
                                                 const color = l.effluent_color
                                                     ? colorMap[l.effluent_color]
                                                     : null;
+
                                                 return (
                                                     <tr
                                                         key={l.id}
@@ -531,20 +631,25 @@ export default function DialysisIndex({
                                                             {l.logged_on}
                                                         </td>
                                                         <td className="py-2 pr-4 tabular-nums">
-                                                            {l.fill_volume ?? '—'}
+                                                            {l.fill_volume ??
+                                                                '—'}
                                                         </td>
                                                         <td className="py-2 pr-4 tabular-nums">
-                                                            {l.drain_volume ?? '—'}
+                                                            {l.drain_volume ??
+                                                                '—'}
                                                         </td>
                                                         <td
                                                             className={cn(
                                                                 'py-2 pr-4 tabular-nums',
-                                                                l.ultrafiltration !== null &&
-                                                                    l.ultrafiltration < 0 &&
+                                                                l.ultrafiltration !==
+                                                                    null &&
+                                                                    l.ultrafiltration <
+                                                                        0 &&
                                                                     'text-rose-600 dark:text-rose-400',
                                                             )}
                                                         >
-                                                            {l.ultrafiltration !== null
+                                                            {l.ultrafiltration !==
+                                                            null
                                                                 ? `${l.ultrafiltration > 0 ? '+' : ''}${l.ultrafiltration}`
                                                                 : '—'}
                                                         </td>
@@ -556,8 +661,12 @@ export default function DialysisIndex({
                                                                             'font-medium text-rose-600 dark:text-rose-400',
                                                                     )}
                                                                 >
-                                                                    {color.label}
-                                                                    {color.warning ? ' ⚠️' : ''}
+                                                                    {
+                                                                        color.label
+                                                                    }
+                                                                    {color.warning
+                                                                        ? ' ⚠️'
+                                                                        : ''}
                                                                 </span>
                                                             ) : (
                                                                 '—'
@@ -565,7 +674,9 @@ export default function DialysisIndex({
                                                         </td>
                                                         <td className="py-2 text-right">
                                                             <ConfirmDelete
-                                                                onConfirm={() => remove(l.id)}
+                                                                onConfirm={() =>
+                                                                    remove(l.id)
+                                                                }
                                                                 title="Delete this entry?"
                                                                 trigger={
                                                                     <button className="text-xs text-destructive hover:underline">
@@ -586,9 +697,10 @@ export default function DialysisIndex({
                 </div>
 
                 <p className="rounded-lg border border-amber-500/40 bg-amber-50 px-4 py-3 text-xs text-amber-900 dark:bg-amber-950/40 dark:text-amber-200">
-                    Personal tracking only — not medical advice. Keep the exit site clean
-                    and dry, and contact your care team promptly for cloudy or bloody
-                    fluid, fever, redness, swelling or pain at the site.
+                    Personal tracking only — not medical advice. Keep the exit
+                    site clean and dry, and contact your care team promptly for
+                    cloudy or bloody fluid, fever, redness, swelling or pain at
+                    the site.
                 </p>
             </div>
         </>

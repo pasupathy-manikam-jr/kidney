@@ -14,6 +14,7 @@ import {
 import LabResultController from '@/actions/App/Http/Controllers/LabResultController';
 import { ConfirmDelete } from '@/components/confirm-delete';
 import { EgfrCalculator } from '@/components/egfr-calculator';
+import InputError from '@/components/input-error';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
@@ -32,9 +33,8 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
-import InputError from '@/components/input-error';
-import { cn } from '@/lib/utils';
 import { display, displayBound, useUnits } from '@/lib/units';
+import { cn } from '@/lib/utils';
 
 interface SiInfo {
     unit: string;
@@ -78,9 +78,19 @@ interface TooltipProps {
     metricLabel: string;
 }
 
-function ChartTooltip({ active, label, payload, unit, metricLabel }: TooltipProps) {
-    if (!active || !payload?.length) return null;
+function ChartTooltip({
+    active,
+    label,
+    payload,
+    unit,
+    metricLabel,
+}: TooltipProps) {
+    if (!active || !payload?.length) {
+        return null;
+    }
+
     const note = payload[0].payload?.note;
+
     return (
         <div className="max-w-56 rounded-md border border-border bg-popover px-3 py-2 text-xs text-popover-foreground shadow-md">
             <div className="mb-0.5 text-muted-foreground">{label}</div>
@@ -116,7 +126,11 @@ function EditReadingDialog({
 
     const submit = (e: React.FormEvent) => {
         e.preventDefault();
-        if (!reading) return;
+
+        if (!reading) {
+            return;
+        }
+
         form.put(LabResultController.update(reading.id).url, {
             preserveScroll: true,
             onSuccess: onClose,
@@ -165,7 +179,9 @@ function EditReadingDialog({
                             step="0.1"
                             min="0"
                             value={form.data.value}
-                            onChange={(e) => form.setData('value', e.target.value)}
+                            onChange={(e) =>
+                                form.setData('value', e.target.value)
+                            }
                             required
                         />
                         <InputError message={form.errors.value} />
@@ -178,7 +194,9 @@ function EditReadingDialog({
                             type="date"
                             max={today()}
                             value={form.data.measured_at}
-                            onChange={(e) => form.setData('measured_at', e.target.value)}
+                            onChange={(e) =>
+                                form.setData('measured_at', e.target.value)
+                            }
                             required
                         />
                         <InputError message={form.errors.measured_at} />
@@ -190,7 +208,9 @@ function EditReadingDialog({
                             id="edit-note"
                             type="text"
                             value={form.data.note}
-                            onChange={(e) => form.setData('note', e.target.value)}
+                            onChange={(e) =>
+                                form.setData('note', e.target.value)
+                            }
                         />
                         <InputError message={form.errors.note} />
                     </div>
@@ -213,7 +233,11 @@ function EditReadingDialog({
     );
 }
 
-export default function LabResultsIndex({ results, catalog, profile }: PageProps) {
+export default function LabResultsIndex({
+    results,
+    catalog,
+    profile,
+}: PageProps) {
     const units = useUnits();
     const [editing, setEditing] = useState<LabResultRow | null>(null);
     const catalogMap = useMemo(
@@ -221,8 +245,12 @@ export default function LabResultsIndex({ results, catalog, profile }: PageProps
         [catalog],
     );
 
-    const [selectedMetric, setSelectedMetric] = useState(catalog[0]?.value ?? '');
-    const [timeRange, setTimeRange] = useState<'3m' | '6m' | '1y' | 'all'>('all');
+    const [selectedMetric, setSelectedMetric] = useState(
+        catalog[0]?.value ?? '',
+    );
+    const [timeRange, setTimeRange] = useState<'3m' | '6m' | '1y' | 'all'>(
+        'all',
+    );
     const [filterMetric, setFilterMetric] = useState('all');
     const [search, setSearch] = useState('');
 
@@ -242,14 +270,20 @@ export default function LabResultsIndex({ results, catalog, profile }: PageProps
     };
 
     const remove = (id: number) => {
-        form.delete(LabResultController.destroy(id).url, { preserveScroll: true });
+        form.delete(LabResultController.destroy(id).url, {
+            preserveScroll: true,
+        });
     };
 
     const importForm = useForm<{ file: File | null }>({ file: null });
 
     const handleImport = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
-        if (!file) return;
+
+        if (!file) {
+            return;
+        }
+
         importForm.setData('file', file);
         importForm.post(LabResultController.import().url, {
             preserveScroll: true,
@@ -264,15 +298,24 @@ export default function LabResultsIndex({ results, catalog, profile }: PageProps
     // Chart data for the selected metric, oldest -> newest, within the range.
     const chartData = useMemo(() => {
         const cutoff = new Date();
-        if (timeRange === '3m') cutoff.setMonth(cutoff.getMonth() - 3);
-        else if (timeRange === '6m') cutoff.setMonth(cutoff.getMonth() - 6);
-        else if (timeRange === '1y') cutoff.setFullYear(cutoff.getFullYear() - 1);
+
+        if (timeRange === '3m') {
+            cutoff.setMonth(cutoff.getMonth() - 3);
+        } else if (timeRange === '6m') {
+            cutoff.setMonth(cutoff.getMonth() - 6);
+        } else if (timeRange === '1y') {
+            cutoff.setFullYear(cutoff.getFullYear() - 1);
+        }
+
         const cutoffStr =
-            timeRange === 'all' ? '0000-00-00' : cutoff.toISOString().slice(0, 10);
+            timeRange === 'all'
+                ? '0000-00-00'
+                : cutoff.toISOString().slice(0, 10);
 
         return results
             .filter(
-                (r) => r.metric === selectedMetric && r.measured_at >= cutoffStr,
+                (r) =>
+                    r.metric === selectedMetric && r.measured_at >= cutoffStr,
             )
             .map((r) => ({
                 date: r.measured_at,
@@ -289,9 +332,16 @@ export default function LabResultsIndex({ results, catalog, profile }: PageProps
 
     const filteredResults = useMemo(() => {
         const q = search.trim().toLowerCase();
+
         return results.filter((r) => {
-            if (filterMetric !== 'all' && r.metric !== filterMetric) return false;
-            if (!q) return true;
+            if (filterMetric !== 'all' && r.metric !== filterMetric) {
+                return false;
+            }
+
+            if (!q) {
+                return true;
+            }
+
             const label = catalogMap[r.metric]?.label.toLowerCase() ?? r.metric;
             const haystack = [
                 label,
@@ -303,6 +353,7 @@ export default function LabResultsIndex({ results, catalog, profile }: PageProps
             ]
                 .join(' ')
                 .toLowerCase();
+
             return haystack.includes(q);
         });
     }, [results, filterMetric, search, catalogMap]);
@@ -327,9 +378,9 @@ export default function LabResultsIndex({ results, catalog, profile }: PageProps
             <div className="flex h-full flex-1 flex-col gap-6 p-4">
                 <p className="rounded-lg border border-amber-500/40 bg-amber-50 px-4 py-3 text-sm text-amber-900 dark:bg-amber-950/40 dark:text-amber-200">
                     This tool is for personal tracking only. It is not medical
-                    advice and does not diagnose anything. Reference ranges shown
-                    are general adult values — always confirm with the lab report
-                    and your care team.
+                    advice and does not diagnose anything. Reference ranges
+                    shown are general adult values — always confirm with the lab
+                    report and your care team.
                 </p>
 
                 <div className="grid gap-6 lg:grid-cols-[380px_1fr]">
@@ -347,19 +398,30 @@ export default function LabResultsIndex({ results, catalog, profile }: PageProps
                             />
                         </CardHeader>
                         <CardContent>
-                            <form onSubmit={submit} className="flex flex-col gap-4">
+                            <form
+                                onSubmit={submit}
+                                className="flex flex-col gap-4"
+                            >
                                 <div className="grid gap-2">
                                     <Label htmlFor="metric">Metric</Label>
                                     <Select
                                         value={form.data.metric}
-                                        onValueChange={(v) => form.setData('metric', v)}
+                                        onValueChange={(v) =>
+                                            form.setData('metric', v)
+                                        }
                                     >
-                                        <SelectTrigger id="metric" className="w-full">
+                                        <SelectTrigger
+                                            id="metric"
+                                            className="w-full"
+                                        >
                                             <SelectValue placeholder="Select a metric" />
                                         </SelectTrigger>
                                         <SelectContent>
                                             {catalog.map((m) => (
-                                                <SelectItem key={m.value} value={m.value}>
+                                                <SelectItem
+                                                    key={m.value}
+                                                    value={m.value}
+                                                >
                                                     {m.label} ({m.unit})
                                                 </SelectItem>
                                             ))}
@@ -373,7 +435,12 @@ export default function LabResultsIndex({ results, catalog, profile }: PageProps
                                         Value{' '}
                                         {catalogMap[form.data.metric] && (
                                             <span className="text-muted-foreground">
-                                                ({catalogMap[form.data.metric].unit})
+                                                (
+                                                {
+                                                    catalogMap[form.data.metric]
+                                                        .unit
+                                                }
+                                                )
                                             </span>
                                         )}
                                     </Label>
@@ -384,7 +451,10 @@ export default function LabResultsIndex({ results, catalog, profile }: PageProps
                                         min="0"
                                         value={form.data.value}
                                         onChange={(e) =>
-                                            form.setData('value', e.target.value)
+                                            form.setData(
+                                                'value',
+                                                e.target.value,
+                                            )
                                         }
                                         required
                                     />
@@ -399,15 +469,22 @@ export default function LabResultsIndex({ results, catalog, profile }: PageProps
                                         max={today()}
                                         value={form.data.measured_at}
                                         onChange={(e) =>
-                                            form.setData('measured_at', e.target.value)
+                                            form.setData(
+                                                'measured_at',
+                                                e.target.value,
+                                            )
                                         }
                                         required
                                     />
-                                    <InputError message={form.errors.measured_at} />
+                                    <InputError
+                                        message={form.errors.measured_at}
+                                    />
                                 </div>
 
                                 <div className="grid gap-2">
-                                    <Label htmlFor="note">Note (optional)</Label>
+                                    <Label htmlFor="note">
+                                        Note (optional)
+                                    </Label>
                                     <Input
                                         id="note"
                                         type="text"
@@ -419,7 +496,10 @@ export default function LabResultsIndex({ results, catalog, profile }: PageProps
                                     <InputError message={form.errors.note} />
                                 </div>
 
-                                <Button type="submit" disabled={form.processing}>
+                                <Button
+                                    type="submit"
+                                    disabled={form.processing}
+                                >
                                     Save reading
                                 </Button>
                             </form>
@@ -432,21 +512,25 @@ export default function LabResultsIndex({ results, catalog, profile }: PageProps
                             <CardTitle>Trend</CardTitle>
                             <div className="flex flex-wrap items-center gap-2">
                                 <div className="flex rounded-md border border-border p-0.5">
-                                    {(['3m', '6m', '1y', 'all'] as const).map((r) => (
-                                        <button
-                                            key={r}
-                                            type="button"
-                                            onClick={() => setTimeRange(r)}
-                                            className={cn(
-                                                'rounded px-2.5 py-1 text-xs font-medium transition',
-                                                timeRange === r
-                                                    ? 'bg-primary text-primary-foreground'
-                                                    : 'text-muted-foreground hover:text-foreground',
-                                            )}
-                                        >
-                                            {r === 'all' ? 'All' : r.toUpperCase()}
-                                        </button>
-                                    ))}
+                                    {(['3m', '6m', '1y', 'all'] as const).map(
+                                        (r) => (
+                                            <button
+                                                key={r}
+                                                type="button"
+                                                onClick={() => setTimeRange(r)}
+                                                className={cn(
+                                                    'rounded px-2.5 py-1 text-xs font-medium transition',
+                                                    timeRange === r
+                                                        ? 'bg-primary text-primary-foreground'
+                                                        : 'text-muted-foreground hover:text-foreground',
+                                                )}
+                                            >
+                                                {r === 'all'
+                                                    ? 'All'
+                                                    : r.toUpperCase()}
+                                            </button>
+                                        ),
+                                    )}
                                 </div>
                                 <Select
                                     value={selectedMetric}
@@ -457,7 +541,10 @@ export default function LabResultsIndex({ results, catalog, profile }: PageProps
                                     </SelectTrigger>
                                     <SelectContent>
                                         {catalog.map((m) => (
-                                            <SelectItem key={m.value} value={m.value}>
+                                            <SelectItem
+                                                key={m.value}
+                                                value={m.value}
+                                            >
                                                 {m.label}
                                             </SelectItem>
                                         ))}
@@ -501,11 +588,17 @@ export default function LabResultsIndex({ results, catalog, profile }: PageProps
                                                 />
                                             )}
                                         <Tooltip
-                                            cursor={{ stroke: 'currentColor', strokeOpacity: 0.2 }}
+                                            cursor={{
+                                                stroke: 'currentColor',
+                                                strokeOpacity: 0.2,
+                                            }}
                                             content={
                                                 <ChartTooltip
                                                     unit={selectedUnit ?? ''}
-                                                    metricLabel={selectedInfo?.label ?? ''}
+                                                    metricLabel={
+                                                        selectedInfo?.label ??
+                                                        ''
+                                                    }
                                                 />
                                             }
                                         />
@@ -516,8 +609,14 @@ export default function LabResultsIndex({ results, catalog, profile }: PageProps
                                             className="text-primary"
                                             strokeWidth={2}
                                             dot={(props) => {
-                                                const { cx, cy, payload, index } = props;
+                                                const {
+                                                    cx,
+                                                    cy,
+                                                    payload,
+                                                    index,
+                                                } = props;
                                                 const hasNote = !!payload?.note;
+
                                                 return (
                                                     <circle
                                                         key={index}
@@ -543,8 +642,10 @@ export default function LabResultsIndex({ results, catalog, profile }: PageProps
                                 <p className="mt-2 text-xs text-muted-foreground">
                                     {range && (
                                         <>
-                                            Shaded band = general reference range
-                                            {range[0] !== null && range[1] !== null
+                                            Shaded band = general reference
+                                            range
+                                            {range[0] !== null &&
+                                            range[1] !== null
                                                 ? ` (${range[0]}–${range[1]} ${selectedUnit})`
                                                 : range[0] !== null
                                                   ? ` (≥${range[0]} ${selectedUnit})`
@@ -565,7 +666,11 @@ export default function LabResultsIndex({ results, catalog, profile }: PageProps
                         <CardTitle>History</CardTitle>
                         <div className="flex items-center gap-2">
                             <a href={LabResultController.export().url}>
-                                <Button type="button" variant="outline" size="sm">
+                                <Button
+                                    type="button"
+                                    variant="outline"
+                                    size="sm"
+                                >
                                     <Download className="size-4" /> Export CSV
                                 </Button>
                             </a>
@@ -603,7 +708,9 @@ export default function LabResultsIndex({ results, catalog, profile }: PageProps
                                         type="search"
                                         placeholder="Search notes, metric or date…"
                                         value={search}
-                                        onChange={(e) => setSearch(e.target.value)}
+                                        onChange={(e) =>
+                                            setSearch(e.target.value)
+                                        }
                                         className="sm:max-w-xs"
                                     />
                                     <Select
@@ -614,9 +721,14 @@ export default function LabResultsIndex({ results, catalog, profile }: PageProps
                                             <SelectValue />
                                         </SelectTrigger>
                                         <SelectContent>
-                                            <SelectItem value="all">All metrics</SelectItem>
+                                            <SelectItem value="all">
+                                                All metrics
+                                            </SelectItem>
                                             {catalog.map((m) => (
-                                                <SelectItem key={m.value} value={m.value}>
+                                                <SelectItem
+                                                    key={m.value}
+                                                    value={m.value}
+                                                >
                                                     {m.label}
                                                 </SelectItem>
                                             ))}
@@ -628,63 +740,95 @@ export default function LabResultsIndex({ results, catalog, profile }: PageProps
                                         No readings match your filter.
                                     </p>
                                 ) : (
-                            <div className="overflow-x-auto">
-                                <table className="w-full text-sm">
-                                    <thead>
-                                        <tr className="border-b text-left text-muted-foreground">
-                                            <th className="py-2 pr-4 font-medium">Date</th>
-                                            <th className="py-2 pr-4 font-medium">Metric</th>
-                                            <th className="py-2 pr-4 font-medium">Value</th>
-                                            <th className="py-2 pr-4 font-medium">Note</th>
-                                            <th className="py-2" />
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {filteredResults.map((r) => (
-                                            <tr key={r.id} className="border-b last:border-0">
-                                                <td className="py-2 pr-4">{r.measured_at}</td>
-                                                <td className="py-2 pr-4">
-                                                    {catalogMap[r.metric]?.label ?? r.metric}
-                                                </td>
-                                                <td className="py-2 pr-4">
-                                                    {(() => {
-                                                        const info = catalogMap[r.metric];
-                                                        const d = display(
-                                                            Number(r.value),
-                                                            info?.unit ?? r.unit,
-                                                            info?.si,
-                                                            units,
-                                                        );
-                                                        return `${d.value} ${d.unit}`;
-                                                    })()}
-                                                </td>
-                                                <td className="py-2 pr-4 text-muted-foreground">
-                                                    {r.note ?? ''}
-                                                </td>
-                                                <td className="py-2 text-right">
-                                                    <div className="flex justify-end gap-3">
-                                                        <button
-                                                            onClick={() => setEditing(r)}
-                                                            className="text-xs text-muted-foreground hover:text-foreground hover:underline"
-                                                        >
-                                                            Edit
-                                                        </button>
-                                                        <ConfirmDelete
-                                                            onConfirm={() => remove(r.id)}
-                                                            title="Delete this reading?"
-                                                            trigger={
-                                                                <button className="text-xs text-destructive hover:underline">
-                                                                    Delete
+                                    <div className="overflow-x-auto">
+                                        <table className="w-full text-sm">
+                                            <thead>
+                                                <tr className="border-b text-left text-muted-foreground">
+                                                    <th className="py-2 pr-4 font-medium">
+                                                        Date
+                                                    </th>
+                                                    <th className="py-2 pr-4 font-medium">
+                                                        Metric
+                                                    </th>
+                                                    <th className="py-2 pr-4 font-medium">
+                                                        Value
+                                                    </th>
+                                                    <th className="py-2 pr-4 font-medium">
+                                                        Note
+                                                    </th>
+                                                    <th className="py-2" />
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {filteredResults.map((r) => (
+                                                    <tr
+                                                        key={r.id}
+                                                        className="border-b last:border-0"
+                                                    >
+                                                        <td className="py-2 pr-4">
+                                                            {r.measured_at}
+                                                        </td>
+                                                        <td className="py-2 pr-4">
+                                                            {catalogMap[
+                                                                r.metric
+                                                            ]?.label ??
+                                                                r.metric}
+                                                        </td>
+                                                        <td className="py-2 pr-4">
+                                                            {(() => {
+                                                                const info =
+                                                                    catalogMap[
+                                                                        r.metric
+                                                                    ];
+                                                                const d =
+                                                                    display(
+                                                                        Number(
+                                                                            r.value,
+                                                                        ),
+                                                                        info?.unit ??
+                                                                            r.unit,
+                                                                        info?.si,
+                                                                        units,
+                                                                    );
+
+                                                                return `${d.value} ${d.unit}`;
+                                                            })()}
+                                                        </td>
+                                                        <td className="py-2 pr-4 text-muted-foreground">
+                                                            {r.note ?? ''}
+                                                        </td>
+                                                        <td className="py-2 text-right">
+                                                            <div className="flex justify-end gap-3">
+                                                                <button
+                                                                    onClick={() =>
+                                                                        setEditing(
+                                                                            r,
+                                                                        )
+                                                                    }
+                                                                    className="text-xs text-muted-foreground hover:text-foreground hover:underline"
+                                                                >
+                                                                    Edit
                                                                 </button>
-                                                            }
-                                                        />
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
-                            </div>
+                                                                <ConfirmDelete
+                                                                    onConfirm={() =>
+                                                                        remove(
+                                                                            r.id,
+                                                                        )
+                                                                    }
+                                                                    title="Delete this reading?"
+                                                                    trigger={
+                                                                        <button className="text-xs text-destructive hover:underline">
+                                                                            Delete
+                                                                        </button>
+                                                                    }
+                                                                />
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                ))}
+                                            </tbody>
+                                        </table>
+                                    </div>
                                 )}
                             </>
                         )}

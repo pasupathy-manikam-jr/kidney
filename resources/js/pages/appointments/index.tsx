@@ -3,11 +3,11 @@ import { CalendarDays, MapPin } from 'lucide-react';
 import { useMemo } from 'react';
 import AppointmentController from '@/actions/App/Http/Controllers/AppointmentController';
 import { ConfirmDelete } from '@/components/confirm-delete';
+import InputError from '@/components/input-error';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import InputError from '@/components/input-error';
 import { cn } from '@/lib/utils';
 import { dashboard } from '@/routes';
 
@@ -43,15 +43,19 @@ export default function AppointmentsIndex({ appointments, today }: PageProps) {
     };
 
     const remove = (id: number) => {
-        form.delete(AppointmentController.destroy(id).url, { preserveScroll: true });
+        form.delete(AppointmentController.destroy(id).url, {
+            preserveScroll: true,
+        });
     };
 
     const { upcoming, past } = useMemo(() => {
         const up: Appointment[] = [];
         const pa: Appointment[] = [];
+
         for (const a of appointments) {
             (a.scheduled_for >= today ? up : pa).push(a);
         }
+
         return { upcoming: up, past: pa.reverse() };
     }, [appointments, today]);
 
@@ -111,13 +115,21 @@ export default function AppointmentsIndex({ appointments, today }: PageProps) {
                             <CardTitle>Add appointment / test</CardTitle>
                         </CardHeader>
                         <CardContent>
-                            <form onSubmit={submit} className="flex flex-col gap-4">
+                            <form
+                                onSubmit={submit}
+                                className="flex flex-col gap-4"
+                            >
                                 <div className="grid gap-2">
                                     <Label htmlFor="title">Title</Label>
                                     <Input
                                         id="title"
                                         value={form.data.title}
-                                        onChange={(e) => form.setData('title', e.target.value)}
+                                        onChange={(e) =>
+                                            form.setData(
+                                                'title',
+                                                e.target.value,
+                                            )
+                                        }
                                         placeholder="e.g. Nephrology clinic, Blood test"
                                         required
                                     />
@@ -125,26 +137,38 @@ export default function AppointmentsIndex({ appointments, today }: PageProps) {
                                 </div>
                                 <div className="grid grid-cols-2 gap-4">
                                     <div className="grid gap-2">
-                                        <Label htmlFor="scheduled_for">Date</Label>
+                                        <Label htmlFor="scheduled_for">
+                                            Date
+                                        </Label>
                                         <Input
                                             id="scheduled_for"
                                             type="date"
                                             value={form.data.scheduled_for}
                                             onChange={(e) =>
-                                                form.setData('scheduled_for', e.target.value)
+                                                form.setData(
+                                                    'scheduled_for',
+                                                    e.target.value,
+                                                )
                                             }
                                             required
                                         />
-                                        <InputError message={form.errors.scheduled_for} />
+                                        <InputError
+                                            message={form.errors.scheduled_for}
+                                        />
                                     </div>
                                     <div className="grid gap-2">
-                                        <Label htmlFor="time_of_day">Time</Label>
+                                        <Label htmlFor="time_of_day">
+                                            Time
+                                        </Label>
                                         <Input
                                             id="time_of_day"
                                             type="time"
                                             value={form.data.time_of_day}
                                             onChange={(e) =>
-                                                form.setData('time_of_day', e.target.value)
+                                                form.setData(
+                                                    'time_of_day',
+                                                    e.target.value,
+                                                )
                                             }
                                         />
                                     </div>
@@ -155,7 +179,10 @@ export default function AppointmentsIndex({ appointments, today }: PageProps) {
                                         id="location"
                                         value={form.data.location}
                                         onChange={(e) =>
-                                            form.setData('location', e.target.value)
+                                            form.setData(
+                                                'location',
+                                                e.target.value,
+                                            )
                                         }
                                         placeholder="Clinic / hospital"
                                     />
@@ -165,10 +192,18 @@ export default function AppointmentsIndex({ appointments, today }: PageProps) {
                                     <Input
                                         id="notes"
                                         value={form.data.notes}
-                                        onChange={(e) => form.setData('notes', e.target.value)}
+                                        onChange={(e) =>
+                                            form.setData(
+                                                'notes',
+                                                e.target.value,
+                                            )
+                                        }
                                     />
                                 </div>
-                                <Button type="submit" disabled={form.processing}>
+                                <Button
+                                    type="submit"
+                                    disabled={form.processing}
+                                >
                                     Add
                                 </Button>
                             </form>

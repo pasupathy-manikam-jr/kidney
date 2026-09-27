@@ -3,9 +3,21 @@
 namespace App\Models;
 
 use App\Enums\EffluentColor;
+use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+/**
+ * @property int $id
+ * @property int $user_id
+ * @property CarbonImmutable $logged_on
+ * @property int|null $fill_volume
+ * @property int|null $drain_volume
+ * @property EffluentColor|null $effluent_color
+ * @property string|null $notes
+ * @property CarbonImmutable|null $created_at
+ * @property CarbonImmutable|null $updated_at
+ */
 class CatheterLog extends Model
 {
     protected $fillable = [
@@ -16,6 +28,9 @@ class CatheterLog extends Model
         'notes',
     ];
 
+    /**
+     * @return array<string, string>
+     */
     protected function casts(): array
     {
         return [
@@ -26,6 +41,9 @@ class CatheterLog extends Model
         ];
     }
 
+    /**
+     * @return BelongsTo<User, $this>
+     */
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);

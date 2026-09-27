@@ -3,6 +3,7 @@
 use App\Enums\AlbuminuriaCategory;
 use App\Enums\GfrCategory;
 use App\Enums\LabMetric;
+use App\Http\Controllers\AppearancePrefController;
 use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\CareShareController;
 use App\Http\Controllers\CatheterController;
@@ -18,13 +19,14 @@ use App\Http\Controllers\PushSubscriptionController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\SharedController;
 use App\Http\Controllers\SymptomEntryController;
+use App\Http\Middleware\ResolveActivePatient;
 use App\Support\KdigoRisk;
 use Illuminate\Support\Facades\Route;
 
 Route::inertia('/', 'welcome')->name('home');
 Route::inertia('guide', 'guide')->name('guide');
 
-Route::middleware(['auth', 'verified', \App\Http\Middleware\ResolveActivePatient::class])->group(function () {
+Route::middleware(['auth', 'verified', ResolveActivePatient::class])->group(function () {
     Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     // Caregiver sharing (patient side: invite/revoke).
@@ -68,7 +70,7 @@ Route::middleware(['auth', 'verified', \App\Http\Middleware\ResolveActivePatient
     Route::put('appointments/{appointment}', [AppointmentController::class, 'update'])->name('appointments.update');
     Route::delete('appointments/{appointment}', [AppointmentController::class, 'destroy'])->name('appointments.destroy');
 
-    Route::put('appearance-prefs', [\App\Http\Controllers\AppearancePrefController::class, 'update'])->name('appearance-prefs.update');
+    Route::put('appearance-prefs', [AppearancePrefController::class, 'update'])->name('appearance-prefs.update');
 
     Route::post('push-subscriptions', [PushSubscriptionController::class, 'store'])->name('push-subscriptions.store');
     Route::delete('push-subscriptions', [PushSubscriptionController::class, 'destroy'])->name('push-subscriptions.destroy');

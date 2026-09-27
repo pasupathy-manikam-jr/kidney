@@ -168,22 +168,26 @@ export default function Welcome() {
                 <main className="mx-auto max-w-5xl px-6">
                     <section className="flex flex-col items-center gap-6 py-16 text-center sm:py-24">
                         <span className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-3 py-1 text-xs font-medium text-primary">
-                            <HeartPulse className="size-3.5" /> Kidney health, tracked simply
+                            <HeartPulse className="size-3.5" /> Kidney health,
+                            tracked simply
                         </span>
                         <h1 className="max-w-2xl text-4xl font-bold tracking-tight sm:text-5xl">
                             Understand your kidney numbers over time
                         </h1>
                         <p className="max-w-xl text-lg text-muted-foreground">
-                            Track labs, medications, diet & fluid and symptoms — see
-                            your trends and KDIGO risk, and print a report for every
-                            appointment. All in one calm, private place.
+                            Track labs, medications, diet & fluid and symptoms —
+                            see your trends and KDIGO risk, and print a report
+                            for every appointment. All in one calm, private
+                            place.
                         </p>
                         <div className="flex flex-wrap items-center justify-center gap-3">
                             <Link
                                 href={auth.user ? dashboard() : register()}
                                 className="rounded-lg bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground shadow-sm transition hover:bg-primary/90"
                             >
-                                {auth.user ? 'Open dashboard' : 'Start tracking free'}
+                                {auth.user
+                                    ? 'Open dashboard'
+                                    : 'Start tracking free'}
                             </Link>
                             {!auth.user && (
                                 <Link
@@ -206,7 +210,9 @@ export default function Welcome() {
                                 <span className="flex size-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
                                     <f.icon className="size-5" />
                                 </span>
-                                <h3 className="mt-4 font-semibold">{f.title}</h3>
+                                <h3 className="mt-4 font-semibold">
+                                    {f.title}
+                                </h3>
                                 <p className="mt-1 text-sm text-muted-foreground">
                                     {f.body}
                                 </p>
@@ -217,9 +223,10 @@ export default function Welcome() {
                     {/* Disclaimer */}
                     <section className="pb-16">
                         <p className="rounded-lg border border-amber-500/40 bg-amber-50 px-4 py-3 text-center text-xs text-amber-900 dark:bg-amber-950/40 dark:text-amber-200">
-                            Kidney-Love is a personal tracking tool — not medical advice
-                            or a diagnosis. Reference ranges are general adult values.
-                            Always confirm every result with your lab report and care team.
+                            Kidney-Love is a personal tracking tool — not
+                            medical advice or a diagnosis. Reference ranges are
+                            general adult values. Always confirm every result
+                            with your lab report and care team.
                         </p>
                     </section>
                 </main>

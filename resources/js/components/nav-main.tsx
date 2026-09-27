@@ -29,7 +29,9 @@ export function NavMain({ items = [] }: { items: NavItem[] }) {
                                 href={item.href}
                                 prefetch
                                 onClick={() => {
-                                    if (isMobile) setOpenMobile(false);
+                                    if (isMobile) {
+                                        setOpenMobile(false);
+                                    }
                                 }}
                             >
                                 {item.icon && <item.icon />}

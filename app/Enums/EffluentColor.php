@@ -46,6 +46,9 @@ enum EffluentColor: string
         };
     }
 
+    /**
+     * @return list<array{value: string, label: string, warning: bool}>
+     */
     public static function catalog(): array
     {
         return array_map(fn (self $c) => [

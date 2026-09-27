@@ -42,6 +42,9 @@ class SymptomEntryController extends Controller
         return back()->with('status', 'Entry removed.');
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     private function validated(Request $request): array
     {
         return $request->validate([

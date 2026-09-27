@@ -1,7 +1,7 @@
 import { Head, Link } from '@inertiajs/react';
 import { ArrowLeft, Printer } from 'lucide-react';
-import { cn } from '@/lib/utils';
 import { display, displayBound, useUnits } from '@/lib/units';
+import { cn } from '@/lib/utils';
 import { dashboard } from '@/routes';
 
 type Status = 'in_range' | 'low' | 'high' | 'none';
@@ -86,11 +86,24 @@ const STATUS_LABEL: Record<Status, string> = {
 };
 
 function refRange(r: Latest['referenceRange'], unit: string): string {
-    if (!r) return '—';
+    if (!r) {
+        return '—';
+    }
+
     const [low, high] = r;
-    if (low !== null && high !== null) return `${low}–${high} ${unit}`;
-    if (low !== null) return `≥${low} ${unit}`;
-    if (high !== null) return `<${high} ${unit}`;
+
+    if (low !== null && high !== null) {
+        return `${low}–${high} ${unit}`;
+    }
+
+    if (low !== null) {
+        return `≥${low} ${unit}`;
+    }
+
+    if (high !== null) {
+        return `<${high} ${unit}`;
+    }
+
     return '—';
 }
 
@@ -109,6 +122,7 @@ export default function Report({
     dialysis,
 }: PageProps) {
     const units = useUnits();
+
     return (
         <>
             <Head title="Report — Kidney-Love" />
@@ -132,23 +146,34 @@ export default function Report({
 
                 {/* Header */}
                 <header className="mb-6 border-b border-neutral-200 pb-4">
-                    <h1 className="text-2xl font-bold">Kidney-Love — Kidney Health Report</h1>
+                    <h1 className="text-2xl font-bold">
+                        Kidney-Love — Kidney Health Report
+                    </h1>
                     <div className="mt-1 text-sm text-neutral-500">
-                        {patientName} · Generated {generatedAt} · {totalReadings} readings
+                        {patientName} · Generated {generatedAt} ·{' '}
+                        {totalReadings} readings
                     </div>
                 </header>
 
                 {/* Summary */}
                 <section className="mb-6 grid grid-cols-1 gap-3 sm:grid-cols-3 print:grid-cols-3">
                     <div className="rounded-lg border border-neutral-200 p-3">
-                        <div className="text-xs text-neutral-500">GFR category</div>
-                        <div className="text-lg font-semibold">{gfr?.code ?? '—'}</div>
                         <div className="text-xs text-neutral-500">
-                            {gfr ? `eGFR ${gfr.egfr} · ${gfr.label}` : 'No eGFR reading'}
+                            GFR category
+                        </div>
+                        <div className="text-lg font-semibold">
+                            {gfr?.code ?? '—'}
+                        </div>
+                        <div className="text-xs text-neutral-500">
+                            {gfr
+                                ? `eGFR ${gfr.egfr} · ${gfr.label}`
+                                : 'No eGFR reading'}
                         </div>
                     </div>
                     <div className="rounded-lg border border-neutral-200 p-3">
-                        <div className="text-xs text-neutral-500">Albuminuria</div>
+                        <div className="text-xs text-neutral-500">
+                            Albuminuria
+                        </div>
                         <div className="text-lg font-semibold">
                             {albuminuria?.code ?? '—'}
                         </div>
@@ -159,7 +184,9 @@ export default function Report({
                         </div>
                     </div>
                     <div className="rounded-lg border border-neutral-200 p-3">
-                        <div className="text-xs text-neutral-500">KDIGO risk</div>
+                        <div className="text-xs text-neutral-500">
+                            KDIGO risk
+                        </div>
                         <div className="text-lg font-semibold">
                             {risk?.label ?? '—'}
                         </div>
@@ -173,50 +200,77 @@ export default function Report({
                 <section className="mb-6">
                     <h2 className="mb-2 font-semibold">Latest values</h2>
                     <div className="overflow-x-auto">
-                    <table className="w-full min-w-[520px] text-sm print:min-w-0">
-                        <thead>
-                            <tr className="border-b border-neutral-200 text-left text-neutral-500">
-                                <th className="py-1.5 pr-4 font-medium">Metric</th>
-                                <th className="py-1.5 pr-4 font-medium">Value</th>
-                                <th className="py-1.5 pr-4 font-medium">Reference</th>
-                                <th className="py-1.5 pr-4 font-medium">Status</th>
-                                <th className="py-1.5 font-medium">Date</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {latest.map((m) => {
-                                const d = display(m.value, m.unit, m.si, units);
-                                const dRange = m.referenceRange
-                                    ? ([
-                                          displayBound(m.referenceRange[0], m.si, units),
-                                          displayBound(m.referenceRange[1], m.si, units),
-                                      ] as [number | null, number | null])
-                                    : null;
-                                return (
-                                <tr key={m.metric} className="border-b border-neutral-100">
-                                    <td className="py-1.5 pr-4">{m.label}</td>
-                                    <td className="py-1.5 pr-4 font-medium">
-                                        {d.value} {d.unit}
-                                    </td>
-                                    <td className="py-1.5 pr-4 text-neutral-500">
-                                        {refRange(dRange, d.unit)}
-                                    </td>
-                                    <td
-                                        className={cn(
-                                            'py-1.5 pr-4 font-medium',
-                                            STATUS_TEXT[m.status],
-                                        )}
-                                    >
-                                        {STATUS_LABEL[m.status]}
-                                    </td>
-                                    <td className="py-1.5 text-neutral-500">
-                                        {m.measuredAt}
-                                    </td>
+                        <table className="w-full min-w-[520px] text-sm print:min-w-0">
+                            <thead>
+                                <tr className="border-b border-neutral-200 text-left text-neutral-500">
+                                    <th className="py-1.5 pr-4 font-medium">
+                                        Metric
+                                    </th>
+                                    <th className="py-1.5 pr-4 font-medium">
+                                        Value
+                                    </th>
+                                    <th className="py-1.5 pr-4 font-medium">
+                                        Reference
+                                    </th>
+                                    <th className="py-1.5 pr-4 font-medium">
+                                        Status
+                                    </th>
+                                    <th className="py-1.5 font-medium">Date</th>
                                 </tr>
-                                );
-                            })}
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody>
+                                {latest.map((m) => {
+                                    const d = display(
+                                        m.value,
+                                        m.unit,
+                                        m.si,
+                                        units,
+                                    );
+                                    const dRange = m.referenceRange
+                                        ? ([
+                                              displayBound(
+                                                  m.referenceRange[0],
+                                                  m.si,
+                                                  units,
+                                              ),
+                                              displayBound(
+                                                  m.referenceRange[1],
+                                                  m.si,
+                                                  units,
+                                              ),
+                                          ] as [number | null, number | null])
+                                        : null;
+
+                                    return (
+                                        <tr
+                                            key={m.metric}
+                                            className="border-b border-neutral-100"
+                                        >
+                                            <td className="py-1.5 pr-4">
+                                                {m.label}
+                                            </td>
+                                            <td className="py-1.5 pr-4 font-medium">
+                                                {d.value} {d.unit}
+                                            </td>
+                                            <td className="py-1.5 pr-4 text-neutral-500">
+                                                {refRange(dRange, d.unit)}
+                                            </td>
+                                            <td
+                                                className={cn(
+                                                    'py-1.5 pr-4 font-medium',
+                                                    STATUS_TEXT[m.status],
+                                                )}
+                                            >
+                                                {STATUS_LABEL[m.status]}
+                                            </td>
+                                            <td className="py-1.5 text-neutral-500">
+                                                {m.measuredAt}
+                                            </td>
+                                        </tr>
+                                    );
+                                })}
+                            </tbody>
+                        </table>
                     </div>
                 </section>
 
@@ -224,15 +278,24 @@ export default function Report({
                 <section className="mb-6">
                     <h2 className="mb-2 font-semibold">Current medications</h2>
                     {medications.length === 0 ? (
-                        <p className="text-sm text-neutral-500">None recorded.</p>
+                        <p className="text-sm text-neutral-500">
+                            None recorded.
+                        </p>
                     ) : (
                         <ul className="grid gap-1 text-sm sm:grid-cols-2 print:grid-cols-2">
                             {medications.map((m, i) => (
-                                <li key={i} className="rounded border border-neutral-200 px-3 py-2">
-                                    <span className="font-medium">{m.name}</span>
+                                <li
+                                    key={i}
+                                    className="rounded border border-neutral-200 px-3 py-2"
+                                >
+                                    <span className="font-medium">
+                                        {m.name}
+                                    </span>
                                     {m.dosage && <span> · {m.dosage}</span>}
                                     <div className="text-xs text-neutral-500">
-                                        {[m.frequency, m.timeOfDay].filter(Boolean).join(' · ') || '—'}
+                                        {[m.frequency, m.timeOfDay]
+                                            .filter(Boolean)
+                                            .join(' · ') || '—'}
                                     </div>
                                 </li>
                             ))}
@@ -242,15 +305,25 @@ export default function Report({
 
                 {/* Today's intake */}
                 <section className="mb-6">
-                    <h2 className="mb-2 font-semibold">Today's diet &amp; fluid</h2>
+                    <h2 className="mb-2 font-semibold">
+                        Today's diet &amp; fluid
+                    </h2>
                     <div className="grid grid-cols-2 gap-2 text-sm sm:grid-cols-4 print:grid-cols-4">
                         {intakeToday.map((c, i) => (
-                            <div key={i} className="rounded border border-neutral-200 px-3 py-2">
-                                <div className="text-xs text-neutral-500">{c.label}</div>
+                            <div
+                                key={i}
+                                className="rounded border border-neutral-200 px-3 py-2"
+                            >
+                                <div className="text-xs text-neutral-500">
+                                    {c.label}
+                                </div>
                                 <div className="font-medium">
                                     {c.total} {c.unit}
                                     {c.target ? (
-                                        <span className="text-neutral-500"> / {c.target}</span>
+                                        <span className="text-neutral-500">
+                                            {' '}
+                                            / {c.target}
+                                        </span>
                                     ) : null}
                                 </div>
                             </div>
@@ -262,25 +335,46 @@ export default function Report({
                 <section className="mb-6">
                     <h2 className="mb-2 font-semibold">Recent symptoms</h2>
                     {symptoms.length === 0 ? (
-                        <p className="text-sm text-neutral-500">None recorded.</p>
+                        <p className="text-sm text-neutral-500">
+                            None recorded.
+                        </p>
                     ) : (
                         <div className="overflow-x-auto">
                             <table className="w-full min-w-[420px] text-sm print:min-w-0">
                                 <thead>
                                     <tr className="border-b border-neutral-200 text-left text-neutral-500">
-                                        <th className="py-1.5 pr-4 font-medium">Date</th>
-                                        <th className="py-1.5 pr-4 font-medium">Symptom</th>
-                                        <th className="py-1.5 pr-4 font-medium">Severity</th>
-                                        <th className="py-1.5 font-medium">Note</th>
+                                        <th className="py-1.5 pr-4 font-medium">
+                                            Date
+                                        </th>
+                                        <th className="py-1.5 pr-4 font-medium">
+                                            Symptom
+                                        </th>
+                                        <th className="py-1.5 pr-4 font-medium">
+                                            Severity
+                                        </th>
+                                        <th className="py-1.5 font-medium">
+                                            Note
+                                        </th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {symptoms.map((s, i) => (
-                                        <tr key={i} className="border-b border-neutral-100">
-                                            <td className="py-1.5 pr-4">{s.loggedOn}</td>
-                                            <td className="py-1.5 pr-4">{s.symptom}</td>
-                                            <td className="py-1.5 pr-4">{s.severity}/5</td>
-                                            <td className="py-1.5 text-neutral-500">{s.note ?? ''}</td>
+                                        <tr
+                                            key={i}
+                                            className="border-b border-neutral-100"
+                                        >
+                                            <td className="py-1.5 pr-4">
+                                                {s.loggedOn}
+                                            </td>
+                                            <td className="py-1.5 pr-4">
+                                                {s.symptom}
+                                            </td>
+                                            <td className="py-1.5 pr-4">
+                                                {s.severity}/5
+                                            </td>
+                                            <td className="py-1.5 text-neutral-500">
+                                                {s.note ?? ''}
+                                            </td>
                                         </tr>
                                     ))}
                                 </tbody>
@@ -292,14 +386,18 @@ export default function Report({
                 {/* Dialysis */}
                 {dialysis && (
                     <section className="mb-6">
-                        <h2 className="mb-2 font-semibold">Peritoneal dialysis</h2>
+                        <h2 className="mb-2 font-semibold">
+                            Peritoneal dialysis
+                        </h2>
                         <div className="mb-2 text-sm">
-                            {[dialysis.brand, dialysis.type].filter(Boolean).join(' · ') ||
-                                'Catheter on record'}
+                            {[dialysis.brand, dialysis.type]
+                                .filter(Boolean)
+                                .join(' · ') || 'Catheter on record'}
                             {dialysis.nextTransferSetChange && (
                                 <span className="text-neutral-500">
                                     {' '}
-                                    · next transfer-set change {dialysis.nextTransferSetChange}
+                                    · next transfer-set change{' '}
+                                    {dialysis.nextTransferSetChange}
                                 </span>
                             )}
                         </div>
@@ -308,19 +406,38 @@ export default function Report({
                                 <table className="w-full min-w-[420px] text-sm print:min-w-0">
                                     <thead>
                                         <tr className="border-b border-neutral-200 text-left text-neutral-500">
-                                            <th className="py-1.5 pr-4 font-medium">Date</th>
-                                            <th className="py-1.5 pr-4 font-medium">Fill</th>
-                                            <th className="py-1.5 pr-4 font-medium">Drain</th>
-                                            <th className="py-1.5 pr-4 font-medium">UF</th>
-                                            <th className="py-1.5 font-medium">Colour</th>
+                                            <th className="py-1.5 pr-4 font-medium">
+                                                Date
+                                            </th>
+                                            <th className="py-1.5 pr-4 font-medium">
+                                                Fill
+                                            </th>
+                                            <th className="py-1.5 pr-4 font-medium">
+                                                Drain
+                                            </th>
+                                            <th className="py-1.5 pr-4 font-medium">
+                                                UF
+                                            </th>
+                                            <th className="py-1.5 font-medium">
+                                                Colour
+                                            </th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         {dialysis.exchanges.map((e, i) => (
-                                            <tr key={i} className="border-b border-neutral-100">
-                                                <td className="py-1.5 pr-4">{e.loggedOn}</td>
-                                                <td className="py-1.5 pr-4">{e.fill ?? '—'}</td>
-                                                <td className="py-1.5 pr-4">{e.drain ?? '—'}</td>
+                                            <tr
+                                                key={i}
+                                                className="border-b border-neutral-100"
+                                            >
+                                                <td className="py-1.5 pr-4">
+                                                    {e.loggedOn}
+                                                </td>
+                                                <td className="py-1.5 pr-4">
+                                                    {e.fill ?? '—'}
+                                                </td>
+                                                <td className="py-1.5 pr-4">
+                                                    {e.drain ?? '—'}
+                                                </td>
                                                 <td className="py-1.5 pr-4">
                                                     {e.uf !== null
                                                         ? `${e.uf > 0 ? '+' : ''}${e.uf}`
@@ -342,40 +459,59 @@ export default function Report({
                 <section className="mb-6">
                     <h2 className="mb-2 font-semibold">Full lab history</h2>
                     <div className="overflow-x-auto">
-                    <table className="w-full min-w-[480px] text-sm print:min-w-0">
-                        <thead>
-                            <tr className="border-b border-neutral-200 text-left text-neutral-500">
-                                <th className="py-1.5 pr-4 font-medium">Date</th>
-                                <th className="py-1.5 pr-4 font-medium">Metric</th>
-                                <th className="py-1.5 pr-4 font-medium">Value</th>
-                                <th className="py-1.5 font-medium">Note</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {history.map((h, i) => (
-                                <tr key={i} className="border-b border-neutral-100">
-                                    <td className="py-1.5 pr-4">{h.measuredAt}</td>
-                                    <td className="py-1.5 pr-4">{h.metric}</td>
-                                    <td className="py-1.5 pr-4">
-                                        {(() => {
-                                            const d = display(h.value, h.unit, h.si, units);
-                                            return `${d.value} ${d.unit}`;
-                                        })()}
-                                    </td>
-                                    <td className="py-1.5 text-neutral-500">
-                                        {h.note ?? ''}
-                                    </td>
+                        <table className="w-full min-w-[480px] text-sm print:min-w-0">
+                            <thead>
+                                <tr className="border-b border-neutral-200 text-left text-neutral-500">
+                                    <th className="py-1.5 pr-4 font-medium">
+                                        Date
+                                    </th>
+                                    <th className="py-1.5 pr-4 font-medium">
+                                        Metric
+                                    </th>
+                                    <th className="py-1.5 pr-4 font-medium">
+                                        Value
+                                    </th>
+                                    <th className="py-1.5 font-medium">Note</th>
                                 </tr>
-                            ))}
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody>
+                                {history.map((h, i) => (
+                                    <tr
+                                        key={i}
+                                        className="border-b border-neutral-100"
+                                    >
+                                        <td className="py-1.5 pr-4">
+                                            {h.measuredAt}
+                                        </td>
+                                        <td className="py-1.5 pr-4">
+                                            {h.metric}
+                                        </td>
+                                        <td className="py-1.5 pr-4">
+                                            {(() => {
+                                                const d = display(
+                                                    h.value,
+                                                    h.unit,
+                                                    h.si,
+                                                    units,
+                                                );
+
+                                                return `${d.value} ${d.unit}`;
+                                            })()}
+                                        </td>
+                                        <td className="py-1.5 text-neutral-500">
+                                            {h.note ?? ''}
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
                     </div>
                 </section>
 
                 <footer className="border-t border-neutral-200 pt-3 text-xs text-neutral-500">
-                    Personal tracking only — not medical advice or a diagnosis. Reference
-                    ranges are general adult values; confirm with the lab report and care
-                    team.
+                    Personal tracking only — not medical advice or a diagnosis.
+                    Reference ranges are general adult values; confirm with the
+                    lab report and care team.
                 </footer>
             </div>
         </>

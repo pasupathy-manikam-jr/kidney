@@ -1,15 +1,14 @@
 import { useSyncExternalStore } from 'react';
 
 export type ColorTheme =
-    | 'default'
-    | 'teal'
-    | 'ocean'
-    | 'forest'
-    | 'sunset'
-    | 'contrast';
+    'default' | 'teal' | 'ocean' | 'forest' | 'sunset' | 'contrast';
 export type TextSize = 'normal' | 'large' | 'xl';
 
-export const COLOR_THEMES: { value: ColorTheme; label: string; swatch: string }[] = [
+export const COLOR_THEMES: {
+    value: ColorTheme;
+    label: string;
+    swatch: string;
+}[] = [
     { value: 'default', label: 'Neutral', swatch: '#404040' },
     { value: 'teal', label: 'Teal', swatch: '#0d9488' },
     { value: 'ocean', label: 'Ocean', swatch: '#2563eb' },
@@ -32,18 +31,26 @@ let currentTheme: ColorTheme = DEFAULT_THEME;
 let currentText: TextSize = DEFAULT_TEXT;
 
 function setCookie(name: string, value: string, days = 365): void {
-    if (typeof document === 'undefined') return;
+    if (typeof document === 'undefined') {
+        return;
+    }
+
     document.cookie = `${name}=${value};path=/;max-age=${days * 86400};SameSite=Lax`;
 }
 
 function apply(): void {
-    if (typeof document === 'undefined') return;
+    if (typeof document === 'undefined') {
+        return;
+    }
+
     const el = document.documentElement;
+
     if (currentTheme === 'default') {
         delete el.dataset.theme;
     } else {
         el.dataset.theme = currentTheme;
     }
+
     if (currentText === 'normal') {
         delete el.dataset.text;
     } else {
@@ -54,8 +61,12 @@ function apply(): void {
 const notify = () => listeners.forEach((l) => l());
 
 export function initializeThemePrefs(): void {
-    if (typeof window === 'undefined') return;
-    currentTheme = (localStorage.getItem('theme') as ColorTheme) || DEFAULT_THEME;
+    if (typeof window === 'undefined') {
+        return;
+    }
+
+    currentTheme =
+        (localStorage.getItem('theme') as ColorTheme) || DEFAULT_THEME;
     currentText = (localStorage.getItem('text') as TextSize) || DEFAULT_TEXT;
     apply();
 }
@@ -64,18 +75,26 @@ export function initializeThemePrefs(): void {
  * When logged in, the account's saved preference is the source of truth.
  * Mirror it into local state + storage so it wins over any stale local value.
  */
-export function syncThemeFromAccount(theme?: string | null, text?: string | null): void {
-    if (typeof window === 'undefined') return;
+export function syncThemeFromAccount(
+    theme?: string | null,
+    text?: string | null,
+): void {
+    if (typeof window === 'undefined') {
+        return;
+    }
+
     if (theme) {
         currentTheme = theme as ColorTheme;
         localStorage.setItem('theme', currentTheme);
         setCookie('theme', currentTheme);
     }
+
     if (text) {
         currentText = text as TextSize;
         localStorage.setItem('text', currentText);
         setCookie('text', currentText);
     }
+
     apply();
     notify();
 }
@@ -84,6 +103,7 @@ export function useThemePrefs() {
     const theme = useSyncExternalStore(
         (cb) => {
             listeners.add(cb);
+
             return () => listeners.delete(cb);
         },
         () => currentTheme,
@@ -92,6 +112,7 @@ export function useThemePrefs() {
     const text = useSyncExternalStore(
         (cb) => {
             listeners.add(cb);
+
             return () => listeners.delete(cb);
         },
         () => currentText,
@@ -102,7 +123,11 @@ export function useThemePrefs() {
         const csrf = document
             .querySelector('meta[name="csrf-token"]')
             ?.getAttribute('content');
-        if (!csrf) return; // guest (landing) — local only
+
+        if (!csrf) {
+            return;
+        } // guest (landing) — local only
+
         fetch('/appearance-prefs', {
             method: 'PUT',
             headers: {
@@ -110,7 +135,10 @@ export function useThemePrefs() {
                 'X-CSRF-TOKEN': csrf,
                 'X-Requested-With': 'XMLHttpRequest',
             },
-            body: JSON.stringify({ theme: currentTheme, text_size: currentText }),
+            body: JSON.stringify({
+                theme: currentTheme,
+                text_size: currentText,
+            }),
         }).catch(() => {});
     };
 

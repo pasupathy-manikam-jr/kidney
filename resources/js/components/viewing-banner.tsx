@@ -7,7 +7,9 @@ import { Eye } from 'lucide-react';
 export function ViewingBanner() {
     const { viewing } = usePage<{ viewing?: { name: string } | null }>().props;
 
-    if (!viewing) return null;
+    if (!viewing) {
+        return null;
+    }
 
     return (
         <div className="flex items-center justify-between gap-3 bg-amber-500 px-4 py-2 text-sm font-medium text-amber-950">

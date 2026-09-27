@@ -11,11 +11,13 @@ export interface SiInfo {
 /** The current user's preferred units, defaulting to conventional. */
 export function useUnits(): Units {
     const page = usePage<{ auth?: { user?: { units?: string | null } } }>();
+
     return page.props.auth?.user?.units === 'si' ? 'si' : 'conventional';
 }
 
 function round(n: number, precision: number): number {
     const f = 10 ** precision;
+
     return Math.round(n * f) / f;
 }
 
@@ -31,6 +33,7 @@ export function display(
     if (units === 'si' && si) {
         return { value: round(value * si.factor, si.precision), unit: si.unit };
     }
+
     return { value, unit: conventionalUnit };
 }
 
@@ -40,7 +43,13 @@ export function displayBound(
     si: SiInfo | undefined,
     units: Units,
 ): number | null {
-    if (bound === null) return null;
-    if (units === 'si' && si) return round(bound * si.factor, si.precision);
+    if (bound === null) {
+        return null;
+    }
+
+    if (units === 'si' && si) {
+        return round(bound * si.factor, si.precision);
+    }
+
     return bound;
 }

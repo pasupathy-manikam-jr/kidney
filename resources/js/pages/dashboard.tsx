@@ -15,9 +15,14 @@ import {
 import { Line, LineChart, ResponsiveContainer, YAxis } from 'recharts';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card';
-import { cn } from '@/lib/utils';
+import {
+    Card,
+    CardContent,
+    CardFooter,
+    CardHeader,
+} from '@/components/ui/card';
 import { display, displayBound, useUnits } from '@/lib/units';
+import { cn } from '@/lib/utils';
 import { dashboard } from '@/routes';
 
 type Status = 'in_range' | 'low' | 'high' | 'none' | 'empty';
@@ -66,7 +71,11 @@ interface Summary {
     fluidToday: number;
     fluidTarget: number | null;
     symptomsLogged: number;
-    latestSymptom: { symptom: string; severity: number; loggedOn: string } | null;
+    latestSymptom: {
+        symptom: string;
+        severity: number;
+        loggedOn: string;
+    } | null;
 }
 
 interface PageProps {
@@ -78,11 +87,30 @@ interface PageProps {
 }
 
 // KDIGO risk-level colors: 1 low -> 4 very high.
-const RISK_STYLE: Record<number, { cell: string; text: string; label: string }> = {
-    1: { cell: 'bg-emerald-500', text: 'text-emerald-700 dark:text-emerald-400', label: 'Low' },
-    2: { cell: 'bg-amber-400', text: 'text-amber-700 dark:text-amber-400', label: 'Moderate' },
-    3: { cell: 'bg-orange-500', text: 'text-orange-700 dark:text-orange-400', label: 'High' },
-    4: { cell: 'bg-rose-600', text: 'text-rose-700 dark:text-rose-400', label: 'Very high' },
+const RISK_STYLE: Record<
+    number,
+    { cell: string; text: string; label: string }
+> = {
+    1: {
+        cell: 'bg-emerald-500',
+        text: 'text-emerald-700 dark:text-emerald-400',
+        label: 'Low',
+    },
+    2: {
+        cell: 'bg-amber-400',
+        text: 'text-amber-700 dark:text-amber-400',
+        label: 'Moderate',
+    },
+    3: {
+        cell: 'bg-orange-500',
+        text: 'text-orange-700 dark:text-orange-400',
+        label: 'High',
+    },
+    4: {
+        cell: 'bg-rose-600',
+        text: 'text-rose-700 dark:text-rose-400',
+        label: 'Very high',
+    },
 };
 
 const GFR_ROWS = ['G1', 'G2', 'G3a', 'G3b', 'G4', 'G5'];
@@ -101,13 +129,18 @@ function RiskHeatMap({ risk }: { risk: Risk }) {
             <CardHeader className="pb-3">
                 <div className="flex flex-wrap items-center justify-between gap-2">
                     <span className="font-semibold">KDIGO risk map</span>
-                    <Badge className={cn('border-transparent text-white', active.cell)}>
+                    <Badge
+                        className={cn(
+                            'border-transparent text-white',
+                            active.cell,
+                        )}
+                    >
                         {risk.label}
                     </Badge>
                 </div>
                 <p className="text-xs text-muted-foreground">
-                    GFR category {risk.gfrCode} × albuminuria {risk.albCode}. Prognosis
-                    grid only — not a diagnosis.
+                    GFR category {risk.gfrCode} × albuminuria {risk.albCode}.
+                    Prognosis grid only — not a diagnosis.
                 </p>
             </CardHeader>
             <CardContent>
@@ -135,7 +168,9 @@ function RiskHeatMap({ risk }: { risk: Risk }) {
                                 {ALB_COLS.map((a) => {
                                     const level = risk.grid[g]?.[a] ?? 1;
                                     const isActive =
-                                        g === risk.gfrCode && a === risk.albCode;
+                                        g === risk.gfrCode &&
+                                        a === risk.albCode;
+
                                     return (
                                         <div
                                             key={a}
@@ -148,7 +183,9 @@ function RiskHeatMap({ risk }: { risk: Risk }) {
                                             )}
                                         >
                                             {isActive && (
-                                                <span className="text-lg font-bold">●</span>
+                                                <span className="text-lg font-bold">
+                                                    ●
+                                                </span>
                                             )}
                                         </div>
                                     );
@@ -161,8 +198,16 @@ function RiskHeatMap({ risk }: { risk: Risk }) {
                 {/* Legend */}
                 <div className="mt-4 flex flex-wrap gap-3">
                     {[1, 2, 3, 4].map((l) => (
-                        <div key={l} className="flex items-center gap-1.5 text-xs">
-                            <span className={cn('size-3 rounded-sm', RISK_STYLE[l].cell)} />
+                        <div
+                            key={l}
+                            className="flex items-center gap-1.5 text-xs"
+                        >
+                            <span
+                                className={cn(
+                                    'size-3 rounded-sm',
+                                    RISK_STYLE[l].cell,
+                                )}
+                            />
                             <span className="text-muted-foreground">
                                 {RISK_STYLE[l].label}
                             </span>
@@ -175,12 +220,35 @@ function RiskHeatMap({ risk }: { risk: Risk }) {
 }
 
 // KDIGO GFR-category color ramp: green (best) -> deep red (worst).
-const SEVERITY_STYLE: Record<number, { bar: string; text: string; bg: string }> = {
-    1: { bar: 'bg-emerald-500', text: 'text-emerald-600 dark:text-emerald-400', bg: 'from-emerald-500/10' },
-    2: { bar: 'bg-lime-500', text: 'text-lime-600 dark:text-lime-400', bg: 'from-lime-500/10' },
-    3: { bar: 'bg-amber-500', text: 'text-amber-600 dark:text-amber-400', bg: 'from-amber-500/10' },
-    4: { bar: 'bg-orange-500', text: 'text-orange-600 dark:text-orange-400', bg: 'from-orange-500/10' },
-    5: { bar: 'bg-rose-600', text: 'text-rose-600 dark:text-rose-400', bg: 'from-rose-600/10' },
+const SEVERITY_STYLE: Record<
+    number,
+    { bar: string; text: string; bg: string }
+> = {
+    1: {
+        bar: 'bg-emerald-500',
+        text: 'text-emerald-600 dark:text-emerald-400',
+        bg: 'from-emerald-500/10',
+    },
+    2: {
+        bar: 'bg-lime-500',
+        text: 'text-lime-600 dark:text-lime-400',
+        bg: 'from-lime-500/10',
+    },
+    3: {
+        bar: 'bg-amber-500',
+        text: 'text-amber-600 dark:text-amber-400',
+        bg: 'from-amber-500/10',
+    },
+    4: {
+        bar: 'bg-orange-500',
+        text: 'text-orange-600 dark:text-orange-400',
+        bg: 'from-orange-500/10',
+    },
+    5: {
+        bar: 'bg-rose-600',
+        text: 'text-rose-600 dark:text-rose-400',
+        bg: 'from-rose-600/10',
+    },
 };
 
 const GFR_CATEGORIES = [
@@ -196,7 +264,12 @@ function GfrCard({ gfr }: { gfr: Gfr }) {
     const s = SEVERITY_STYLE[gfr.severity];
 
     return (
-        <Card className={cn('overflow-hidden bg-gradient-to-br to-transparent', s.bg)}>
+        <Card
+            className={cn(
+                'overflow-hidden bg-gradient-to-br to-transparent',
+                s.bg,
+            )}
+        >
             <CardContent className="flex flex-col gap-4 pt-6 sm:flex-row sm:items-center sm:justify-between">
                 <div className="flex items-center gap-4">
                     <div
@@ -205,13 +278,17 @@ function GfrCard({ gfr }: { gfr: Gfr }) {
                             s.bar,
                         )}
                     >
-                        <span className="text-xl font-bold leading-none">{gfr.code}</span>
+                        <span className="text-xl leading-none font-bold">
+                            {gfr.code}
+                        </span>
                     </div>
                     <div>
-                        <div className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                        <div className="text-xs font-medium tracking-wide text-muted-foreground uppercase">
                             GFR category (KDIGO)
                         </div>
-                        <div className={cn('text-lg font-semibold', s.text)}>{gfr.label}</div>
+                        <div className={cn('text-lg font-semibold', s.text)}>
+                            {gfr.label}
+                        </div>
                         <div className="text-sm text-muted-foreground">
                             eGFR {gfr.egfr} mL/min/1.73m² · {gfr.measuredAt}
                         </div>
@@ -222,17 +299,23 @@ function GfrCard({ gfr }: { gfr: Gfr }) {
                 <div className="flex gap-1">
                     {GFR_CATEGORIES.map((c) => {
                         const active = c.code === gfr.code;
+
                         return (
                             <div
                                 key={c.code}
                                 className={cn(
                                     'flex w-11 flex-col items-center gap-1 rounded-md border px-1 py-1.5 text-center transition',
                                     active
-                                        ? cn('border-transparent text-white', s.bar)
+                                        ? cn(
+                                              'border-transparent text-white',
+                                              s.bar,
+                                          )
                                         : 'border-border text-muted-foreground',
                                 )}
                             >
-                                <span className="text-xs font-semibold">{c.code}</span>
+                                <span className="text-xs font-semibold">
+                                    {c.code}
+                                </span>
                                 <span className="text-[10px] leading-none opacity-80">
                                     {c.range}
                                 </span>
@@ -287,16 +370,38 @@ const STATUS_STYLE: Record<
 };
 
 function rangeLabel(range: Tile['referenceRange'], unit: string): string {
-    if (!range) return 'No reference range';
+    if (!range) {
+        return 'No reference range';
+    }
+
     const [low, high] = range;
-    if (low !== null && high !== null) return `Ref ${low}–${high} ${unit}`;
-    if (low !== null) return `Ref ≥${low} ${unit}`;
-    if (high !== null) return `Ref ≤${high} ${unit}`;
+
+    if (low !== null && high !== null) {
+        return `Ref ${low}–${high} ${unit}`;
+    }
+
+    if (low !== null) {
+        return `Ref ≥${low} ${unit}`;
+    }
+
+    if (high !== null) {
+        return `Ref ≤${high} ${unit}`;
+    }
+
     return 'No reference range';
 }
 
-function Delta({ value, previous }: { value: number; previous: number | null }) {
-    if (previous === null) return null;
+function Delta({
+    value,
+    previous,
+}: {
+    value: number;
+    previous: number | null;
+}) {
+    if (previous === null) {
+        return null;
+    }
+
     const diff = Math.round((value - previous) * 100) / 100;
 
     if (diff === 0) {
@@ -308,6 +413,7 @@ function Delta({ value, previous }: { value: number; previous: number | null }) 
     }
 
     const up = diff > 0;
+
     return (
         <span className="inline-flex items-center gap-1 text-xs font-medium text-muted-foreground">
             {up ? (
@@ -343,7 +449,12 @@ function MetricTile({ tile }: { tile: Tile }) {
     const dispUnit = display(0, tile.unit, tile.si, units).unit;
 
     return (
-        <Card className={cn('gap-0 overflow-hidden transition-shadow hover:shadow-md', s.ring)}>
+        <Card
+            className={cn(
+                'gap-0 overflow-hidden transition-shadow hover:shadow-md',
+                s.ring,
+            )}
+        >
             <CardHeader className="flex flex-row items-center justify-between gap-2 pb-2">
                 <span className="text-sm font-medium text-muted-foreground">
                     {tile.label}
@@ -358,7 +469,7 @@ function MetricTile({ tile }: { tile: Tile }) {
                             <div className="flex items-baseline gap-1">
                                 <span
                                     className={cn(
-                                        'text-3xl font-semibold tabular-nums tracking-tight',
+                                        'text-3xl font-semibold tracking-tight tabular-nums',
                                         s.text,
                                     )}
                                 >
@@ -369,7 +480,10 @@ function MetricTile({ tile }: { tile: Tile }) {
                                 </span>
                             </div>
                             <div className="mt-1">
-                                <Delta value={dispValue!.value} previous={dispPrev} />
+                                <Delta
+                                    value={dispValue!.value}
+                                    previous={dispPrev}
+                                />
                             </div>
                         </div>
 
@@ -377,7 +491,10 @@ function MetricTile({ tile }: { tile: Tile }) {
                             <div className="h-12 w-24 shrink-0">
                                 <ResponsiveContainer width="100%" height="100%">
                                     <LineChart data={tile.spark}>
-                                        <YAxis hide domain={['dataMin', 'dataMax']} />
+                                        <YAxis
+                                            hide
+                                            domain={['dataMin', 'dataMax']}
+                                        />
                                         <Line
                                             type="monotone"
                                             dataKey="v"
@@ -437,10 +554,15 @@ function SummaryCards({ summary }: { summary: Summary }) {
                                 {summary.fluidToday}
                                 <span className="text-xs font-normal text-muted-foreground">
                                     {' '}
-                                    mL{summary.fluidTarget ? ` / ${summary.fluidTarget}` : ''}
+                                    mL
+                                    {summary.fluidTarget
+                                        ? ` / ${summary.fluidTarget}`
+                                        : ''}
                                 </span>
                             </div>
-                            <div className="text-xs text-muted-foreground">fluid today</div>
+                            <div className="text-xs text-muted-foreground">
+                                fluid today
+                            </div>
                         </div>
                     </CardContent>
                 </Card>
@@ -462,8 +584,11 @@ function SummaryCards({ summary }: { summary: Summary }) {
                                         </span>
                                     </div>
                                     <div className="text-xs text-muted-foreground">
-                                        latest of {summary.symptomsLogged} symptom
-                                        {summary.symptomsLogged === 1 ? '' : 's'}
+                                        latest of {summary.symptomsLogged}{' '}
+                                        symptom
+                                        {summary.symptomsLogged === 1
+                                            ? ''
+                                            : 's'}
                                     </div>
                                 </>
                             ) : (
@@ -547,8 +672,9 @@ export default function Dashboard({
                         className="flex items-center gap-2 rounded-lg border border-teal-500/40 bg-teal-500/10 px-4 py-3 text-sm text-teal-800 transition hover:opacity-90 dark:text-teal-200"
                     >
                         <CalendarDays className="size-4 shrink-0" />
-                        Next: <strong>{summary.nextAppointment.title}</strong> ·{' '}
-                        {summary.nextAppointment.date}
+                        Next: <strong>
+                            {summary.nextAppointment.title}
+                        </strong> · {summary.nextAppointment.date}
                         {summary.nextAppointment.time
                             ? ` ${summary.nextAppointment.time}`
                             : ''}{' '}
@@ -574,32 +700,44 @@ export default function Dashboard({
                                     Let's log your first reading
                                 </h2>
                                 <p className="mt-1 text-sm text-muted-foreground">
-                                    Add a value or two and your trends, GFR category and
-                                    risk map appear here automatically.
+                                    Add a value or two and your trends, GFR
+                                    category and risk map appear here
+                                    automatically.
                                 </p>
                             </div>
                             <ol className="grid gap-3 text-left text-sm sm:grid-cols-3">
                                 <li className="rounded-lg border border-border p-3">
-                                    <span className="font-semibold text-primary">1.</span>{' '}
-                                    Open <span className="font-medium">Lab Results</span>.
+                                    <span className="font-semibold text-primary">
+                                        1.
+                                    </span>{' '}
+                                    Open{' '}
+                                    <span className="font-medium">
+                                        Lab Results
+                                    </span>
+                                    .
                                 </li>
                                 <li className="rounded-lg border border-border p-3">
-                                    <span className="font-semibold text-primary">2.</span>{' '}
+                                    <span className="font-semibold text-primary">
+                                        2.
+                                    </span>{' '}
                                     Pick a metric, enter the value and date.
                                 </li>
                                 <li className="rounded-lg border border-border p-3">
-                                    <span className="font-semibold text-primary">3.</span>{' '}
+                                    <span className="font-semibold text-primary">
+                                        3.
+                                    </span>{' '}
                                     Come back here to see the picture.
                                 </li>
                             </ol>
                             <Button asChild>
                                 <Link href="/lab-results">
-                                    <Plus className="size-4" /> Add your first reading
+                                    <Plus className="size-4" /> Add your first
+                                    reading
                                 </Link>
                             </Button>
                             <p className="text-xs text-muted-foreground">
-                                Not sure? Import a CSV or use the eGFR calculator on the
-                                Lab Results page.
+                                Not sure? Import a CSV or use the eGFR
+                                calculator on the Lab Results page.
                             </p>
                         </CardContent>
                     </Card>
@@ -631,8 +769,8 @@ export default function Dashboard({
                 <p className="flex items-center gap-2 rounded-lg border border-amber-500/40 bg-amber-50 px-4 py-3 text-xs text-amber-900 dark:bg-amber-950/40 dark:text-amber-200">
                     <ArrowRight className="size-3.5 shrink-0" />
                     Personal tracking only — not medical advice or a diagnosis.
-                    Reference ranges are general adult values; confirm every result
-                    with the lab report and care team.
+                    Reference ranges are general adult values; confirm every
+                    result with the lab report and care team.
                 </p>
             </div>
         </>

@@ -73,14 +73,16 @@ export function EgfrCalculator({
                 <DialogHeader>
                     <DialogTitle>eGFR calculator</DialogTitle>
                     <DialogDescription>
-                        CKD-EPI Creatinine 2021 (race-free). Estimate only — confirm
-                        with the lab report.
+                        CKD-EPI Creatinine 2021 (race-free). Estimate only —
+                        confirm with the lab report.
                     </DialogDescription>
                 </DialogHeader>
 
                 <div className="flex flex-col gap-4">
                     <div className="grid gap-2">
-                        <Label htmlFor="calc-scr">Serum creatinine (mg/dL)</Label>
+                        <Label htmlFor="calc-scr">
+                            Serum creatinine (mg/dL)
+                        </Label>
                         <Input
                             id="calc-scr"
                             type="number"
@@ -106,13 +108,18 @@ export function EgfrCalculator({
                         </div>
                         <div className="grid gap-2">
                             <Label htmlFor="calc-sex">Sex</Label>
-                            <Select value={sex} onValueChange={(v) => setSex(v as Sex)}>
+                            <Select
+                                value={sex}
+                                onValueChange={(v) => setSex(v as Sex)}
+                            >
                                 <SelectTrigger id="calc-sex" className="w-full">
                                     <SelectValue />
                                 </SelectTrigger>
                                 <SelectContent>
                                     <SelectItem value="male">Male</SelectItem>
-                                    <SelectItem value="female">Female</SelectItem>
+                                    <SelectItem value="female">
+                                        Female
+                                    </SelectItem>
                                 </SelectContent>
                             </Select>
                         </div>

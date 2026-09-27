@@ -41,7 +41,11 @@ class KdigoRisk
         return self::LABELS[$level];
     }
 
-    /** Full grid serialized for the frontend heat-map. */
+    /**
+     * Full grid serialized for the frontend heat-map.
+     *
+     * @return array<string, array<string, int>>
+     */
     public static function grid(): array
     {
         return self::GRID;

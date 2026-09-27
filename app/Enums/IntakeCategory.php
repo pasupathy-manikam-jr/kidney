@@ -31,8 +31,8 @@ enum IntakeCategory: string
         };
     }
 
-    /** Suggested general daily limit (upper guidance), or null. */
-    public function suggestedLimit(): ?int
+    /** Suggested general daily limit (upper guidance). */
+    public function suggestedLimit(): int
     {
         return match ($this) {
             self::Fluid => 1500,
@@ -42,6 +42,9 @@ enum IntakeCategory: string
         };
     }
 
+    /**
+     * @return list<array{value: string, label: string, unit: string, suggestedLimit: int}>
+     */
     public static function catalog(): array
     {
         return array_map(fn (self $c) => [

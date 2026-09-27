@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Enums\AlbuminuriaCategory;
 use App\Enums\GfrCategory;
+use App\Enums\IntakeCategory;
 use App\Enums\LabMetric;
 use App\Support\KdigoRisk;
 use Illuminate\Http\Request;
@@ -122,11 +123,11 @@ class DashboardController extends Controller
             'transferSetDaysUntil' => $nextChange
                 ? (int) now()->startOfDay()->diffInDays($nextChange, false)
                 : null,
-            'fluidToday' => (int) round($user->intakeEntries()
-                ->where('category', \App\Enums\IntakeCategory::Fluid->value)
+            'fluidToday' => (int) round((float) $user->intakeEntries()
+                ->where('category', IntakeCategory::Fluid->value)
                 ->whereDate('logged_on', now()->toDateString())
                 ->sum('amount')),
-            'fluidTarget' => $user->intakeTarget(\App\Enums\IntakeCategory::Fluid),
+            'fluidTarget' => $user->intakeTarget(IntakeCategory::Fluid),
             'symptomsLogged' => $user->symptomEntries()->count(),
             'latestSymptom' => $latestSymptom ? [
                 'symptom' => $latestSymptom->symptom,

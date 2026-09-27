@@ -3,11 +3,17 @@ import { useCallback, useEffect, useState } from 'react';
 
 function urlBase64ToUint8Array(base64String: string): Uint8Array {
     const padding = '='.repeat((4 - (base64String.length % 4)) % 4);
-    const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
+    const base64 = (base64String + padding)
+        .replace(/-/g, '+')
+        .replace(/_/g, '/');
     const raw = atob(base64);
     const buffer = new ArrayBuffer(raw.length);
     const out = new Uint8Array(buffer);
-    for (let i = 0; i < raw.length; i++) out[i] = raw.charCodeAt(i);
+
+    for (let i = 0; i < raw.length; i++) {
+        out[i] = raw.charCodeAt(i);
+    }
+
     return out;
 }
 
@@ -32,7 +38,8 @@ export interface PushState {
  * reminders arrive even when the app is closed.
  */
 export function usePushNotifications(): PushState {
-    const { vapidPublicKey } = usePage<{ vapidPublicKey?: string | null }>().props;
+    const { vapidPublicKey } = usePage<{ vapidPublicKey?: string | null }>()
+        .props;
     const supported =
         typeof window !== 'undefined' &&
         'serviceWorker' in navigator &&
@@ -43,7 +50,10 @@ export function usePushNotifications(): PushState {
     const [busy, setBusy] = useState(false);
 
     useEffect(() => {
-        if (!supported) return;
+        if (!supported) {
+            return;
+        }
+
         navigator.serviceWorker
             .register('/sw.js')
             .then((reg) => reg.pushManager.getSubscription())
@@ -52,11 +62,18 @@ export function usePushNotifications(): PushState {
     }, [supported]);
 
     const subscribe = useCallback(async () => {
-        if (!supported || !vapidPublicKey) return;
+        if (!supported || !vapidPublicKey) {
+            return;
+        }
+
         setBusy(true);
+
         try {
             const permission = await Notification.requestPermission();
-            if (permission !== 'granted') return;
+
+            if (permission !== 'granted') {
+                return;
+            }
 
             const reg = await navigator.serviceWorker.ready;
             const sub = await reg.pushManager.subscribe({
@@ -84,11 +101,16 @@ export function usePushNotifications(): PushState {
     }, [supported, vapidPublicKey]);
 
     const unsubscribe = useCallback(async () => {
-        if (!supported) return;
+        if (!supported) {
+            return;
+        }
+
         setBusy(true);
+
         try {
             const reg = await navigator.serviceWorker.ready;
             const sub = await reg.pushManager.getSubscription();
+
             if (sub) {
                 await fetch('/push-subscriptions', {
                     method: 'DELETE',
@@ -101,6 +123,7 @@ export function usePushNotifications(): PushState {
                 });
                 await sub.unsubscribe();
             }
+
             setSubscribed(false);
         } finally {
             setBusy(false);

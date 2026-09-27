@@ -55,7 +55,11 @@ enum GfrCategory: string
         };
     }
 
-    /** Serializable catalog for the frontend reference tables. */
+    /**
+     * Serializable catalog for the frontend reference tables.
+     *
+     * @return list<array{code: string, label: string, range: string, severity: int}>
+     */
     public static function catalog(): array
     {
         return array_map(fn (self $c) => [

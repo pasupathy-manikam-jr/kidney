@@ -91,31 +91,47 @@ export default function Profile({
                                         id="sex"
                                         name="sex"
                                         defaultValue={
-                                            (auth.user as { sex?: string | null }).sex ?? ''
+                                            (
+                                                auth.user as {
+                                                    sex?: string | null;
+                                                }
+                                            ).sex ?? ''
                                         }
                                         className="h-9 rounded-md border border-input bg-transparent px-3 text-sm shadow-xs dark:bg-input/30"
                                     >
-                                        <option value="">Prefer not to say</option>
+                                        <option value="">
+                                            Prefer not to say
+                                        </option>
                                         <option value="male">Male</option>
                                         <option value="female">Female</option>
                                     </select>
                                     <InputError message={errors.sex} />
                                 </div>
                                 <div className="grid gap-2">
-                                    <Label htmlFor="date_of_birth">Date of birth</Label>
+                                    <Label htmlFor="date_of_birth">
+                                        Date of birth
+                                    </Label>
                                     <Input
                                         id="date_of_birth"
                                         type="date"
                                         name="date_of_birth"
                                         defaultValue={
-                                            (auth.user as { date_of_birth?: string | null })
-                                                .date_of_birth ?? ''
+                                            (
+                                                auth.user as {
+                                                    date_of_birth?:
+                                                        string | null;
+                                                }
+                                            ).date_of_birth ?? ''
                                         }
                                     />
-                                    <InputError message={errors.date_of_birth} />
+                                    <InputError
+                                        message={errors.date_of_birth}
+                                    />
                                 </div>
                                 <div className="grid gap-2">
-                                    <Label htmlFor="dry_weight">Dry weight (kg)</Label>
+                                    <Label htmlFor="dry_weight">
+                                        Dry weight (kg)
+                                    </Label>
                                     <Input
                                         id="dry_weight"
                                         type="number"
@@ -123,8 +139,11 @@ export default function Profile({
                                         min="0"
                                         name="dry_weight"
                                         defaultValue={
-                                            (auth.user as { dry_weight?: string | null })
-                                                .dry_weight ?? ''
+                                            (
+                                                auth.user as {
+                                                    dry_weight?: string | null;
+                                                }
+                                            ).dry_weight ?? ''
                                         }
                                         placeholder="e.g. 72"
                                     />
@@ -137,22 +156,25 @@ export default function Profile({
                                     id="units"
                                     name="units"
                                     defaultValue={
-                                        (auth.user as { units?: string | null }).units ??
-                                        'conventional'
+                                        (auth.user as { units?: string | null })
+                                            .units ?? 'conventional'
                                     }
-                                    className="h-9 rounded-md border border-input bg-transparent px-3 text-sm shadow-xs dark:bg-input/30 sm:max-w-xs"
+                                    className="h-9 rounded-md border border-input bg-transparent px-3 text-sm shadow-xs sm:max-w-xs dark:bg-input/30"
                                 >
                                     <option value="conventional">
                                         Conventional (mg/dL, mEq/L)
                                     </option>
-                                    <option value="si">SI (mmol/L, µmol/L)</option>
+                                    <option value="si">
+                                        SI (mmol/L, µmol/L)
+                                    </option>
                                 </select>
                                 <InputError message={errors.units} />
                             </div>
                             <p className="-mt-2 text-xs text-muted-foreground">
-                                Sex and date of birth pre-fill the eGFR calculator. Dry
-                                weight is your target post-dialysis weight. Units change
-                                how lab values are displayed (creatinine, urea,
+                                Sex and date of birth pre-fill the eGFR
+                                calculator. Dry weight is your target
+                                post-dialysis weight. Units change how lab
+                                values are displayed (creatinine, urea,
                                 phosphorus, albuminuria).
                             </p>
 

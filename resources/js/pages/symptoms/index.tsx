@@ -12,11 +12,11 @@ import {
 } from 'recharts';
 import SymptomEntryController from '@/actions/App/Http/Controllers/SymptomEntryController';
 import { ConfirmDelete } from '@/components/confirm-delete';
+import InputError from '@/components/input-error';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import InputError from '@/components/input-error';
 import { cn } from '@/lib/utils';
 import { dashboard } from '@/routes';
 
@@ -77,15 +77,19 @@ export default function SymptomsIndex({ entries, today }: PageProps) {
     };
 
     const remove = (id: number) => {
-        form.delete(SymptomEntryController.destroy(id).url, { preserveScroll: true });
+        form.delete(SymptomEntryController.destroy(id).url, {
+            preserveScroll: true,
+        });
     };
 
     // Severity over time, oldest -> newest.
     const chartData = useMemo(
         () =>
-            [...entries]
-                .reverse()
-                .map((e) => ({ date: e.logged_on, severity: e.severity, symptom: e.symptom })),
+            [...entries].reverse().map((e) => ({
+                date: e.logged_on,
+                severity: e.severity,
+                symptom: e.symptom,
+            })),
         [entries],
     );
 
@@ -106,7 +110,11 @@ export default function SymptomsIndex({ entries, today }: PageProps) {
                                         strokeDasharray="3 3"
                                         className="stroke-border"
                                     />
-                                    <XAxis dataKey="date" fontSize={12} tickMargin={8} />
+                                    <XAxis
+                                        dataKey="date"
+                                        fontSize={12}
+                                        tickMargin={8}
+                                    />
                                     <YAxis
                                         domain={[0, 5]}
                                         ticks={[1, 2, 3, 4, 5]}
@@ -114,15 +122,26 @@ export default function SymptomsIndex({ entries, today }: PageProps) {
                                         fontSize={12}
                                     />
                                     <Tooltip
-                                        cursor={{ stroke: 'currentColor', strokeOpacity: 0.2 }}
-                                        content={({ active, payload, label }) =>
+                                        cursor={{
+                                            stroke: 'currentColor',
+                                            strokeOpacity: 0.2,
+                                        }}
+                                        content={({
+                                            active,
+                                            payload,
+                                            label,
+                                        }) =>
                                             active && payload?.length ? (
                                                 <div className="rounded-md border border-border bg-popover px-3 py-2 text-xs text-popover-foreground shadow-md">
                                                     <div className="mb-0.5 text-muted-foreground">
                                                         {label}
                                                     </div>
                                                     <div className="font-medium">
-                                                        {payload[0].payload.symptom} · severity{' '}
+                                                        {
+                                                            payload[0].payload
+                                                                .symptom
+                                                        }{' '}
+                                                        · severity{' '}
                                                         {payload[0].value}
                                                     </div>
                                                 </div>
@@ -150,13 +169,21 @@ export default function SymptomsIndex({ entries, today }: PageProps) {
                             <CardTitle>Log a symptom</CardTitle>
                         </CardHeader>
                         <CardContent>
-                            <form onSubmit={submit} className="flex flex-col gap-4">
+                            <form
+                                onSubmit={submit}
+                                className="flex flex-col gap-4"
+                            >
                                 <div className="grid gap-2">
                                     <Label htmlFor="symptom">Symptom</Label>
                                     <Input
                                         id="symptom"
                                         value={form.data.symptom}
-                                        onChange={(e) => form.setData('symptom', e.target.value)}
+                                        onChange={(e) =>
+                                            form.setData(
+                                                'symptom',
+                                                e.target.value,
+                                            )
+                                        }
                                         placeholder="e.g. Fatigue"
                                         required
                                     />
@@ -165,7 +192,9 @@ export default function SymptomsIndex({ entries, today }: PageProps) {
                                             <button
                                                 key={c}
                                                 type="button"
-                                                onClick={() => form.setData('symptom', c)}
+                                                onClick={() =>
+                                                    form.setData('symptom', c)
+                                                }
                                                 className="rounded-full border border-border px-2.5 py-0.5 text-xs text-muted-foreground transition hover:bg-muted hover:text-foreground"
                                             >
                                                 {c}
@@ -176,17 +205,25 @@ export default function SymptomsIndex({ entries, today }: PageProps) {
                                 </div>
 
                                 <div className="grid gap-2">
-                                    <Label>Severity · {SEVERITY_LABEL[form.data.severity]}</Label>
+                                    <Label>
+                                        Severity ·{' '}
+                                        {SEVERITY_LABEL[form.data.severity]}
+                                    </Label>
                                     <div className="flex gap-1.5">
                                         {[1, 2, 3, 4, 5].map((n) => (
                                             <button
                                                 key={n}
                                                 type="button"
-                                                onClick={() => form.setData('severity', n)}
+                                                onClick={() =>
+                                                    form.setData('severity', n)
+                                                }
                                                 className={cn(
                                                     'flex h-9 flex-1 items-center justify-center rounded-md text-sm font-medium transition',
                                                     form.data.severity === n
-                                                        ? cn('text-white', SEVERITY_STYLE[n])
+                                                        ? cn(
+                                                              'text-white',
+                                                              SEVERITY_STYLE[n],
+                                                          )
                                                         : 'border border-border text-muted-foreground hover:bg-muted',
                                                 )}
                                             >
@@ -194,15 +231,21 @@ export default function SymptomsIndex({ entries, today }: PageProps) {
                                             </button>
                                         ))}
                                     </div>
-                                    <InputError message={form.errors.severity} />
+                                    <InputError
+                                        message={form.errors.severity}
+                                    />
                                 </div>
 
                                 <div className="grid gap-2">
-                                    <Label htmlFor="note">Note (optional)</Label>
+                                    <Label htmlFor="note">
+                                        Note (optional)
+                                    </Label>
                                     <Input
                                         id="note"
                                         value={form.data.note}
-                                        onChange={(e) => form.setData('note', e.target.value)}
+                                        onChange={(e) =>
+                                            form.setData('note', e.target.value)
+                                        }
                                         placeholder="Context, triggers…"
                                     />
                                     <InputError message={form.errors.note} />
@@ -215,13 +258,23 @@ export default function SymptomsIndex({ entries, today }: PageProps) {
                                         type="date"
                                         max={today}
                                         value={form.data.logged_on}
-                                        onChange={(e) => form.setData('logged_on', e.target.value)}
+                                        onChange={(e) =>
+                                            form.setData(
+                                                'logged_on',
+                                                e.target.value,
+                                            )
+                                        }
                                         required
                                     />
-                                    <InputError message={form.errors.logged_on} />
+                                    <InputError
+                                        message={form.errors.logged_on}
+                                    />
                                 </div>
 
-                                <Button type="submit" disabled={form.processing}>
+                                <Button
+                                    type="submit"
+                                    disabled={form.processing}
+                                >
                                     Log symptom
                                 </Button>
                             </form>
@@ -250,17 +303,27 @@ export default function SymptomsIndex({ entries, today }: PageProps) {
                                                 <span
                                                     className={cn(
                                                         'mt-0.5 flex size-8 items-center justify-center rounded-md text-xs font-bold text-white',
-                                                        SEVERITY_STYLE[e.severity],
+                                                        SEVERITY_STYLE[
+                                                            e.severity
+                                                        ],
                                                     )}
-                                                    title={SEVERITY_LABEL[e.severity]}
+                                                    title={
+                                                        SEVERITY_LABEL[
+                                                            e.severity
+                                                        ]
+                                                    }
                                                 >
                                                     {e.severity}
                                                 </span>
                                                 <div>
-                                                    <div className="font-medium">{e.symptom}</div>
+                                                    <div className="font-medium">
+                                                        {e.symptom}
+                                                    </div>
                                                     <div className="text-xs text-muted-foreground">
                                                         {e.logged_on}
-                                                        {e.note ? ` · ${e.note}` : ''}
+                                                        {e.note
+                                                            ? ` · ${e.note}`
+                                                            : ''}
                                                     </div>
                                                 </div>
                                             </div>
@@ -282,8 +345,9 @@ export default function SymptomsIndex({ entries, today }: PageProps) {
                 </div>
 
                 <p className="rounded-lg border border-amber-500/40 bg-amber-50 px-4 py-3 text-xs text-amber-900 dark:bg-amber-950/40 dark:text-amber-200">
-                    A journal to share with your care team. If symptoms are severe or
-                    sudden, contact your care team or seek urgent care — don't wait.
+                    A journal to share with your care team. If symptoms are
+                    severe or sudden, contact your care team or seek urgent care
+                    — don't wait.
                 </p>
             </div>
         </>

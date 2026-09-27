@@ -2,9 +2,20 @@
 
 namespace App\Models;
 
+use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+/**
+ * @property int $id
+ * @property int $user_id
+ * @property string $symptom
+ * @property int $severity
+ * @property string|null $note
+ * @property CarbonImmutable $logged_on
+ * @property CarbonImmutable|null $created_at
+ * @property CarbonImmutable|null $updated_at
+ */
 class SymptomEntry extends Model
 {
     protected $fillable = [
@@ -14,6 +25,9 @@ class SymptomEntry extends Model
         'logged_on',
     ];
 
+    /**
+     * @return array<string, string>
+     */
     protected function casts(): array
     {
         return [
@@ -22,6 +36,9 @@ class SymptomEntry extends Model
         ];
     }
 
+    /**
+     * @return BelongsTo<User, $this>
+     */
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);

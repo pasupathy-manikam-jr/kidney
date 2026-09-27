@@ -19,15 +19,21 @@ export default function DataSettings({ counts }: PageProps) {
 
     const handleImport = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
-        if (!file) return;
+
+        if (!file) {
+            return;
+        }
+
         if (
             !confirm(
                 'Restoring will replace ALL current data in this account with the backup. Continue?',
             )
         ) {
             e.target.value = '';
+
             return;
         }
+
         importForm.setData('file', file);
         importForm.post(BackupController.import().url, {
             preserveScroll: true,
@@ -52,9 +58,9 @@ export default function DataSettings({ counts }: PageProps) {
 
                 <div className="rounded-lg border border-border p-4 text-sm text-muted-foreground">
                     This account holds {counts.labResults} lab readings,{' '}
-                    {counts.medications} medications, {counts.intakeEntries} diet/fluid
-                    entries, {counts.symptomEntries} symptoms and {counts.catheterLogs}{' '}
-                    dialysis exchanges.
+                    {counts.medications} medications, {counts.intakeEntries}{' '}
+                    diet/fluid entries, {counts.symptomEntries} symptoms and{' '}
+                    {counts.catheterLogs} dialysis exchanges.
                 </div>
 
                 <div className="flex flex-col gap-3 sm:flex-row">
@@ -71,17 +77,24 @@ export default function DataSettings({ counts }: PageProps) {
                             onChange={handleImport}
                             disabled={importForm.processing}
                         />
-                        <Button type="button" variant="outline" asChild disabled={importForm.processing}>
+                        <Button
+                            type="button"
+                            variant="outline"
+                            asChild
+                            disabled={importForm.processing}
+                        >
                             <span className="cursor-pointer">
-                                <Upload className="size-4" /> Restore from backup
+                                <Upload className="size-4" /> Restore from
+                                backup
                             </span>
                         </Button>
                     </label>
                 </div>
 
                 <p className="rounded-lg border border-amber-500/40 bg-amber-50 px-4 py-3 text-xs text-amber-900 dark:bg-amber-950/40 dark:text-amber-200">
-                    Restoring replaces everything currently in this account with the
-                    contents of the backup file. Export first if you're unsure.
+                    Restoring replaces everything currently in this account with
+                    the contents of the backup file. Export first if you're
+                    unsure.
                 </p>
             </div>
         </>

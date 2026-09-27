@@ -72,9 +72,9 @@ export default function EmergencyIndex({ contacts }: PageProps) {
                     </CardHeader>
                     <CardContent>
                         <p className="mb-3 text-sm text-muted-foreground">
-                            Contact your care team promptly — or emergency services if
-                            severe — for any of these. General guidance only; follow your
-                            own care team's advice.
+                            Contact your care team promptly — or emergency
+                            services if severe — for any of these. General
+                            guidance only; follow your own care team's advice.
                         </p>
                         <ul className="grid gap-2 sm:grid-cols-2">
                             {WHEN_TO_CALL.map((w) => (
@@ -108,18 +108,24 @@ export default function EmergencyIndex({ contacts }: PageProps) {
                                     <Input
                                         placeholder="Name"
                                         value={c.name}
-                                        onChange={(e) => update(i, 'name', e.target.value)}
+                                        onChange={(e) =>
+                                            update(i, 'name', e.target.value)
+                                        }
                                     />
                                     <Input
                                         placeholder="Role (e.g. PD nurse)"
                                         value={c.role}
-                                        onChange={(e) => update(i, 'role', e.target.value)}
+                                        onChange={(e) =>
+                                            update(i, 'role', e.target.value)
+                                        }
                                     />
                                     <Input
                                         type="tel"
                                         placeholder="Phone"
                                         value={c.phone}
-                                        onChange={(e) => update(i, 'phone', e.target.value)}
+                                        onChange={(e) =>
+                                            update(i, 'phone', e.target.value)
+                                        }
                                     />
                                     <Button
                                         type="button"
@@ -133,10 +139,19 @@ export default function EmergencyIndex({ contacts }: PageProps) {
                                 </div>
                             ))}
                             <div className="flex items-center gap-2">
-                                <Button type="button" variant="outline" size="sm" onClick={addRow}>
+                                <Button
+                                    type="button"
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={addRow}
+                                >
                                     <Plus className="size-4" /> Add contact
                                 </Button>
-                                <Button type="submit" size="sm" disabled={form.processing}>
+                                <Button
+                                    type="submit"
+                                    size="sm"
+                                    disabled={form.processing}
+                                >
                                     Save contacts
                                 </Button>
                             </div>
@@ -147,7 +162,11 @@ export default function EmergencyIndex({ contacts }: PageProps) {
                                 {contacts.map((c, i) => (
                                     <a
                                         key={i}
-                                        href={c.phone ? `tel:${c.phone}` : undefined}
+                                        href={
+                                            c.phone
+                                                ? `tel:${c.phone}`
+                                                : undefined
+                                        }
                                         className="flex items-center justify-between rounded-lg border border-border px-4 py-3 transition hover:bg-muted"
                                     >
                                         <div>
@@ -160,7 +179,8 @@ export default function EmergencyIndex({ contacts }: PageProps) {
                                         </div>
                                         {c.phone && (
                                             <span className="flex items-center gap-1.5 text-sm text-teal-600 dark:text-teal-400">
-                                                <Phone className="size-4" /> {c.phone}
+                                                <Phone className="size-4" />{' '}
+                                                {c.phone}
                                             </span>
                                         )}
                                     </a>
@@ -171,9 +191,9 @@ export default function EmergencyIndex({ contacts }: PageProps) {
                 </Card>
 
                 <p className="rounded-lg border border-amber-500/40 bg-amber-50 px-4 py-3 text-xs text-amber-900 dark:bg-amber-950/40 dark:text-amber-200">
-                    In a life-threatening emergency, call your local emergency number
-                    immediately. This page is a personal quick-reference, not medical
-                    advice.
+                    In a life-threatening emergency, call your local emergency
+                    number immediately. This page is a personal quick-reference,
+                    not medical advice.
                 </p>
             </div>
         </>

@@ -113,7 +113,11 @@ enum LabMetric: string
         return self::META[$this->value][1];
     }
 
-    /** General adult reference range [low, high], or null if not applicable. */
+    /**
+     * General adult reference range [low, high], or null if not applicable.
+     *
+     * @return array{int|float|null, int|float|null}|null
+     */
     public function referenceRange(): ?array
     {
         return self::META[$this->value][2];
@@ -134,6 +138,8 @@ enum LabMetric: string
     /**
      * SI-unit display info: [unit, factor (conventional × factor), precision].
      * Only the US-conventional metrics convert; the rest already use SI units.
+     *
+     * @return array{unit: string, factor: float, precision: int}
      */
     public function si(): array
     {
@@ -150,6 +156,8 @@ enum LabMetric: string
     /**
      * Critical thresholds [low, high] that warrant prompt medical attention.
      * General adult danger cut-offs — NOT a diagnosis. null = none defined.
+     *
+     * @return array{int|float|null, int|float|null}|null
      */
     public function criticalRange(): ?array
     {
@@ -217,7 +225,11 @@ enum LabMetric: string
         return 'in_range';
     }
 
-    /** Serializable catalog for the frontend. */
+    /**
+     * Serializable catalog for the frontend.
+     *
+     * @return array<int, array{value: string, label: string, unit: string, referenceRange: array{int|float|null, int|float|null}|null, precision: int, si: array{unit: string, factor: float, precision: int}}>
+     */
     public static function catalog(): array
     {
         return array_map(fn (self $m) => [

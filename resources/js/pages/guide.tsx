@@ -1,13 +1,14 @@
 import { Head, Link } from '@inertiajs/react';
 import GithubSlugger from 'github-slugger';
 import { ArrowLeft, HeartPulse } from 'lucide-react';
-import { type ComponentPropsWithoutRef, useMemo } from 'react';
+import { useMemo } from 'react';
+import type { ComponentPropsWithoutRef } from 'react';
 import Markdown from 'react-markdown';
 import rehypeSlug from 'rehype-slug';
 import remarkGfm from 'remark-gfm';
 // Single source of truth: the user guide markdown file.
-import guideContent from '../../../docs/USER_GUIDE.md?raw';
 import { home } from '@/routes';
+import guideContent from '../../../docs/USER_GUIDE.md?raw';
 
 const components = {
     h1: (p: ComponentPropsWithoutRef<'h1'>) => (
@@ -26,14 +27,23 @@ const components = {
         <p className="my-3 leading-relaxed text-muted-foreground" {...p} />
     ),
     ul: (p: ComponentPropsWithoutRef<'ul'>) => (
-        <ul className="my-3 ml-5 list-disc space-y-1.5 text-muted-foreground" {...p} />
+        <ul
+            className="my-3 ml-5 list-disc space-y-1.5 text-muted-foreground"
+            {...p}
+        />
     ),
     ol: (p: ComponentPropsWithoutRef<'ol'>) => (
-        <ol className="my-3 ml-5 list-decimal space-y-1.5 text-muted-foreground" {...p} />
+        <ol
+            className="my-3 ml-5 list-decimal space-y-1.5 text-muted-foreground"
+            {...p}
+        />
     ),
     li: (p: ComponentPropsWithoutRef<'li'>) => <li className="pl-1" {...p} />,
     a: (p: ComponentPropsWithoutRef<'a'>) => (
-        <a className="font-medium text-teal-600 underline underline-offset-4 dark:text-teal-400" {...p} />
+        <a
+            className="font-medium text-teal-600 underline underline-offset-4 dark:text-teal-400"
+            {...p}
+        />
     ),
     strong: (p: ComponentPropsWithoutRef<'strong'>) => (
         <strong className="font-semibold text-foreground" {...p} />
@@ -45,7 +55,10 @@ const components = {
         />
     ),
     code: (p: ComponentPropsWithoutRef<'code'>) => (
-        <code className="rounded bg-muted px-1.5 py-0.5 font-mono text-sm" {...p} />
+        <code
+            className="rounded bg-muted px-1.5 py-0.5 font-mono text-sm"
+            {...p}
+        />
     ),
     hr: () => <hr className="my-8 border-border" />,
     table: (p: ComponentPropsWithoutRef<'table'>) => (
@@ -54,10 +67,16 @@ const components = {
         </div>
     ),
     th: (p: ComponentPropsWithoutRef<'th'>) => (
-        <th className="border-b border-border py-2 pr-4 text-left font-medium" {...p} />
+        <th
+            className="border-b border-border py-2 pr-4 text-left font-medium"
+            {...p}
+        />
     ),
     td: (p: ComponentPropsWithoutRef<'td'>) => (
-        <td className="border-b border-border py-2 pr-4 text-muted-foreground" {...p} />
+        <td
+            className="border-b border-border py-2 pr-4 text-muted-foreground"
+            {...p}
+        />
     ),
 };
 
@@ -66,11 +85,13 @@ export default function Guide() {
     // rehype-slug (github-slugger) so the anchor links line up.
     const toc = useMemo(() => {
         const slugger = new GithubSlugger();
+
         return guideContent
             .split('\n')
             .filter((line) => /^##\s+/.test(line))
             .map((line) => {
                 const title = line.replace(/^##\s+/, '').trim();
+
                 return { title, id: slugger.slug(title) };
             });
     }, []);
@@ -81,7 +102,10 @@ export default function Guide() {
 
             <div className="min-h-screen bg-background text-foreground">
                 <header className="mx-auto flex max-w-6xl items-center justify-between px-6 py-5">
-                    <Link href={home()} className="flex items-center gap-2 font-semibold">
+                    <Link
+                        href={home()}
+                        className="flex items-center gap-2 font-semibold"
+                    >
                         <span className="flex size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
                             <HeartPulse className="size-5" />
                         </span>
@@ -99,7 +123,7 @@ export default function Guide() {
                     {/* Table of contents */}
                     <aside className="mb-8 shrink-0 lg:sticky lg:top-6 lg:mb-0 lg:h-[calc(100vh-3rem)] lg:w-60 lg:overflow-y-auto">
                         <div className="rounded-lg border border-border p-4 lg:border-0 lg:p-0">
-                            <div className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                            <div className="mb-2 text-xs font-semibold tracking-wide text-muted-foreground uppercase">
                                 Contents
                             </div>
                             <nav className="flex flex-col gap-0.5">
@@ -117,7 +141,7 @@ export default function Guide() {
                     </aside>
 
                     {/* Content */}
-                    <main className="min-w-0 max-w-3xl scroll-smooth">
+                    <main className="max-w-3xl min-w-0 scroll-smooth">
                         <Markdown
                             remarkPlugins={[remarkGfm]}
                             rehypePlugins={[rehypeSlug]}

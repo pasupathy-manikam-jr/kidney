@@ -50,6 +50,9 @@ class AppointmentController extends Controller
         return back()->with('status', 'Appointment removed.');
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     private function validated(Request $request): array
     {
         return $request->validate([

@@ -60,6 +60,10 @@ class BackupController extends Controller
         ]);
 
         $raw = file_get_contents($request->file('file')->getRealPath());
+        if ($raw === false) {
+            return back()->with('error', 'Could not read the uploaded file.');
+        }
+
         $data = json_decode($raw, true);
 
         if (! is_array($data) || ($data['version'] ?? null) !== self::VERSION) {
@@ -109,6 +113,11 @@ class BackupController extends Controller
         return back()->with('status', 'Backup restored.');
     }
 
+    /**
+     * @param  array<string, mixed>  $row
+     * @param  list<string>  $keys
+     * @return array<string, mixed>
+     */
     private function only(array $row, array $keys): array
     {
         return array_intersect_key($row, array_flip($keys));

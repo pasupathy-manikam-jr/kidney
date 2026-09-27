@@ -3,18 +3,18 @@ import { Bell, BellOff, Pill } from 'lucide-react';
 import { useState } from 'react';
 import { toast } from 'sonner';
 import MedicationController from '@/actions/App/Http/Controllers/MedicationController';
+import { ConfirmDelete } from '@/components/confirm-delete';
+import InputError from '@/components/input-error';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import {
     remindersEnabled,
     setRemindersEnabled,
     useMedReminders,
 } from '@/hooks/use-med-reminders';
 import { usePushNotifications } from '@/hooks/use-push-notifications';
-import { ConfirmDelete } from '@/components/confirm-delete';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import InputError from '@/components/input-error';
 import { cn } from '@/lib/utils';
 import { dashboard } from '@/routes';
 
@@ -47,28 +47,41 @@ export default function MedicationsIndex({ medications }: PageProps) {
     const enableReminders = async () => {
         if (!('Notification' in window)) {
             toast.error('This browser does not support notifications.');
+
             return;
         }
+
         const perm = await Notification.requestPermission();
+
         if (perm !== 'granted') {
             toast.error('Notification permission denied.');
+
             return;
         }
+
         setRemindersEnabled(true);
         setRemindersOn(true);
 
         if (push.supported) {
             await push.subscribe();
-            toast.success('Reminders on — they arrive even when the app is closed.');
+            toast.success(
+                'Reminders on — they arrive even when the app is closed.',
+            );
         } else {
-            toast.success('Reminders on. Notifications fire while the app is open.');
+            toast.success(
+                'Reminders on. Notifications fire while the app is open.',
+            );
         }
     };
 
     const disableReminders = async () => {
         setRemindersEnabled(false);
         setRemindersOn(false);
-        if (push.subscribed) await push.unsubscribe();
+
+        if (push.subscribed) {
+            await push.unsubscribe();
+        }
+
         toast.success('Reminders off.');
     };
 
@@ -107,7 +120,9 @@ export default function MedicationsIndex({ medications }: PageProps) {
     };
 
     const remove = (id: number) => {
-        form.delete(MedicationController.destroy(id).url, { preserveScroll: true });
+        form.delete(MedicationController.destroy(id).url, {
+            preserveScroll: true,
+        });
     };
 
     return (
@@ -122,13 +137,18 @@ export default function MedicationsIndex({ medications }: PageProps) {
                             <CardTitle>Add a medication</CardTitle>
                         </CardHeader>
                         <CardContent>
-                            <form onSubmit={submit} className="flex flex-col gap-4">
+                            <form
+                                onSubmit={submit}
+                                className="flex flex-col gap-4"
+                            >
                                 <div className="grid gap-2">
                                     <Label htmlFor="name">Name</Label>
                                     <Input
                                         id="name"
                                         value={form.data.name}
-                                        onChange={(e) => form.setData('name', e.target.value)}
+                                        onChange={(e) =>
+                                            form.setData('name', e.target.value)
+                                        }
                                         placeholder="e.g. Amlodipine"
                                         required
                                     />
@@ -140,16 +160,28 @@ export default function MedicationsIndex({ medications }: PageProps) {
                                         <Input
                                             id="dosage"
                                             value={form.data.dosage}
-                                            onChange={(e) => form.setData('dosage', e.target.value)}
+                                            onChange={(e) =>
+                                                form.setData(
+                                                    'dosage',
+                                                    e.target.value,
+                                                )
+                                            }
                                             placeholder="5 mg"
                                         />
                                     </div>
                                     <div className="grid gap-2">
-                                        <Label htmlFor="time_of_day">Time</Label>
+                                        <Label htmlFor="time_of_day">
+                                            Time
+                                        </Label>
                                         <Input
                                             id="time_of_day"
                                             value={form.data.time_of_day}
-                                            onChange={(e) => form.setData('time_of_day', e.target.value)}
+                                            onChange={(e) =>
+                                                form.setData(
+                                                    'time_of_day',
+                                                    e.target.value,
+                                                )
+                                            }
                                             placeholder="Morning"
                                         />
                                     </div>
@@ -163,30 +195,50 @@ export default function MedicationsIndex({ medications }: PageProps) {
                                         type="time"
                                         value={form.data.reminder_time}
                                         onChange={(e) =>
-                                            form.setData('reminder_time', e.target.value)
+                                            form.setData(
+                                                'reminder_time',
+                                                e.target.value,
+                                            )
                                         }
                                     />
-                                    <InputError message={form.errors.reminder_time} />
+                                    <InputError
+                                        message={form.errors.reminder_time}
+                                    />
                                 </div>
                                 <div className="grid gap-2">
                                     <Label htmlFor="frequency">Frequency</Label>
                                     <Input
                                         id="frequency"
                                         value={form.data.frequency}
-                                        onChange={(e) => form.setData('frequency', e.target.value)}
+                                        onChange={(e) =>
+                                            form.setData(
+                                                'frequency',
+                                                e.target.value,
+                                            )
+                                        }
                                         placeholder="Once daily"
                                     />
                                 </div>
                                 <div className="grid gap-2">
-                                    <Label htmlFor="notes">Notes (optional)</Label>
+                                    <Label htmlFor="notes">
+                                        Notes (optional)
+                                    </Label>
                                     <Input
                                         id="notes"
                                         value={form.data.notes}
-                                        onChange={(e) => form.setData('notes', e.target.value)}
+                                        onChange={(e) =>
+                                            form.setData(
+                                                'notes',
+                                                e.target.value,
+                                            )
+                                        }
                                         placeholder="With food"
                                     />
                                 </div>
-                                <Button type="submit" disabled={form.processing}>
+                                <Button
+                                    type="submit"
+                                    disabled={form.processing}
+                                >
                                     Add medication
                                 </Button>
                             </form>
@@ -221,7 +273,8 @@ export default function MedicationsIndex({ medications }: PageProps) {
                             {medications.length === 0 ? (
                                 <div className="flex flex-col items-center gap-2 py-12 text-center text-sm text-muted-foreground">
                                     <Pill className="size-8 opacity-50" />
-                                    No medications yet. Add your first on the left.
+                                    No medications yet. Add your first on the
+                                    left.
                                 </div>
                             ) : (
                                 <ul className="flex flex-col gap-3">
@@ -266,13 +319,19 @@ export default function MedicationsIndex({ medications }: PageProps) {
                                             </div>
                                             <div className="flex shrink-0 flex-row items-center gap-4 border-t border-border pt-3 pl-12 sm:flex-col sm:items-end sm:gap-1.5 sm:border-0 sm:pt-0 sm:pl-0">
                                                 <button
-                                                    onClick={() => toggleActive(m)}
+                                                    onClick={() =>
+                                                        toggleActive(m)
+                                                    }
                                                     className="text-xs text-muted-foreground hover:text-foreground hover:underline"
                                                 >
-                                                    {m.active ? 'Mark inactive' : 'Mark active'}
+                                                    {m.active
+                                                        ? 'Mark inactive'
+                                                        : 'Mark active'}
                                                 </button>
                                                 <ConfirmDelete
-                                                    onConfirm={() => remove(m.id)}
+                                                    onConfirm={() =>
+                                                        remove(m.id)
+                                                    }
                                                     title="Remove this medication?"
                                                     confirmLabel="Remove"
                                                     trigger={

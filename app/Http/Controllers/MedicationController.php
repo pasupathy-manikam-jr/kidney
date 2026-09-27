@@ -49,6 +49,9 @@ class MedicationController extends Controller
         return back()->with('status', 'Medication removed.');
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     private function validated(Request $request): array
     {
         return $request->validate([
