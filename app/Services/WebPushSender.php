@@ -41,7 +41,7 @@ class WebPushSender
             return;
         }
 
-        $payload = json_encode(['title' => $title, 'body' => $body, 'url' => $url ?? '/dashboard']);
+        $payload = json_encode(['title' => $title, 'body' => $body, 'url' => url($url ?? '/dashboard')], JSON_THROW_ON_ERROR);
 
         $byEndpoint = $subscriptions->keyBy('endpoint');
 

@@ -1,4 +1,5 @@
 // Kidney-Love service worker: offline shell + push notifications.
+// Paths are relative to this script so the app also works from a subfolder.
 
 self.addEventListener('install', () => {
     self.skipWaiting();
@@ -19,9 +20,9 @@ self.addEventListener('push', (event) => {
     const title = data.title || 'Kidney-Love';
     const options = {
         body: data.body || '',
-        icon: '/apple-touch-icon.png',
-        badge: '/favicon.ico',
-        data: { url: data.url || '/dashboard' },
+        icon: 'apple-touch-icon.png',
+        badge: 'favicon.ico',
+        data: { url: data.url || 'dashboard' },
         tag: data.tag,
         requireInteraction: true, // stay on screen until the user dismisses it
         renotify: !!data.tag,
@@ -32,7 +33,7 @@ self.addEventListener('push', (event) => {
 
 self.addEventListener('notificationclick', (event) => {
     event.notification.close();
-    const url = (event.notification.data && event.notification.data.url) || '/dashboard';
+    const url = (event.notification.data && event.notification.data.url) || 'dashboard';
     event.waitUntil(
         self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clients) => {
             for (const client of clients) {
