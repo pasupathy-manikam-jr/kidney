@@ -30,7 +30,7 @@ and walk into each appointment with a clear picture instead of a pile of paper.
 - **Reminders** — opt-in web-push notifications.
 - **Your data, your control** — export/backup, light/dark theme, unit choices.
 
-A read-only **demo account** (`demo@example.com` / `password`) is seeded with
+A read-only **demo account** (`demo@example.com` / `Zx123456`) is seeded with
 fictional data for a walkthrough — see [`docs/USER_GUIDE.md`](docs/USER_GUIDE.md)
 and [`docs/DEMO_DATA.md`](docs/DEMO_DATA.md).
 

@@ -23,7 +23,7 @@ class DemoSeeder extends Seeder
      * @var list<array{name: string, email: string, password: string}>
      */
     public const LOGINS = [
-        ['name' => 'Demo', 'email' => 'demo@example.com', 'password' => 'password'],
+        ['name' => 'Demo', 'email' => 'demo@example.com', 'password' => 'Zx123456'],
     ];
 
     public function run(): void

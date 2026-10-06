@@ -42,8 +42,8 @@ class AuthenticationTest extends TestCase
         $this->seed(DemoSeeder::class);
 
         $this->post(route('login.store'), [
-            'email' => 'demo@example.com',
-            'password' => 'password',
+            'email' => DemoSeeder::LOGINS[0]['email'],
+            'password' => DemoSeeder::LOGINS[0]['password'],
         ]);
 
         $this->assertAuthenticated();
