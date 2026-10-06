@@ -15,13 +15,24 @@ use Illuminate\Support\Facades\Hash;
  */
 class DemoSeeder extends Seeder
 {
+    /**
+     * Seeded accounts (role label, email, password). With DEMO_LOGINS=true the
+     * login page also offers them as one-click logins, so never enable that
+     * flag on a live server.
+     *
+     * @var list<array{name: string, email: string, password: string}>
+     */
+    public const LOGINS = [
+        ['name' => 'Demo', 'email' => 'demo@example.com', 'password' => 'password'],
+    ];
+
     public function run(): void
     {
         $user = User::updateOrCreate(
-            ['email' => 'demo@example.com'],
+            ['email' => self::LOGINS[0]['email']],
             [
                 'name' => 'Demo Patient',
-                'password' => Hash::make('password'),
+                'password' => Hash::make(self::LOGINS[0]['password']),
                 'email_verified_at' => now(),
             ],
         );
