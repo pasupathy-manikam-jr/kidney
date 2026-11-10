@@ -1,0 +1,1 @@
+import{f as e}from"./wayfinder-DZFyYBti.js";function t(){return e().props.auth?.user?.units===`si`?`si`:`conventional`}function n(e,t){let n=10**t;return Math.round(e*n)/n}function r(e,t,r,i){return i===`si`&&r?{value:n(e*r.factor,r.precision),unit:r.unit}:{value:e,unit:t}}function i(e,t,r){return e===null?null:r===`si`&&t?n(e*t.factor,t.precision):e}export{i as n,t as r,r as t};
