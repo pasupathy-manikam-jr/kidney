@@ -24,4 +24,26 @@ class DashboardTest extends TestCase
         $response = $this->get(route('dashboard'));
         $response->assertOk();
     }
+
+    public function test_android_apk_link_only_shows_when_the_file_is_uploaded()
+    {
+        $this->actingAs(User::factory()->create());
+        $apk = public_path('downloads/kidney-love.apk');
+        $existed = is_file($apk);
+
+        if (! $existed) {
+            $this->get(route('dashboard'))->assertInertia(fn ($page) => $page->where('androidApkUrl', null));
+            @mkdir(dirname($apk), 0755, true);
+            file_put_contents($apk, 'apk');
+        }
+
+        try {
+            $this->get(route('dashboard'))->assertInertia(fn ($page) => $page->where('androidApkUrl', asset('downloads/kidney-love.apk')));
+        } finally {
+            if (! $existed) {
+                unlink($apk);
+                @rmdir(dirname($apk));
+            }
+        }
+    }
 }

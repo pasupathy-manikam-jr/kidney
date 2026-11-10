@@ -143,6 +143,10 @@ class DashboardController extends Controller
             'albuminuria' => $albuminuria,
             'risk' => $risk,
             'summary' => $summary,
+            // Beta APK is uploaded to the server by hand (not in git); link only when present.
+            'androidApkUrl' => is_file(public_path('downloads/kidney-love.apk'))
+                ? asset('downloads/kidney-love.apk')
+                : null,
         ]);
     }
 }

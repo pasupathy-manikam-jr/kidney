@@ -10,6 +10,7 @@ import {
     NotebookPen,
     Pill,
     Plus,
+    Smartphone,
     Utensils,
 } from 'lucide-react';
 import { Line, LineChart, ResponsiveContainer, YAxis } from 'recharts';
@@ -84,6 +85,7 @@ interface PageProps {
     gfr: Gfr | null;
     risk: Risk | null;
     summary: Summary;
+    androidApkUrl: string | null;
 }
 
 // KDIGO risk-level colors: 1 low -> 4 very high.
@@ -615,6 +617,7 @@ export default function Dashboard({
     gfr,
     risk,
     summary,
+    androidApkUrl,
 }: PageProps) {
     return (
         <>
@@ -644,6 +647,22 @@ export default function Dashboard({
                         </Link>
                     </Button>
                 </div>
+
+                {/* Android beta download */}
+                {androidApkUrl && (
+                    <a
+                        href={androidApkUrl}
+                        download
+                        className="flex items-center gap-2 rounded-lg border border-primary/40 bg-primary/5 px-4 py-3 text-sm transition hover:opacity-90"
+                    >
+                        <Smartphone className="size-4 shrink-0" />
+                        <span>
+                            <strong>Try the Android app (beta)</strong> —
+                            download the APK. Data stays on your phone; move it
+                            across with Settings → Data &amp; backup.
+                        </span>
+                    </a>
+                )}
 
                 {/* Transfer-set reminder */}
                 {summary.transferSetDaysUntil !== null &&
